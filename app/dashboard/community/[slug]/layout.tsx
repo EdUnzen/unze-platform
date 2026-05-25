@@ -1,0 +1,75 @@
+import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
+import { ROLE_LABELS } from "@/lib/constants/dashboard";
+import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
+import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
+import { countPendingReportsFromDb } from "@/services/governance/report.repository";
+import { getCurrentUser } from "@/services/auth/auth.service";
+import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+interface DashboardCommunityLayoutProps {
+  children: React.ReactNode;
+  params: Promise<{ slug: string }>;
+}
+
+export default async function DashboardCommunityLayout({
+  children,
+  params,
+}: DashboardCommunityLayoutProps) {
+  const { slug } = await params;
+  const user = await getCurrentUser();
+  if (!user) redirect("/auth/login?next=/dashboard");
+
+  const { community, canAccess } = await getDashboardCommunityAccess(
+    slug,
+    user.id,
+  );
+
+  if (!canAccess || !community) {
+    redirect("/dashboard");
+  }
+
+  const pendingApplicationCount = await countPendingApplicationsFromDb(
+    community.id,
+  );
+  const pendingReportCount = await countPendingReportsFromDb(community.id);
+  const accessLabel =
+    ACCESS_STATUS_OPTIONS.find(
+      (o) => o.value === community.access?.accessStatus,
+    )?.label ?? "Offen";
+
+  return (
+    <div className="page-padding">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        <Link href="/dashboard" className="text-sm font-medium text-unze-green">
+          ← Dashboard
+        </Link>
+        <Link
+          href={`/community/${slug}`}
+          className="text-xs font-medium text-unze-ink-muted underline-offset-2 hover:underline"
+        >
+          Öffentliche Ansicht
+        </Link>
+      </div>
+
+      <header className="mb-4">
+        <h1 className="text-xl font-bold tracking-tight text-unze-ink">
+          {community.title}
+        </h1>
+        <p className="text-sm text-unze-ink-secondary">
+          Verwaltung · {ROLE_LABELS[community.viewerRole]} · {accessLabel}
+        </p>
+      </header>
+
+      <DashboardTabs
+        slug={slug}
+        viewerRole={community.viewerRole}
+        pendingApplicationCount={pendingApplicationCount}
+        pendingReportCount={pendingReportCount}
+      />
+
+      {children}
+    </div>
+  );
+}

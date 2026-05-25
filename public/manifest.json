@@ -1,0 +1,25 @@
+{
+  "name": "UNZE — Universelles Netzwerk",
+  "short_name": "UNZE",
+  "description": "Community- und Creator-Plattform für moderne Netzwerke",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F5F5F7",
+  "theme_color": "#1DB872",
+  "orientation": "portrait-primary",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "/apple-icon",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

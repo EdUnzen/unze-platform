@@ -1,0 +1,62 @@
+# =============================================================================
+# UNZE — Git Ignore (Production-safe)
+# =============================================================================
+
+# --- Dependencies ---
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# --- Next.js / Build ---
+/.next/
+/out/
+/build
+/dist
+
+# --- Environment & Secrets (NIEMALS committen) ---
+.env
+.env*.local
+!.env.example
+
+# --- Vercel / Deploy ---
+.vercel
+
+# --- TypeScript / Cache ---
+*.tsbuildinfo
+
+# --- Tests / Coverage ---
+/coverage
+
+# --- Logs / Debug ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+
+# --- OS / Editor ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# --- Certificates / Keys ---
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+
+# --- Design-Referenzen (große Binärdateien, lokal only) ---
+Landigpage und app inspiration/
+*.bmp
+
+# --- Supabase CLI (falls lokal genutzt) ---
+.supabase/
