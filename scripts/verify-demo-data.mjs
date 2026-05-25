@@ -26,8 +26,13 @@ function loadEnvLocal() {
   return env;
 }
 
+const TABLE_COUNT_SELECT = {
+  post_likes: "post_id",
+};
+
 async function countTable(url, key, table) {
-  const res = await fetch(`${url}/rest/v1/${table}?select=id`, {
+  const selectCol = TABLE_COUNT_SELECT[table] ?? "id";
+  const res = await fetch(`${url}/rest/v1/${table}?select=${selectCol}`, {
     headers: {
       apikey: key,
       Authorization: `Bearer ${key}`,
@@ -70,13 +75,17 @@ async function main() {
   for (const table of tables) {
     const r = await countTable(url, anonKey, table);
     const ok = r.status === 200 || r.status === 206;
-    console.log(`${ok ? "✓" : "✗"} ${table}: ${ok ? r.count + " Zeilen" : "HTTP " + r.status}`);
+    const note =
+      table === "community_join_applications" && ok && r.count === "0"
+        ? " (RLS: Anon sieht keine Bewerbungen — normal)"
+        : "";
+    console.log(`${ok ? "✓" : "✗"} ${table}: ${ok ? r.count + " Zeilen" : "HTTP " + r.status}${note}`);
     if (!ok) schemaOk = false;
   }
 
   if (!schemaOk) {
-    console.log("\n→ Schema fehlt. Ausführen: npm run db:migrate");
-    console.log("  oder database/BUNDLE_all_migrations.sql im SQL Editor\n");
+    console.log("\n→ Schema- oder Grant-Problem. Prüfe:");
+    console.log("  database/BUNDLE_all_migrations.sql + database/FIX_api_grants.sql\n");
     process.exit(1);
   }
 
@@ -85,6 +94,17 @@ async function main() {
         auth: { persistSession: false, autoRefreshToken: false },
       })
     : createClient(url, anonKey);
+
+  const { count: applicationCount } = serviceKey
+    ? await db
+        .from("community_join_applications")
+        .select("*", { count: "exact", head: true })
+    : { count: null };
+
+  if (serviceKey && applicationCount != null) {
+    console.log(`\n--- Bewerbungen (Service Role) ---\n`);
+    console.log(`✓ community_join_applications: ${applicationCount} Zeilen`);
+  }
 
   const { data: communities, error: commErr } = await db
     .from("communities")
@@ -167,7 +187,8 @@ async function main() {
   const ok =
     (communities?.length ?? 0) >= 3 &&
     (postCount ?? 0) >= 6 &&
-    (memberCount ?? 0) >= 3;
+    (memberCount ?? 0) >= 3 &&
+    (likeCount ?? 0) >= 1;
 
   if (ok) {
     console.log("Verify ERFOLGREICH — Discover & Feed sollten Daten zeigen.\n");

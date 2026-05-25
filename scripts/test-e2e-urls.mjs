@@ -33,8 +33,8 @@ const ROUTES = [
 ];
 
 async function main() {
-  const env = { ...process.env, ...loadEnvLocal() };
-  const base = env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3002";
+  const env = { ...loadEnvLocal(), ...process.env };
+  const base = env.NEXT_PUBLIC_APP_URL ?? env.E2E_BASE_URL ?? "http://localhost:3002";
 
   console.log(`\n=== E2E URL Test (${base}) ===\n`);
 
