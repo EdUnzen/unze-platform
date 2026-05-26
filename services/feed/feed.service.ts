@@ -4,6 +4,11 @@ import type { PostRow } from "@/types/database";
 import { getFollowedCommunityIds } from "@/services/follow/follow.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { fetchViewerLikedPostIds } from "./like.repository";
+import {
+  FEED_EXPLORE_RATIO,
+  interleaveFeedPosts,
+} from "@/lib/feed/blend-feed";
+import { getCommunityActivityStats } from "@/services/platform/activity-stats.service";
 
 export async function getFeedAuthorMeta(
   authorIds: string[],
@@ -120,40 +125,100 @@ export async function getFeedCommunityMeta(
 }
 
 export async function getPersonalFeedPosts(limit = 20): Promise<FeedPost[]> {
+  return getBlendedFeedPosts(limit);
+}
+
+async function fetchExploreFeedPosts(
+  limit: number,
+  excludeCommunityIds: string[] = [],
+): Promise<FeedPost[]> {
   const supabase = await createClient();
   if (!supabase) return [];
-
-  const followedCommunityIds = await getFollowedCommunityIds();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
 
   let query = supabase
     .from("posts")
     .select("*")
+    .eq("visibility", "public")
+    .order("like_count", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .limit(limit * 2);
 
-  if (user || followedCommunityIds.length > 0) {
-    const filters: string[] = [];
-    if (user) filters.push(`author_id.eq.${user.id}`);
-    if (followedCommunityIds.length > 0) {
-      filters.push(`community_id.in.(${followedCommunityIds.join(",")})`);
-    }
-    query = query.or(filters.join(","));
-  } else {
-    return getDiscoverFeedPosts(limit);
+  if (excludeCommunityIds.length > 0) {
+    query = query.not(
+      "community_id",
+      "in",
+      `(${excludeCommunityIds.join(",")})`,
+    );
   }
 
   const { data, error } = await query;
-
   if (error) {
-    console.error("[feed.service] personal:", error.message);
+    console.error("[feed.service] explore:", error.message);
     return [];
   }
 
-  return enrichFeedPosts((data ?? []).map((row) => mapPostRow(row as PostRow)));
+  return (data ?? []).map((row) => ({
+    ...mapPostRow(row as PostRow),
+    feedSource: "explore" as const,
+  }));
+}
+
+async function fetchFollowFeedPosts(limit: number): Promise<FeedPost[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const followedCommunityIds = await getFollowedCommunityIds();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user && followedCommunityIds.length === 0) {
+    return [];
+  }
+
+  const filters: string[] = [];
+  if (user) filters.push(`author_id.eq.${user.id}`);
+  if (followedCommunityIds.length > 0) {
+    filters.push(`community_id.in.(${followedCommunityIds.join(",")})`);
+  }
+
+  const { data, error } = await supabase
+    .from("posts")
+    .select("*")
+    .or(filters.join(","))
+    .order("created_at", { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    console.error("[feed.service] follow:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => ({
+    ...mapPostRow(row as PostRow),
+    feedSource: "follow" as const,
+  }));
+}
+
+/** Follow (~88 %) + Explore (~12 %) */
+export async function getBlendedFeedPosts(limit = 20): Promise<FeedPost[]> {
+  const exploreCount = Math.max(1, Math.round(limit * FEED_EXPLORE_RATIO));
+  const followCount = limit - exploreCount + 4;
+
+  const followedIds = await getFollowedCommunityIds();
+  const user = await getCurrentUser();
+
+  if (!user && followedIds.length === 0) {
+    return getDiscoverFeedPosts(limit);
+  }
+
+  const [followPosts, explorePosts] = await Promise.all([
+    fetchFollowFeedPosts(followCount),
+    fetchExploreFeedPosts(exploreCount + 4, followedIds),
+  ]);
+
+  const blended = interleaveFeedPosts(followPosts, explorePosts, limit);
+  return enrichFeedPosts(blended);
 }
 
 export async function getCommunityPosts(

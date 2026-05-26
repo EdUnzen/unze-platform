@@ -26,6 +26,8 @@ export interface FeedPost {
   author?: FeedPostAuthor;
   community?: FeedPostCommunity;
   isLikedByViewer?: boolean;
+  /** follow = aus Abos, explore = Discover-Mix */
+  feedSource?: "follow" | "explore";
 }
 
 export function mapPostRow(row: PostRow): FeedPost {

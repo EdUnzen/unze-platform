@@ -23,7 +23,7 @@ export function buildEngagementPills(
     });
   }
 
-  if ((metrics.shareCount ?? 0) >= 20) {
+  if ((metrics.shareCount ?? 0) >= 10) {
     pills.push({
       key: "shares",
       label: formatShareCountLabel(metrics.shareCount!),

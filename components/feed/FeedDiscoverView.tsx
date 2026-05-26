@@ -3,7 +3,7 @@
 import type { FeedPost } from "@/lib/mappers/post.mapper";
 import { cn } from "@/lib/utils/cn";
 import { LayoutGrid, Rows3 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FeedEmptyState, FeedPostCard } from "./FeedPostCard";
 
 interface FeedDiscoverViewProps {
@@ -12,20 +12,52 @@ interface FeedDiscoverViewProps {
   emptyMessage?: string;
 }
 
+function useDefaultSwipeMode(): "list" | "swipe" {
+  const [mode, setMode] = useState<"list" | "swipe">("list");
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 640px)");
+    const apply = () => setMode(mq.matches ? "swipe" : "list");
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
+  }, []);
+
+  return mode;
+}
+
 export function FeedDiscoverView({
   posts,
   isLoggedIn,
   emptyMessage = "Noch keine Beiträge im Feed.",
 }: FeedDiscoverViewProps) {
-  const [mode, setMode] = useState<"list" | "swipe">("list");
+  const defaultMode = useDefaultSwipeMode();
+  const [mode, setMode] = useState<"list" | "swipe">(defaultMode);
+
+  useEffect(() => {
+    setMode(defaultMode);
+  }, [defaultMode]);
 
   if (posts.length === 0) {
     return <FeedEmptyState message={emptyMessage} />;
   }
 
+  const exploreCount = posts.filter((p) => p.feedSource === "explore").length;
+
   return (
     <div>
-      <div className="mb-4 flex items-center justify-end gap-1 rounded-2xl bg-unze-surface-muted p-1">
+      <div className="mb-4 flex items-center justify-between gap-2">
+        {exploreCount > 0 && (
+          <p className="text-[11px] text-unze-ink-muted">
+            ~{Math.round((exploreCount / posts.length) * 100)}% Entdecken-Mix
+          </p>
+        )}
+        <div
+          className={cn(
+            "flex items-center gap-1 rounded-2xl bg-unze-surface-muted p-1",
+            exploreCount === 0 && "ml-auto",
+          )}
+        >
         <button
           type="button"
           onClick={() => setMode("list")}
@@ -52,11 +84,12 @@ export function FeedDiscoverView({
           <LayoutGrid className="h-3.5 w-3.5" aria-hidden />
           Swipe
         </button>
+        </div>
       </div>
 
       {mode === "swipe" ? (
         <ul
-          className="flex max-h-[min(72dvh,640px)] snap-y snap-mandatory flex-col gap-3 overflow-y-auto pb-2 scrollbar-none"
+          className="flex max-h-[min(78dvh,680px)] snap-y snap-mandatory flex-col gap-3 overflow-y-auto pb-2 scrollbar-none"
           data-testid="feed-swipe-stack"
         >
           {posts.map((post) => (

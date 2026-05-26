@@ -1,7 +1,8 @@
 import type { CommunityDashboardStats } from "@/types/dashboard";
 import { cn } from "@/lib/utils/cn";
-import { Award, FileText, Heart, Users, FolderOpen } from "lucide-react";
+import { Award, Eye, FileText, Heart, Share2, Users, FolderOpen } from "lucide-react";
 import { formatMemberCount } from "@/services/community/community.service";
+import { formatCompactCount } from "@/lib/utils/format-metrics";
 import Link from "next/link";
 
 interface DashboardStatGridProps {
@@ -19,17 +20,29 @@ export function DashboardStatGrid({ stats, slug }: DashboardStatGridProps) {
       highlight: true,
     },
     {
+      label: "Aufrufe/Woche",
+      value: stats.weeklyViews ? formatCompactCount(stats.weeklyViews) : "—",
+      icon: Eye,
+      highlight: (stats.weeklyViews ?? 0) > 0,
+    },
+    {
+      label: "Shares",
+      value: stats.shareCount ? formatCompactCount(stats.shareCount) : "—",
+      icon: Share2,
+      highlight: (stats.shareCount ?? 0) > 0,
+    },
+    {
       label: "Beiträge",
       value: String(stats.postCount),
       icon: FileText,
       highlight: stats.postCount > 0,
     },
-    { label: "Gruppen", value: String(stats.groupCount), icon: FolderOpen },
     {
       label: "Follower",
       value: formatMemberCount(stats.followerCount),
       icon: Heart,
     },
+    { label: "Gruppen", value: String(stats.groupCount), icon: FolderOpen },
     { label: "Badges", value: String(stats.badgeCount), icon: Award },
   ];
 
@@ -38,7 +51,7 @@ export function DashboardStatGrid({ stats, slug }: DashboardStatGridProps) {
       <header className="mb-3">
         <h2 className="text-sm font-semibold text-unze-ink">KPI-Übersicht</h2>
         <p className="text-xs text-unze-ink-secondary">
-          Wachstum und Aktivität deiner Community
+          Engagement, Reichweite und Community-Wachstum
         </p>
       </header>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">

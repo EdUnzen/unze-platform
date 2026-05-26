@@ -13,7 +13,7 @@ import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDiscoverCommunities } from "@/services/community/community.service";
 import { getDiscoverGroups } from "@/services/community/group.service";
 import { getDiscoverCreators } from "@/services/creator/creator.service";
-import { getDiscoverFeedPosts } from "@/services/feed/feed.service";
+import { getDiscoverFeedPosts, getPersonalFeedPosts } from "@/services/feed/feed.service";
 import { isPlatformSchemaReady } from "@/services/platform/schema.service";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -50,17 +50,21 @@ async function DiscoverContent({
   }
 
   if (tab === "feed") {
-    const posts = await getDiscoverFeedPosts();
     const user = await getCurrentUser();
+    const posts = user
+      ? await getPersonalFeedPosts(24)
+      : await getDiscoverFeedPosts(24);
 
     return (
       <section>
         <header className="mb-4">
           <h2 className="text-lg font-semibold tracking-tight text-unze-ink">
-            Feed Discover
+            {user ? "Dein Feed" : "Feed Discover"}
           </h2>
           <p className="mt-0.5 text-sm text-unze-ink-secondary">
-            Öffentliche Beiträge — Liste oder Swipe-Ansicht
+            {user
+              ? "Follows + ~12 % Entdecken — Liste oder Swipe-Ansicht"
+              : "Öffentliche Beiträge — Liste oder Swipe-Ansicht"}
           </p>
         </header>
         <FeedPostList

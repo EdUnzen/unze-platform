@@ -1,4 +1,5 @@
 import { DashboardStatGrid } from "@/components/dashboard/DashboardStatGrid";
+import { DashboardGrowthPanel } from "@/components/dashboard/DashboardGrowthPanel";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { DashboardAttentionPanel } from "@/components/dashboard/DashboardAttentionPanel";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
@@ -51,6 +52,12 @@ export default async function DashboardOverviewPage({
         viewerRole={community.viewerRole}
         pendingApplications={pendingApplicationCount}
         pendingReports={pendingReportCount}
+      />
+
+      <DashboardGrowthPanel
+        slug={slug}
+        stats={community.stats}
+        communityTitle={community.title}
       />
 
       <DashboardStatGrid stats={community.stats} slug={slug} />

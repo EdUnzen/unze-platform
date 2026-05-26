@@ -38,7 +38,7 @@ function FeedPostCardInner({
       className={cn(
         "rounded-3xl bg-white shadow-card",
         variant === "swipe"
-          ? "flex h-full min-h-[420px] snap-start snap-always flex-col p-5"
+          ? "relative flex h-full min-h-[440px] snap-start snap-always flex-col p-5"
           : "p-4",
       )}
       data-testid={`feed-post-${post.id}`}
@@ -73,6 +73,11 @@ function FeedPostCardInner({
             {post.isPinned && (
               <span className="rounded-full bg-amber-100 px-2 py-0.5 font-semibold text-amber-800">
                 Angepinnt
+              </span>
+            )}
+            {post.feedSource === "explore" && (
+              <span className="rounded-full bg-violet-100 px-2 py-0.5 font-semibold text-violet-800">
+                Entdecken
               </span>
             )}
           </div>

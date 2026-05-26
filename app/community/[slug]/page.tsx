@@ -1,4 +1,4 @@
-import { CommunityGroupList } from "@/components/community/CommunityGroupList";
+import { CommunityGroupSection } from "@/components/community/CommunityGroupSection";
 import { CommunityJoinPanel } from "@/components/community/CommunityJoinPanel";
 import { CommunityManageButton } from "@/components/community/CommunityManageButton";
 import { CommunityAtAGlance } from "@/components/community/CommunityAtAGlance";
@@ -11,6 +11,7 @@ import { CommunityViewRecorder } from "@/components/community/CommunityViewRecor
 import { CreatorProfileCard } from "@/components/community/CreatorProfileCard";
 import { FeedPostList } from "@/components/feed/FeedPostList";
 import { ReportDialog } from "@/components/governance/ReportDialog";
+import { ExternalLinkTrustNotice } from "@/components/trust/ExternalLinkTrustNotice";
 import { getEffectiveJoinQuestions } from "@/lib/access/join-questions";
 import { getJoinQuestions } from "@/services/access/access.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
@@ -96,15 +97,18 @@ export default async function CommunityPage({
                 ))}
               </div>
               {community.externalUrl && (
-                <a
-                  href={community.externalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-unze-green"
-                >
-                  <ExternalLink className="h-4 w-4" aria-hidden />
-                  Externe Plattform öffnen
-                </a>
+                <div className="mt-3 space-y-2">
+                  <a
+                    href={community.externalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-unze-green"
+                  >
+                    <ExternalLink className="h-4 w-4" aria-hidden />
+                    Externe Plattform öffnen
+                  </a>
+                  <ExternalLinkTrustNotice communityTitle={community.title} />
+                </div>
               )}
             </section>
 
@@ -112,7 +116,7 @@ export default async function CommunityPage({
             <CommunityReviewsPrep community={community} />
             <CommunityRulesSection community={community} />
             <CreatorProfileCard community={community} />
-            <CommunityGroupList groups={groups} />
+            <CommunityGroupSection community={community} groups={groups} />
 
             {posts.length > 0 && (
               <section className="rounded-3xl bg-white p-4 shadow-card">

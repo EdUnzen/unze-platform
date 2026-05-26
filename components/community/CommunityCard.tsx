@@ -6,6 +6,7 @@ import { VISIBILITY_OPTIONS } from "@/lib/constants/community";
 import { isDemoCommunitySlug } from "@/lib/constants/demo";
 import { getAppUrl } from "@/lib/env";
 import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
+import { CardMetricsRow } from "@/components/share/CardMetricsRow";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { BadgeCheck, FolderOpen, Heart, Lock, Star, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
@@ -118,7 +119,14 @@ function CommunityCardInner({
               {community.description}
             </p>
 
-            <CardEngagementStrip metrics={community.engagement} className="mb-3" />
+            <CardEngagementStrip metrics={community.engagement} className="mb-2" />
+
+          <CardMetricsRow
+            metrics={community.engagement}
+            weeklyViews={community.viewCountWeekly}
+            shareCount={community.shareCount}
+            className="mb-3"
+          />
 
             <div className="mb-3 flex flex-wrap gap-1.5">
               {community.tags.slice(0, 3).map((tag) => (

@@ -6,6 +6,7 @@ import type { CommunityRole, CommunityWithCreator } from "@/types/database";
 import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
 import { countGroupsByCommunityId } from "@/services/community/group.repository";
 import { fetchBadgesByCommunity } from "@/services/badges/badge.repository";
+import { getCommunityActivityStats } from "@/services/platform/activity-stats.service";
 
 const COMMUNITY_SELECT = `
   *,
@@ -23,10 +24,12 @@ const MANAGER_ROLES: CommunityRole[] = ["creator", "admin", "moderator"];
 async function fetchCommunityStats(
   communityId: string,
   memberCount: number,
+  engagement?: { view_count_weekly?: number; share_count?: number },
 ): Promise<CommunityDashboardStats> {
   const supabase = await createClient();
   const groupCount = await countGroupsByCommunityId(communityId);
   const badges = await fetchBadgesByCommunity(communityId);
+  const activity = await getCommunityActivityStats([communityId]);
 
   let postCount = 0;
   let followerCount = 0;
@@ -53,6 +56,9 @@ async function fetchCommunityStats(
     postCount,
     followerCount,
     badgeCount: badges.length,
+    weeklyViews: engagement?.view_count_weekly ?? 0,
+    shareCount: engagement?.share_count ?? 0,
+    weeklyPosts: activity[communityId]?.weeklyPostCount ?? 0,
   };
 }
 
@@ -88,6 +94,10 @@ export async function getManagedCommunities(
     const stats = await fetchCommunityStats(
       community.id,
       community.member_count,
+      {
+        view_count_weekly: (community as { view_count_weekly?: number }).view_count_weekly,
+        share_count: (community as { share_count?: number }).share_count,
+      },
     );
 
     const pendingApplicationCount = await countPendingApplicationsFromDb(
@@ -143,6 +153,10 @@ export async function getDashboardCommunityAccess(
   const stats = await fetchCommunityStats(
     communityRow.id,
     communityRow.member_count,
+    {
+      view_count_weekly: (communityRow as { view_count_weekly?: number }).view_count_weekly,
+      share_count: (communityRow as { share_count?: number }).share_count,
+    },
   );
 
   return {

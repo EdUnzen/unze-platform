@@ -3,9 +3,10 @@ import { AttentionBadge } from "@/components/dashboard/StatusBadge";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import { formatMemberCount } from "@/services/community/community.service";
+import { formatCompactCount } from "@/lib/utils/format-metrics";
 import type { ManagedCommunity } from "@/types/dashboard";
 import { cn } from "@/lib/utils/cn";
-import { ChevronRight, Users } from "lucide-react";
+import { ChevronRight, Eye, Share2, Users } from "lucide-react";
 import Link from "next/link";
 
 interface DashboardCommunityCardProps {
@@ -59,6 +60,20 @@ export function DashboardCommunityCard({
               <Users className="h-3.5 w-3.5" aria-hidden />
               {formatMemberCount(community.memberCount)} · {community.category}
             </p>
+            <div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] text-unze-ink-muted">
+              {(community.stats.weeklyViews ?? 0) > 0 && (
+                <span className="inline-flex items-center gap-0.5">
+                  <Eye className="h-3 w-3" aria-hidden />
+                  {formatCompactCount(community.stats.weeklyViews!)}
+                </span>
+              )}
+              {(community.stats.shareCount ?? 0) > 0 && (
+                <span className="inline-flex items-center gap-0.5 font-medium text-unze-ink-secondary">
+                  <Share2 className="h-3 w-3" aria-hidden />
+                  {formatCompactCount(community.stats.shareCount!)}×
+                </span>
+              )}
+            </div>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
               <span className="rounded-full bg-unze-surface-muted px-2 py-0.5 text-[10px] font-medium text-unze-ink-secondary">
                 {accessLabel}

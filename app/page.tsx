@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getFeaturedCommunities } from "@/services/community/community.service";
 import { getManagedCommunities } from "@/services/dashboard/dashboard.service";
-import { getDiscoverFeedPosts } from "@/services/feed/feed.service";
+import { getDiscoverFeedPosts, getPersonalFeedPosts } from "@/services/feed/feed.service";
 import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
 import {
   Bell,
@@ -18,7 +18,9 @@ import Link from "next/link";
 export default async function HomePage() {
   const user = await getCurrentUser();
   const featured = await getFeaturedCommunities();
-  const recentPosts = await getDiscoverFeedPosts(5);
+  const recentPosts = user
+    ? await getPersonalFeedPosts(5)
+    : await getDiscoverFeedPosts(5);
   const managed = user ? await getManagedCommunities(user.id) : [];
   const unreadCount = user ? await getUnreadNotificationCount(user.id) : 0;
 
@@ -98,7 +100,9 @@ export default async function HomePage() {
                 Aktuell im Netzwerk
               </h2>
               <p className="mt-0.5 text-sm text-unze-ink-secondary">
-                Frische Beiträge aus Communities
+                {user
+                  ? "Aus deinen Follows — mit Entdecken-Mix"
+                  : "Frische Beiträge aus Communities"}
               </p>
             </div>
             <Link

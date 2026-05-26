@@ -8,6 +8,9 @@ export interface CommunityDashboardStats {
   postCount: number;
   followerCount: number;
   badgeCount: number;
+  weeklyViews?: number;
+  shareCount?: number;
+  weeklyPosts?: number;
 }
 
 export interface ManagedCommunity extends Community {

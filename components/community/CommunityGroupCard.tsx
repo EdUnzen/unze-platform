@@ -2,6 +2,7 @@ import { isDemoCommunitySlug } from "@/lib/constants/demo";
 import { getGroupVisual } from "@/lib/demo/group-visuals";
 import { getAppUrl } from "@/lib/env";
 import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
+import { CardMetricsRow } from "@/components/share/CardMetricsRow";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { DiscoverGroup } from "@/types/community";
@@ -115,7 +116,15 @@ function CommunityGroupCardInner({
               {group.description}
             </p>
 
-            <CardEngagementStrip metrics={group.engagement} className="mb-3" />
+            <CardEngagementStrip metrics={group.engagement} className="mb-2" max={2} />
+
+          <CardMetricsRow
+            metrics={group.engagement}
+            weeklyViews={group.viewCountWeekly}
+            shareCount={group.shareCount}
+            compact
+            className="mb-3"
+          />
 
             <div className="flex items-center justify-between border-t border-unze-border/80 pt-3">
               <span className="flex items-center gap-1 text-xs text-unze-ink-secondary">
