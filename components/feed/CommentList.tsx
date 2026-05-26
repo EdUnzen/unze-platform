@@ -19,17 +19,22 @@ export function CommentList({
       {comments.map((comment) => (
         <li
           key={comment.id}
-          className="rounded-2xl bg-unze-surface-muted/50 px-3 py-2.5"
+          className="rounded-2xl border border-unze-border/60 bg-unze-surface-muted/40 px-3 py-3"
         >
-          <div className="mb-1 flex items-center justify-between gap-2">
-            <span className="text-sm font-semibold text-unze-ink">
-              {comment.authorName}
+          <div className="mb-2 flex items-center gap-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-unze-green-muted text-xs font-bold text-unze-green-dark">
+              {comment.authorName.slice(0, 1).toUpperCase()}
             </span>
-            <span className="text-[11px] text-unze-ink-muted">
-              {formatFeedRelativeDate(comment.createdAt)}
-            </span>
+            <div className="min-w-0 flex-1">
+              <span className="block text-sm font-semibold text-unze-ink">
+                {comment.authorName}
+              </span>
+              <span className="text-[11px] text-unze-ink-muted">
+                {formatFeedRelativeDate(comment.createdAt)}
+              </span>
+            </div>
           </div>
-          <p className="whitespace-pre-wrap text-sm leading-relaxed text-unze-ink-secondary">
+          <p className="whitespace-pre-wrap pl-10 text-sm leading-relaxed text-unze-ink-secondary">
             {comment.content}
           </p>
         </li>

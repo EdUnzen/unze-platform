@@ -68,5 +68,9 @@ export const PLATFORM_OPTIONS: { value: PlatformType; label: string }[] = [
   { value: "whatsapp", label: "WhatsApp" },
   { value: "telegram", label: "Telegram" },
   { value: "facebook", label: "Facebook" },
-  { value: "other", label: "Andere" },
+  { value: "instagram", label: "Instagram" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "youtube", label: "YouTube" },
+  { value: "website", label: "Webseite" },
+  { value: "other", label: "Andere / Extern" },
 ];

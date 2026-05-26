@@ -1,29 +1,51 @@
 "use client";
 
 import { createPostAction } from "@/app/create/post-actions";
+import {
+  COMPOSER_POST_TYPES,
+  POST_TYPE_DESCRIPTIONS,
+  POST_TYPE_LABELS,
+} from "@/lib/constants/posts";
+import type { CommunityGroup } from "@/types/community";
 import type { ManagedCommunity } from "@/types/dashboard";
-import { useActionState } from "react";
+import type { PostType } from "@/types/database";
+import { useActionState, useMemo, useState } from "react";
+
+export interface ComposerCommunity extends ManagedCommunity {
+  groups: CommunityGroup[];
+}
 
 interface PostComposerProps {
-  communities: ManagedCommunity[];
+  communities: ComposerCommunity[];
 }
+
+const MEDIA_TYPES: PostType[] = ["image", "gallery", "video", "clip", "highlight"];
 
 export function PostComposer({ communities }: PostComposerProps) {
   const [state, action, pending] = useActionState(createPostAction, null);
+  const [communityId, setCommunityId] = useState("");
+  const [postType, setPostType] = useState<PostType>("text");
+
+  const groups = useMemo(
+    () => communities.find((c) => c.id === communityId)?.groups ?? [],
+    [communities, communityId],
+  );
+
+  const showMedia = MEDIA_TYPES.includes(postType);
+  const showEventFields = postType === "event";
 
   return (
     <form action={action} className="space-y-4" data-testid="post-composer">
       {communities.length > 0 && (
         <div>
-          <label
-            htmlFor="communityId"
-            className="mb-1 block text-sm font-medium text-unze-ink"
-          >
-            Community (optional)
+          <label htmlFor="communityId" className="mb-1 block text-sm font-medium text-unze-ink">
+            Community
           </label>
           <select
             id="communityId"
             name="communityId"
+            value={communityId}
+            onChange={(e) => setCommunityId(e.target.value)}
             className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
           >
             <option value="">Öffentlicher Beitrag</option>
@@ -36,6 +58,50 @@ export function PostComposer({ communities }: PostComposerProps) {
         </div>
       )}
 
+      {groups.length > 0 && (
+        <div>
+          <label htmlFor="groupId" className="mb-1 block text-sm font-medium text-unze-ink">
+            Gruppe (optional)
+          </label>
+          <select
+            id="groupId"
+            name="groupId"
+            className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
+          >
+            <option value="">Gesamte Community</option>
+            {groups.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.title}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="postType" className="mb-1 block text-sm font-medium text-unze-ink">
+          Beitragstyp
+        </label>
+        <select
+          id="postType"
+          name="postType"
+          value={postType}
+          onChange={(e) => setPostType(e.target.value as PostType)}
+          className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
+        >
+          {COMPOSER_POST_TYPES.map((type) => (
+            <option key={type} value={type}>
+              {POST_TYPE_LABELS[type]}
+            </option>
+          ))}
+        </select>
+        {POST_TYPE_DESCRIPTIONS[postType] && (
+          <p className="mt-1 text-xs text-unze-ink-muted">
+            {POST_TYPE_DESCRIPTIONS[postType]}
+          </p>
+        )}
+      </div>
+
       <div>
         <label htmlFor="title" className="mb-1 block text-sm font-medium text-unze-ink">
           Titel (optional)
@@ -45,7 +111,7 @@ export function PostComposer({ communities }: PostComposerProps) {
           name="title"
           type="text"
           maxLength={120}
-          placeholder="Kurzer Titel"
+          placeholder="z. B. Turnier heute Abend"
           className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
         />
       </div>
@@ -59,10 +125,60 @@ export function PostComposer({ communities }: PostComposerProps) {
           name="content"
           required
           rows={5}
-          placeholder="Was möchtest du teilen?"
+          placeholder={
+            postType === "request"
+              ? "z. B. Suche 2v2 Mate für heute Abend — Diamond 2+"
+              : "Was möchtest du mit der Community teilen?"
+          }
           className="w-full resize-none rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
         />
       </div>
+
+      {showMedia && (
+        <div>
+          <label htmlFor="mediaUrls" className="mb-1 block text-sm font-medium text-unze-ink">
+            Medien-URLs (eine pro Zeile)
+          </label>
+          <textarea
+            id="mediaUrls"
+            name="mediaUrls"
+            rows={3}
+            placeholder="https://… (Bild oder Video-Thumbnail)"
+            className="w-full resize-none rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
+          />
+          <p className="mt-1 text-xs text-unze-ink-muted">
+            Upload folgt — vorerst öffentliche Bild-/Video-URLs
+          </p>
+        </div>
+      )}
+
+      {showEventFields && (
+        <>
+          <div>
+            <label htmlFor="eventAt" className="mb-1 block text-sm font-medium text-unze-ink">
+              Event-Datum & Uhrzeit
+            </label>
+            <input
+              id="eventAt"
+              name="eventAt"
+              type="datetime-local"
+              className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="location" className="mb-1 block text-sm font-medium text-unze-ink">
+              Ort / Plattform
+            </label>
+            <input
+              id="location"
+              name="location"
+              type="text"
+              placeholder="Discord Voice / UNZE / vor Ort"
+              className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
+            />
+          </div>
+        </>
+      )}
 
       {state?.error && (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">

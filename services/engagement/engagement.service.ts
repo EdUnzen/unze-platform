@@ -11,6 +11,8 @@ import {
   incrementCommunityShareCount,
   incrementCommunityViewCount,
   incrementGroupShareCount,
+  incrementPostShareCount,
+  incrementPostViewCount,
 } from "./engagement.repository";
 
 export async function enrichCommunitiesWithEngagement(
@@ -45,8 +47,16 @@ export async function recordGroupShare(groupId: string) {
   return incrementGroupShareCount(groupId);
 }
 
+export async function recordPostShare(postId: string) {
+  return incrementPostShareCount(postId);
+}
+
 export async function recordCommunityPageView(communityId: string) {
   await incrementCommunityViewCount(communityId);
+}
+
+export async function recordPostPageView(postId: string) {
+  await incrementPostViewCount(postId);
 }
 
 export async function buildGroupCardEngagement(input: {

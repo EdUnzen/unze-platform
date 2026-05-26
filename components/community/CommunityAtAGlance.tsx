@@ -1,5 +1,7 @@
 import { ACCESS_STATUS_OPTIONS, JOIN_APPROVAL_OPTIONS } from "@/lib/constants/access";
 import { VISIBILITY_OPTIONS } from "@/lib/constants/community";
+import { PLATFORM_LABELS } from "@/lib/constants/platforms";
+import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { Community } from "@/types/community";
 import { Lock, Users, Wallet } from "lucide-react";
@@ -41,7 +43,7 @@ export function CommunityAtAGlance({ community }: CommunityAtAGlanceProps) {
     },
     {
       label: "Plattform",
-      value: community.platformType,
+      value: PLATFORM_LABELS[community.platformType],
     },
   ];
 
@@ -51,6 +53,9 @@ export function CommunityAtAGlance({ community }: CommunityAtAGlanceProps) {
       data-testid="community-at-a-glance"
     >
       <h2 className="mb-3 text-sm font-semibold text-unze-ink">Auf einen Blick</h2>
+      <div className="mb-3">
+        <PlatformBadge platform={community.platformType} variant="footer" />
+      </div>
       <dl className="space-y-2">
         {rows.map((row) => (
           <div key={row.label} className="flex items-center justify-between gap-2 text-xs">

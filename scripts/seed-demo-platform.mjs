@@ -471,9 +471,37 @@ async function main() {
 
   console.log("\n4. Feed-Posts, Likes & Kommentare…");
 
+  async function groupId(communityId, slug) {
+    const { data } = await db
+      .from("community_groups")
+      .select("id")
+      .eq("community_id", communityId)
+      .eq("slug", slug)
+      .maybeSingle();
+    return data?.id ?? null;
+  }
+
+  const gamingGroups = {
+    coaching: await groupId(gaming.id, "coaching"),
+    clips: await groupId(gaming.id, "clips"),
+    turniere: await groupId(gaming.id, "turniere"),
+  };
+  const businessGroups = {
+    networking: await groupId(business.id, "networking"),
+    marketing: await groupId(business.id, "marketing"),
+  };
+  const entertainmentGroups = {
+    feed: await groupId(entertainment.id, "feed"),
+    collabs: await groupId(entertainment.id, "collabs"),
+  };
+
+  const img = (id, w = 800) =>
+    `https://images.unsplash.com/photo-${id}?w=${w}&q=80`;
+
   const posts = [
     {
       communityId: gaming.id,
+      groupId: gamingGroups.coaching,
       authorId: creator.id,
       title: "Neue SSL-Trainingsroutine",
       content:
@@ -483,16 +511,62 @@ async function main() {
       is_pinned: true,
       like_count: 42,
       comment_count: 2,
+      view_count: 1240,
+      share_count: 18,
     },
     {
       communityId: gaming.id,
+      groupId: gamingGroups.clips,
       authorId: members[0].id,
-      title: "Clip der Woche",
+      title: "Clip der Woche — Double Tap Goal",
       content: "Double tap → ceiling → pre-flip goal. Endlich SSL-Touchdown! 🚀",
-      post_type: "text",
+      post_type: "clip",
       visibility: "public",
-      like_count: 28,
+      like_count: 128,
       comment_count: 1,
+      view_count: 3420,
+      share_count: 56,
+      media: [
+        {
+          type: "video",
+          url: img("1542751371-adc38448a05e"),
+          thumbnailUrl: img("1542751371-adc38448a05e"),
+          alt: "Rocket League Clip",
+          durationSec: 42,
+        },
+      ],
+    },
+    {
+      communityId: gaming.id,
+      groupId: gamingGroups.turniere,
+      authorId: members[1].id,
+      title: "Suche 2v2 Mate — heute Abend",
+      content:
+        "Diamond 2+, Voice required. Scrims ab 20:00 — meldet euch im Turniere-Kanal.",
+      post_type: "request",
+      visibility: "public",
+      like_count: 22,
+      comment_count: 3,
+      view_count: 890,
+      share_count: 12,
+    },
+    {
+      communityId: gaming.id,
+      groupId: gamingGroups.turniere,
+      authorId: members[0].id,
+      title: "Scrims Samstag — Bilder & Setup",
+      content: "3v3 Custom Lobby — SSL only. So sah's letzte Woche aus 👇",
+      post_type: "gallery",
+      visibility: "public",
+      like_count: 31,
+      comment_count: 0,
+      view_count: 2100,
+      share_count: 24,
+      media: [
+        { type: "image", url: img("1511512578047-dfb367046420"), alt: "Scrims Lobby" },
+        { type: "image", url: img("1493711662062-fa541adb3fc8"), alt: "Turnier Setup" },
+        { type: "image", url: img("1552820728-8b831bb1ebd2"), alt: "Team Highlight" },
+      ],
     },
     {
       communityId: business.id,
@@ -505,9 +579,17 @@ async function main() {
       is_pinned: true,
       like_count: 35,
       comment_count: 1,
+      view_count: 760,
+      share_count: 9,
+      metadata: {
+        eventAt: new Date(Date.now() + 3 * 86400000).toISOString(),
+        location: "UNZE Voice + Networking-Gruppe",
+      },
+      media: [{ type: "image", url: img("1556761175-5973dc0f32e7"), alt: "Mastermind" }],
     },
     {
       communityId: business.id,
+      groupId: businessGroups.marketing,
       authorId: members[1].id,
       title: "Service-Angebot: Meta Ads Audit",
       content:
@@ -516,17 +598,22 @@ async function main() {
       visibility: "public",
       like_count: 19,
       comment_count: 0,
+      view_count: 420,
+      share_count: 5,
     },
     {
       communityId: entertainment.id,
+      groupId: entertainmentGroups.collabs,
       authorId: members[2].id,
       title: "Collab gesucht: Podcast-Gäste",
       content:
         "Creator mit 5k+ Followern für Cross-Promo — Thema Lifestyle & Tech. Wer Bock hat?",
-      post_type: "question",
+      post_type: "request",
       visibility: "public",
       like_count: 56,
       comment_count: 2,
+      view_count: 1580,
+      share_count: 31,
     },
     {
       communityId: entertainment.id,
@@ -539,10 +626,33 @@ async function main() {
       is_pinned: true,
       like_count: 88,
       comment_count: 1,
+      view_count: 4200,
+      share_count: 67,
+    },
+    {
+      communityId: entertainment.id,
+      groupId: entertainmentGroups.feed,
+      authorId: members[0].id,
+      title: "Highlight der Woche — Creator Montage",
+      content: "Cross-Post aus Gaming — wer will collab für einen Creator-Montage-Stream?",
+      post_type: "highlight",
+      visibility: "public",
+      like_count: 47,
+      comment_count: 0,
+      view_count: 2890,
+      share_count: 44,
+      media: [
+        {
+          type: "image",
+          url: img("1611162617474-5b21e939e113"),
+          alt: "Creator Highlight",
+        },
+      ],
     },
     {
       communityId: gaming.id,
-      authorId: members[0].id,
+      groupId: gamingGroups.coaching,
+      authorId: creator.id,
       title: "Replay-Analyse: Champ 3 → SSL",
       content:
         "Wer heute Abend 20:00 Zeit hat — ich stream die Analyse live im Coaching-Kanal. Bringt 1 Replay mit.",
@@ -550,59 +660,46 @@ async function main() {
       visibility: "public",
       like_count: 31,
       comment_count: 0,
-    },
-    {
-      communityId: gaming.id,
-      authorId: members[1].id,
-      title: "Scrims Samstag 18:00",
-      content: "3v3 Custom Lobby — SSL only. Meldet euch im Turniere-Kanal an.",
-      post_type: "event",
-      visibility: "public",
-      like_count: 22,
-      comment_count: 0,
-    },
-    {
-      communityId: business.id,
-      authorId: members[2].id,
-      title: "Intro: Agentur aus Wien",
-      content:
-        "Hi! Wir machen Performance Marketing für D2C-Brands. Suche Partner für Co-Marketing im DACH-Raum.",
-      post_type: "text",
-      visibility: "public",
-      like_count: 14,
-      comment_count: 0,
-    },
-    {
-      communityId: entertainment.id,
-      authorId: members[0].id,
-      title: "Trending Clip: Rocket League Montage",
-      content: "Cross-Post aus Gaming — wer will collab für einen Creator-Montage-Stream?",
-      post_type: "text",
-      visibility: "public",
-      like_count: 47,
-      comment_count: 0,
+      view_count: 650,
+      share_count: 8,
+      metadata: {
+        eventAt: new Date(Date.now() + 86400000).toISOString(),
+        location: "Discord Coaching Voice",
+      },
     },
   ];
 
   const insertedPosts = [];
   for (const p of posts) {
-    const { data, error } = await db
-      .from("posts")
-      .insert({
-        author_id: p.authorId,
-        community_id: p.communityId,
-        title: p.title,
-        content: p.content,
-        post_type: p.post_type,
-        visibility: p.visibility,
-        is_pinned: p.is_pinned ?? false,
-        like_count: p.like_count,
-        comment_count: p.comment_count,
-      })
-      .select("id")
-      .single();
-    if (error) throw error;
-    insertedPosts.push({ ...p, id: data.id });
+    const row = {
+      author_id: p.authorId,
+      community_id: p.communityId,
+      group_id: p.groupId ?? null,
+      title: p.title,
+      content: p.content,
+      post_type: p.post_type,
+      visibility: p.visibility,
+      is_pinned: p.is_pinned ?? false,
+      like_count: p.like_count,
+      comment_count: p.comment_count,
+      view_count: p.view_count ?? 0,
+      share_count: p.share_count ?? 0,
+      media: p.media ?? [],
+      metadata: p.metadata ?? {},
+    };
+    const { data, error } = await db.from("posts").insert(row).select("id").single();
+    if (error) {
+      const { group_id, media, metadata, view_count, share_count, ...legacy } = row;
+      const fallback = await db
+        .from("posts")
+        .insert(legacy)
+        .select("id")
+        .single();
+      if (fallback.error) throw fallback.error;
+      insertedPosts.push({ ...p, id: fallback.data.id });
+    } else {
+      insertedPosts.push({ ...p, id: data.id });
+    }
   }
 
   for (const post of insertedPosts) {

@@ -1,6 +1,13 @@
-import { mapPostRow, type FeedPost, type FeedPostAuthor } from "@/lib/mappers/post.mapper";
+import {
+  mapPostRow,
+  type FeedPost,
+  type FeedPostAuthor,
+  type FeedPostCommunity,
+  type FeedPostGroup,
+} from "@/lib/mappers/post.mapper";
 import { createClient } from "@/lib/supabase/server";
-import type { PostRow } from "@/types/database";
+import type { CommunityRole, PostRow } from "@/types/database";
+import type { PlatformType } from "@/types/community";
 import { getFollowedCommunityIds } from "@/services/follow/follow.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { fetchViewerLikedPostIds } from "./like.repository";
@@ -8,7 +15,8 @@ import {
   FEED_EXPLORE_RATIO,
   interleaveFeedPosts,
 } from "@/lib/feed/blend-feed";
-import { getCommunityActivityStats } from "@/services/platform/activity-stats.service";
+import type { PostMediaItem, PostMetadata } from "@/types/post";
+import type { PostType } from "@/types/database";
 
 export async function getFeedAuthorMeta(
   authorIds: string[],
@@ -21,7 +29,7 @@ export async function getFeedAuthorMeta(
 
   const { data, error } = await supabase
     .from("profiles")
-    .select("id, display_name, username, avatar_url")
+    .select("id, display_name, username, avatar_url, is_verified")
     .in("id", unique);
 
   if (error || !data) return {};
@@ -33,9 +41,36 @@ export async function getFeedAuthorMeta(
         name: (row.display_name as string) ?? (row.username as string) ?? "Mitglied",
         username: (row.username as string) ?? null,
         avatarUrl: (row.avatar_url as string) ?? null,
+        isVerified: Boolean(row.is_verified),
       },
     ]),
   );
+}
+
+async function getFeedAuthorCommunityRoles(
+  pairs: { authorId: string; communityId: string }[],
+): Promise<Record<string, CommunityRole>> {
+  const unique = pairs.filter((p) => p.authorId && p.communityId);
+  if (unique.length === 0) return {};
+
+  const supabase = await createClient();
+  if (!supabase) return {};
+
+  const communityIds = [...new Set(unique.map((p) => p.communityId))];
+  const authorIds = [...new Set(unique.map((p) => p.authorId))];
+
+  const { data } = await supabase
+    .from("community_members")
+    .select("user_id, community_id, role")
+    .in("community_id", communityIds)
+    .in("user_id", authorIds);
+
+  const result: Record<string, CommunityRole> = {};
+  for (const row of data ?? []) {
+    const key = `${row.user_id as string}:${row.community_id as string}`;
+    result[key] = row.role as CommunityRole;
+  }
+  return result;
 }
 
 export async function enrichFeedPosts(posts: FeedPost[]): Promise<FeedPost[]> {
@@ -45,24 +80,46 @@ export async function enrichFeedPosts(posts: FeedPost[]): Promise<FeedPost[]> {
   const communityIds = posts
     .map((p) => p.communityId)
     .filter((id): id is string => Boolean(id));
+  const groupIds = posts.map((p) => p.groupId).filter((id): id is string => Boolean(id));
   const postIds = posts.map((p) => p.id);
 
+  const rolePairs = posts
+    .filter((p) => p.communityId)
+    .map((p) => ({ authorId: p.authorId, communityId: p.communityId! }));
+
   const user = await getCurrentUser();
-  const [authors, communityNames, likedIds] = await Promise.all([
+  const [authors, communityMeta, groupMeta, roles, likedIds] = await Promise.all([
     getFeedAuthorMeta(authorIds),
     getFeedCommunityMeta(communityIds),
+    getFeedGroupMeta(groupIds),
+    getFeedAuthorCommunityRoles(rolePairs),
     fetchViewerLikedPostIds(postIds, user?.id ?? null),
   ]);
 
-  return posts.map((post) => ({
-    ...post,
-    author: authors[post.authorId],
-    community:
-      post.communityId && communityNames[post.communityId]
-        ? communityNames[post.communityId]
-        : post.community,
-    isLikedByViewer: likedIds.has(post.id),
-  }));
+  return posts.map((post) => {
+    const roleKey =
+      post.communityId ? `${post.authorId}:${post.communityId}` : null;
+    const author = authors[post.authorId];
+    const community =
+      post.communityId && communityMeta[post.communityId]
+        ? communityMeta[post.communityId]
+        : post.community;
+    const group =
+      post.groupId && groupMeta[post.groupId] ? groupMeta[post.groupId] : post.group;
+
+    return {
+      ...post,
+      author: author
+        ? {
+            ...author,
+            communityRole: roleKey ? roles[roleKey] ?? null : null,
+          }
+        : post.author,
+      community,
+      group,
+      isLikedByViewer: likedIds.has(post.id),
+    };
+  });
 }
 
 export async function getPostById(postId: string): Promise<FeedPost | null> {
@@ -102,7 +159,7 @@ export async function getDiscoverFeedPosts(limit = 20): Promise<FeedPost[]> {
 
 export async function getFeedCommunityMeta(
   communityIds: string[],
-): Promise<Record<string, { title: string; slug: string }>> {
+): Promise<Record<string, FeedPostCommunity>> {
   const unique = [...new Set(communityIds.filter(Boolean))];
   if (unique.length === 0) return {};
 
@@ -111,6 +168,37 @@ export async function getFeedCommunityMeta(
 
   const { data, error } = await supabase
     .from("communities")
+    .select("id, title, slug, platform_type, is_verified, is_trending")
+    .in("id", unique);
+
+  if (error || !data) return {};
+
+  return Object.fromEntries(
+    data.map((row) => [
+      row.id as string,
+      {
+        id: row.id as string,
+        title: row.title as string,
+        slug: row.slug as string,
+        platformType: row.platform_type as PlatformType,
+        isVerified: Boolean(row.is_verified),
+        isTrending: Boolean(row.is_trending),
+      },
+    ]),
+  );
+}
+
+export async function getFeedGroupMeta(
+  groupIds: string[],
+): Promise<Record<string, FeedPostGroup>> {
+  const unique = [...new Set(groupIds.filter(Boolean))];
+  if (unique.length === 0) return {};
+
+  const supabase = await createClient();
+  if (!supabase) return {};
+
+  const { data, error } = await supabase
+    .from("community_groups")
     .select("id, title, slug")
     .in("id", unique);
 
@@ -119,7 +207,11 @@ export async function getFeedCommunityMeta(
   return Object.fromEntries(
     data.map((row) => [
       row.id as string,
-      { title: row.title as string, slug: row.slug as string },
+      {
+        id: row.id as string,
+        title: row.title as string,
+        slug: row.slug as string,
+      },
     ]),
   );
 }
@@ -248,8 +340,11 @@ export async function createPost(input: {
   content: string;
   title?: string;
   communityId?: string;
+  groupId?: string;
   visibility?: "public" | "followers" | "community" | "private";
-  postType?: "text" | "image" | "poll" | "event" | "community_update" | "question";
+  postType?: PostType;
+  media?: PostMediaItem[];
+  metadata?: PostMetadata;
 }) {
   const supabase = await createClient();
   if (!supabase) return { data: null, error: new Error("Supabase nicht konfiguriert") };
@@ -259,17 +354,17 @@ export async function createPost(input: {
   } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error("Nicht angemeldet") };
 
-  return supabase
-    .from("posts")
-    .insert({
-      author_id: user.id,
-      content: input.content,
-      title: input.title ?? null,
-      community_id: input.communityId ?? null,
-      visibility: input.visibility ?? (input.communityId ? "community" : "public"),
-      post_type: input.postType ?? "text",
-    })
-    .select()
-    .single();
-}
+  const payload: Record<string, unknown> = {
+    author_id: user.id,
+    content: input.content,
+    title: input.title ?? null,
+    community_id: input.communityId ?? null,
+    group_id: input.groupId ?? null,
+    visibility: input.visibility ?? (input.communityId ? "public" : "public"),
+    post_type: input.postType ?? "text",
+    media: input.media ?? [],
+    metadata: input.metadata ?? {},
+  };
 
+  return supabase.from("posts").insert(payload).select().single();
+}

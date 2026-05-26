@@ -11,6 +11,10 @@ export type PlatformType =
   | "whatsapp"
   | "telegram"
   | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "website"
   | "unze"
   | "other";
 

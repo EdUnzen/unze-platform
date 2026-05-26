@@ -9,14 +9,15 @@ export interface CardEngagementMetrics {
   activityLabel?: string;
 }
 
-export type ShareTargetType = "community" | "group";
+export type ShareTargetType = "community" | "group" | "post";
 
 export interface ShareTarget {
   type: ShareTargetType;
   title: string;
   url: string;
-  communityId: string;
+  communityId?: string;
   groupId?: string;
+  postId?: string;
 }
 
 export interface EngagementPill {

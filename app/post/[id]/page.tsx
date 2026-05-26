@@ -1,6 +1,7 @@
 import { CommentForm } from "@/components/feed/CommentForm";
 import { CommentList } from "@/components/feed/CommentList";
 import { FeedPostCard } from "@/components/feed/FeedPostCard";
+import { PostViewRecorder } from "@/components/feed/PostViewRecorder";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getPostComments } from "@/services/comments/comment.service";
@@ -22,6 +23,7 @@ export default async function PostPage({ params }: PostPageProps) {
 
   return (
     <div className="page-padding">
+      <PostViewRecorder postId={id} />
       <div className="mb-4">
         <Link
           href={
@@ -34,10 +36,10 @@ export default async function PostPage({ params }: PostPageProps) {
       </div>
 
       <PageHeader
-        title={post.title ?? "Beitrag"}
+        title={post.title ?? "Community-Beitrag"}
         subtitle={
           post.community
-            ? `In ${post.community.title}`
+            ? `${post.community.title}${post.group ? ` · ${post.group.title}` : ""}`
             : "Öffentlicher Beitrag im UNZE-Netzwerk"
         }
       />
@@ -45,16 +47,23 @@ export default async function PostPage({ params }: PostPageProps) {
       <FeedPostCard
         post={post}
         isLoggedIn={Boolean(user)}
-        showCommunity={Boolean(post.community)}
+        variant="detail"
+        showCommunity
       />
 
-      <section id="comments" className="mt-6 rounded-3xl bg-white p-4 shadow-card">
-        <h2 className="mb-3 text-sm font-semibold text-unze-ink">
-          Kommentare ({post.commentCount})
-        </h2>
+      <section id="comments" className="mt-6 rounded-3xl bg-white p-4 shadow-card sm:p-5">
+        <header className="mb-4 border-b border-unze-border/80 pb-3">
+          <h2 className="text-sm font-semibold text-unze-ink">
+            Kommentare
+          </h2>
+          <p className="text-xs text-unze-ink-secondary">
+            Diskussion im Community-Kontext — {post.commentCount}{" "}
+            {post.commentCount === 1 ? "Antwort" : "Antworten"}
+          </p>
+        </header>
         <CommentList comments={comments} />
         {user ? (
-          <div className="relative mt-4">
+          <div className="relative mt-4 border-t border-unze-border/80 pt-4">
             <CommentForm postId={id} />
           </div>
         ) : (

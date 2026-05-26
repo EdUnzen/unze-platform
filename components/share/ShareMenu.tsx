@@ -10,9 +10,15 @@ interface ShareMenuProps {
   target: ShareTarget;
   className?: string;
   label?: string;
+  variant?: "icon" | "inline";
 }
 
-export function ShareMenu({ target, className, label = "Teilen" }: ShareMenuProps) {
+export function ShareMenu({
+  target,
+  className,
+  label = "Teilen",
+  variant = "icon",
+}: ShareMenuProps) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -34,6 +40,7 @@ export function ShareMenu({ target, className, label = "Teilen" }: ShareMenuProp
         type: target.type,
         communityId: target.communityId,
         groupId: target.groupId,
+        postId: target.postId,
         channel,
       });
     },
@@ -86,14 +93,20 @@ export function ShareMenu({ target, className, label = "Teilen" }: ShareMenuProp
           setOpen((v) => !v);
         }}
         className={cn(
-          "flex h-8 w-8 items-center justify-center rounded-full",
-          "bg-white/90 text-unze-ink shadow-sm backdrop-blur-md",
-          "transition active:scale-95 hover:bg-white",
+          variant === "inline"
+            ? "inline-flex items-center gap-1 rounded-full bg-unze-surface-muted px-2.5 py-1 text-xs font-medium text-unze-ink-secondary"
+            : cn(
+                "flex h-8 w-8 items-center justify-center rounded-full",
+                "bg-white/90 text-unze-ink shadow-sm backdrop-blur-md",
+                "transition active:scale-95 hover:bg-white",
+              ),
+          className,
         )}
         aria-label={label}
         aria-expanded={open}
       >
-        <Share2 className="h-4 w-4" aria-hidden />
+        <Share2 className={cn(variant === "inline" ? "h-3.5 w-3.5" : "h-4 w-4")} aria-hidden />
+        {variant === "inline" && "Teilen"}
       </button>
 
       {open && (

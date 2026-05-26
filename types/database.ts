@@ -7,6 +7,10 @@ export type PlatformType =
   | "whatsapp"
   | "telegram"
   | "facebook"
+  | "instagram"
+  | "tiktok"
+  | "youtube"
+  | "website"
   | "unze"
   | "other";
 
@@ -67,10 +71,15 @@ export type JoinApplicationStatus =
 export type PostType =
   | "text"
   | "image"
+  | "gallery"
+  | "video"
+  | "clip"
   | "poll"
   | "event"
   | "community_update"
-  | "question";
+  | "highlight"
+  | "question"
+  | "request";
 export type PostVisibility = "public" | "followers" | "community" | "private";
 export type FollowTarget = "user" | "community";
 export type SubscriptionStatus =
@@ -144,6 +153,7 @@ export interface PostRow {
   id: string;
   author_id: string;
   community_id: string | null;
+  group_id?: string | null;
   post_type: PostType;
   title: string | null;
   content: string;
@@ -151,6 +161,10 @@ export interface PostRow {
   is_pinned: boolean;
   like_count: number;
   comment_count: number;
+  media?: import("@/types/post").PostMediaItem[] | null;
+  metadata?: import("@/types/post").PostMetadata | null;
+  view_count?: number;
+  share_count?: number;
   created_at: string;
   updated_at: string;
 }

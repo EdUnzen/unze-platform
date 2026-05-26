@@ -1,7 +1,18 @@
 import type { FeedPost } from "@/lib/mappers/post.mapper";
 
+function mockPost(partial: Omit<FeedPost, "groupId" | "viewCount" | "shareCount" | "media" | "metadata"> & Partial<Pick<FeedPost, "groupId" | "viewCount" | "shareCount" | "media" | "metadata">>): FeedPost {
+  return {
+    groupId: null,
+    viewCount: 0,
+    shareCount: 0,
+    media: [],
+    metadata: {},
+    ...partial,
+  };
+}
+
 export const MOCK_FEED_POSTS: FeedPost[] = [
-  {
+  mockPost({
     id: "mock-post-1",
     authorId: "mock-creator-1",
     communityId: "mock-1",
@@ -13,8 +24,8 @@ export const MOCK_FEED_POSTS: FeedPost[] = [
     likeCount: 124,
     commentCount: 38,
     createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-  },
-  {
+  }),
+  mockPost({
     id: "mock-post-2",
     authorId: "mock-creator-2",
     communityId: "mock-2",
@@ -26,8 +37,8 @@ export const MOCK_FEED_POSTS: FeedPost[] = [
     likeCount: 89,
     commentCount: 42,
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
-  },
-  {
+  }),
+  mockPost({
     id: "mock-post-3",
     authorId: "mock-creator-3",
     communityId: "mock-3",
@@ -39,8 +50,8 @@ export const MOCK_FEED_POSTS: FeedPost[] = [
     likeCount: 56,
     commentCount: 19,
     createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-  },
-  {
+  }),
+  mockPost({
     id: "mock-post-4",
     authorId: "mock-creator-4",
     communityId: "mock-4",
@@ -52,8 +63,8 @@ export const MOCK_FEED_POSTS: FeedPost[] = [
     likeCount: 31,
     commentCount: 8,
     createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
-  },
-  {
+  }),
+  mockPost({
     id: "mock-post-5",
     authorId: "mock-creator-1",
     communityId: "mock-5",
@@ -64,7 +75,7 @@ export const MOCK_FEED_POSTS: FeedPost[] = [
     likeCount: 210,
     commentCount: 65,
     createdAt: new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString(),
-  },
+  }),
 ];
 
 export const MOCK_COMMUNITY_NAMES: Record<string, { title: string; slug: string }> = {

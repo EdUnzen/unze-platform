@@ -76,6 +76,51 @@ export async function incrementCommunityViewCount(
     .eq("id", communityId);
 }
 
+export async function incrementPostShareCount(
+  postId: string,
+): Promise<{ error: string | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase nicht konfiguriert" };
+
+  const { data, error: fetchError } = await supabase
+    .from("posts")
+    .select("share_count")
+    .eq("id", postId)
+    .maybeSingle();
+
+  if (fetchError?.message?.includes("share_count")) {
+    return { error: null };
+  }
+  if (fetchError || !data) return { error: fetchError?.message ?? "Nicht gefunden" };
+
+  const next = Number(data.share_count ?? 0) + 1;
+  const { error } = await supabase
+    .from("posts")
+    .update({ share_count: next })
+    .eq("id", postId);
+
+  return { error: error?.message ?? null };
+}
+
+export async function incrementPostViewCount(postId: string): Promise<void> {
+  const supabase = await createClient();
+  if (!supabase) return;
+
+  const { data, error: fetchError } = await supabase
+    .from("posts")
+    .select("view_count")
+    .eq("id", postId)
+    .maybeSingle();
+
+  if (fetchError?.message?.includes("view_count")) return;
+  if (!data) return;
+
+  await supabase
+    .from("posts")
+    .update({ view_count: Number(data.view_count ?? 0) + 1 })
+    .eq("id", postId);
+}
+
 export async function fetchNetworkFollowCounts(
   viewerId: string,
   communityIds: string[],

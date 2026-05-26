@@ -46,7 +46,7 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
                 {community.title}
               </h1>
             </div>
-            <PlatformBadge platform={community.platformType} />
+            <PlatformBadge platform={community.platformType} variant="overlay" />
           </div>
         </div>
       </div>

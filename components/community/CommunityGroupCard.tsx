@@ -62,7 +62,7 @@ function CommunityGroupCardInner({
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
 
             <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 pr-10">
-              <PlatformBadge platform={group.platformType} />
+              <PlatformBadge platform={group.platformType} variant="overlay" />
               {group.isTrending && (
                 <span className="inline-flex items-center gap-0.5 rounded-lg bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
                   <TrendingUp className="h-3 w-3" aria-hidden />
@@ -127,10 +127,13 @@ function CommunityGroupCardInner({
           />
 
             <div className="flex items-center justify-between border-t border-unze-border/80 pt-3">
-              <span className="flex items-center gap-1 text-xs text-unze-ink-secondary">
+              <div className="flex flex-wrap items-center gap-2">
+                <PlatformBadge platform={group.platformType} variant="footer" />
+                <span className="flex items-center gap-1 text-xs text-unze-ink-secondary">
                 <Users className="h-3.5 w-3.5" aria-hidden />
                 {formatMemberCount(group.memberCount)}
               </span>
+              </div>
               <span className="text-[11px] text-unze-ink-muted">{group.category}</span>
             </div>
           </div>

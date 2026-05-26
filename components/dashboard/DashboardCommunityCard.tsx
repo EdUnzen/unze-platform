@@ -41,7 +41,7 @@ export function DashboardCommunityCard({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
           <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
-            <PlatformBadge platform={community.platformType} />
+            <PlatformBadge platform={community.platformType} variant="overlay" />
             <div className="flex items-center gap-1.5">
               {pending > 0 && <AttentionBadge count={pending} />}
               <span className="rounded-lg bg-black/30 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-md">

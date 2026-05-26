@@ -58,7 +58,7 @@ function CommunityCardInner({
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
             <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 pr-12">
-              <PlatformBadge platform={community.platformType} />
+              <PlatformBadge platform={community.platformType} variant="overlay" />
               {community.visibility !== "public" && (
                 <span className="inline-flex items-center gap-0.5 rounded-lg bg-black/35 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
                   <Lock className="h-3 w-3" aria-hidden />
@@ -141,6 +141,7 @@ function CommunityCardInner({
 
             <div className="flex items-center justify-between border-t border-unze-border/80 pt-3">
               <div className="flex flex-wrap items-center gap-2 text-xs text-unze-ink-secondary">
+                <PlatformBadge platform={community.platformType} variant="footer" />
                 <span className="flex items-center gap-1">
                   <Users className="h-3.5 w-3.5" aria-hidden />
                   {formatMemberCount(community.memberCount)}

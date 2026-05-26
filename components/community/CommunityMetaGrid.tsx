@@ -1,5 +1,6 @@
 import { JOIN_APPROVAL_OPTIONS } from "@/lib/constants/access";
-import { PLATFORM_OPTIONS } from "@/lib/constants/community";
+import { PLATFORM_LABELS } from "@/lib/constants/platforms";
+import { PlatformIcon } from "@/components/platform/PlatformIcon";
 import type { Community } from "@/types/community";
 import {
   Calendar,
@@ -29,9 +30,7 @@ export function CommunityMetaGrid({ community }: CommunityMetaGridProps) {
       (o) => o.value === community.access?.joinApprovalMode,
     )?.label ?? "Offen";
 
-  const platformLabel =
-    PLATFORM_OPTIONS.find((o) => o.value === community.platformType)?.label ??
-    community.platformType;
+  const platformLabel = PLATFORM_LABELS[community.platformType];
 
   const createdLabel = community.createdAt
     ? new Date(community.createdAt).toLocaleDateString("de-DE", {
@@ -56,13 +55,18 @@ export function CommunityMetaGrid({ community }: CommunityMetaGridProps) {
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {items.map((item) => {
           const Icon = item.icon;
+          const isPlatform = item.key === "platform";
           return (
             <div
               key={item.key}
               className="rounded-2xl border border-unze-border/80 bg-unze-surface-muted/30 p-3"
             >
               <div className="mb-1.5 flex h-8 w-8 items-center justify-center rounded-xl bg-unze-green-muted">
-                <Icon className="h-4 w-4 text-unze-green-dark" aria-hidden />
+                {isPlatform ? (
+                  <PlatformIcon platform={community.platformType} size="md" />
+                ) : (
+                  <Icon className="h-4 w-4 text-unze-green-dark" aria-hidden />
+                )}
               </div>
               <p className="text-[10px] font-medium uppercase tracking-wide text-unze-ink-muted">
                 {item.label}
