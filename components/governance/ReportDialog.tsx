@@ -1,18 +1,10 @@
 "use client";
 
 import { submitReportAction } from "@/app/report/actions";
+import { REPORT_REASONS, type ReportReason } from "@/lib/constants/reports";
 import type { ReportTargetType } from "@/types/governance";
 import { Flag } from "lucide-react";
 import { useState, useTransition } from "react";
-
-const REPORT_REASONS = [
-  "Spam",
-  "Belästigung",
-  "Betrug / Scam",
-  "Unangemessene Inhalte",
-  "Impersonation",
-  "Sonstiges",
-];
 
 interface ReportDialogProps {
   targetType: ReportTargetType;
@@ -30,7 +22,7 @@ export function ReportDialog({
   returnPath,
 }: ReportDialogProps) {
   const [open, setOpen] = useState(false);
-  const [reason, setReason] = useState(REPORT_REASONS[0]);
+  const [reason, setReason] = useState<ReportReason>(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -101,7 +93,7 @@ export function ReportDialog({
               </label>
               <select
                 value={reason}
-                onChange={(e) => setReason(e.target.value)}
+                onChange={(e) => setReason(e.target.value as ReportReason)}
                 className="w-full rounded-xl border border-unze-border px-3 py-2 text-sm"
               >
                 {REPORT_REASONS.map((r) => (

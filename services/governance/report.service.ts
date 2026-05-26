@@ -2,7 +2,8 @@ import { canManageReports } from "@/lib/permissions/engine";
 import { notifyGovernanceEvent } from "@/lib/notifications/events";
 import { logModerationAction } from "@/services/governance/audit.service";
 import { publishPlatformEvent } from "@/services/platform/event-bus.service";
-import { recordTrustEvent } from "@/services/trust/trust.service";import type {
+import { recordTrustEvent } from "@/services/trust/trust.service";
+import type {
   PlatformReport,
   ReportStatus,
   SubmitReportInput,

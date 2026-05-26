@@ -1,27 +1,74 @@
 "use server";
 
 import { createPost } from "@/services/feed/feed.service";
+import {
+  isExternalPlatformUrl,
+  resolveExternalContent,
+  shouldTreatAsExternalLink,
+} from "@/lib/external/resolve-external-content";
 import type { PostType } from "@/types/database";
-import type { PostMediaItem } from "@/types/post";
+import type { PostMediaItem, PostMetadata } from "@/types/post";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-function parseMediaUrls(raw: string, postType: PostType): PostMediaItem[] {
+function parseHostedMediaUrls(raw: string, postType: PostType): PostMediaItem[] {
   const urls = raw
     .split("\n")
     .map((line) => line.trim())
     .filter(Boolean);
-  if (urls.length === 0) return [];
 
-  const mediaType =
-    postType === "video" || postType === "clip" ? "video" : "image";
+  const media: PostMediaItem[] = [];
 
-  return urls.map((url, index) => ({
-    type: mediaType,
-    url,
-    thumbnailUrl: mediaType === "video" ? url : undefined,
-    sortOrder: index,
-  }));
+  for (const url of urls) {
+    if (shouldTreatAsExternalLink(url)) continue;
+
+    const mediaType =
+      postType === "video" || postType === "clip" ? "video" : "image";
+
+    media.push({
+      type: mediaType,
+      url,
+      thumbnailUrl: mediaType === "video" ? url : undefined,
+      sortOrder: media.length,
+      source: "hosted",
+    });
+  }
+
+  return media;
+}
+
+function buildMetadata(input: {
+  postType: PostType;
+  externalUrl: string;
+  mediaUrls: string;
+  eventAt: string;
+  location: string;
+}): PostMetadata {
+  const metadata: PostMetadata = {};
+
+  if (input.postType === "event") {
+    if (input.eventAt) metadata.eventAt = new Date(input.eventAt).toISOString();
+    if (input.location) metadata.location = input.location;
+  }
+
+  const primaryExternal =
+    input.externalUrl ||
+    input.mediaUrls
+      .split("\n")
+      .map((l) => l.trim())
+      .find((url) => url && isExternalPlatformUrl(url));
+
+  if (primaryExternal) {
+    const resolved = resolveExternalContent(primaryExternal);
+    if (resolved) {
+      metadata.externalUrl = resolved.originalUrl;
+      metadata.externalPlatform = resolved.platform;
+      metadata.contentSource =
+        resolved.mode === "iframe" ? "external_embed" : "external_link";
+    }
+  }
+
+  return metadata;
 }
 
 export async function createPostAction(
@@ -35,6 +82,7 @@ export async function createPostAction(
   const postType = (String(formData.get("postType") ?? "text").trim() ||
     "text") as PostType;
   const mediaUrls = String(formData.get("mediaUrls") ?? "");
+  const externalUrl = String(formData.get("externalUrl") ?? "").trim();
   const eventAt = String(formData.get("eventAt") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();
 
@@ -46,14 +94,19 @@ export async function createPostAction(
     return { error: "Mindestens 3 Zeichen" };
   }
 
-  const media = parseMediaUrls(mediaUrls, postType);
-  const metadata =
-    postType === "event"
-      ? {
-          ...(eventAt ? { eventAt: new Date(eventAt).toISOString() } : {}),
-          ...(location ? { location } : {}),
-        }
-      : {};
+  const metadata = buildMetadata({ postType, externalUrl, mediaUrls, eventAt, location });
+  const media = parseHostedMediaUrls(mediaUrls, postType);
+
+  if (
+    (postType === "video" || postType === "clip") &&
+    !metadata.externalUrl &&
+    media.length === 0
+  ) {
+    return {
+      error:
+        "Für Clips/Videos bitte einen externen Link (YouTube, TikTok, …) angeben — UNZE hostet keine fremden Videos neu.",
+    };
+  }
 
   const { error } = await createPost({
     content,

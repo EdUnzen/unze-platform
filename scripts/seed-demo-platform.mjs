@@ -526,15 +526,11 @@ async function main() {
       comment_count: 1,
       view_count: 3420,
       share_count: 56,
-      media: [
-        {
-          type: "video",
-          url: img("1542751371-adc38448a05e"),
-          thumbnailUrl: img("1542751371-adc38448a05e"),
-          alt: "Rocket League Clip",
-          durationSec: 42,
-        },
-      ],
+      metadata: {
+        externalUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        externalPlatform: "youtube",
+        contentSource: "external_embed",
+      },
     },
     {
       communityId: gaming.id,

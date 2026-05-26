@@ -1,6 +1,7 @@
 "use client";
 
 import { createPostAction } from "@/app/create/post-actions";
+import { ExternalContentPolicyNotice } from "@/components/external/ExternalContentPolicyNotice";
 import {
   COMPOSER_POST_TYPES,
   POST_TYPE_DESCRIPTIONS,
@@ -33,6 +34,11 @@ export function PostComposer({ communities }: PostComposerProps) {
 
   const showMedia = MEDIA_TYPES.includes(postType);
   const showEventFields = postType === "event";
+  const showExternalLink =
+    postType === "video" ||
+    postType === "clip" ||
+    postType === "highlight" ||
+    showMedia;
 
   return (
     <form action={action} className="space-y-4" data-testid="post-composer">
@@ -134,23 +140,43 @@ export function PostComposer({ communities }: PostComposerProps) {
         />
       </div>
 
+      {showExternalLink && (
+        <div>
+          <label htmlFor="externalUrl" className="mb-1 block text-sm font-medium text-unze-ink">
+            Externer Link (YouTube, TikTok, Instagram, …)
+          </label>
+          <input
+            id="externalUrl"
+            name="externalUrl"
+            type="url"
+            placeholder="https://youtube.com/watch?v=…"
+            className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
+          />
+          <p className="mt-1 text-xs text-unze-ink-muted">
+            Wird eingebettet oder verlinkt — UNZE lädt fremde Videos nicht neu hoch.
+          </p>
+        </div>
+      )}
+
       {showMedia && (
         <div>
           <label htmlFor="mediaUrls" className="mb-1 block text-sm font-medium text-unze-ink">
-            Medien-URLs (eine pro Zeile)
+            Eigene Bild-URLs (optional, eine pro Zeile)
           </label>
           <textarea
             id="mediaUrls"
             name="mediaUrls"
             rows={3}
-            placeholder="https://… (Bild oder Video-Thumbnail)"
+            placeholder="https://… (nur eigene/erlaubte Bilder — keine YouTube/TikTok-Links)"
             className="w-full resize-none rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
           />
           <p className="mt-1 text-xs text-unze-ink-muted">
-            Upload folgt — vorerst öffentliche Bild-/Video-URLs
+            Plattform-Links (YouTube, TikTok, …) bitte oben eintragen — kein Re-Upload.
           </p>
         </div>
       )}
+
+      <ExternalContentPolicyNotice />
 
       {showEventFields && (
         <>

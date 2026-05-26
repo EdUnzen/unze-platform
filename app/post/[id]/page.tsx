@@ -2,6 +2,7 @@ import { CommentForm } from "@/components/feed/CommentForm";
 import { CommentList } from "@/components/feed/CommentList";
 import { FeedPostCard } from "@/components/feed/FeedPostCard";
 import { PostViewRecorder } from "@/components/feed/PostViewRecorder";
+import { ReportDialog } from "@/components/governance/ReportDialog";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getPostComments } from "@/services/comments/comment.service";
@@ -50,6 +51,25 @@ export default async function PostPage({ params }: PostPageProps) {
         variant="detail"
         showCommunity
       />
+
+      {user && (
+        <section className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-3xl bg-white p-4 shadow-card">
+          <div>
+            <p className="text-sm font-semibold text-unze-ink">Vertrauen & Moderation</p>
+            <p className="text-xs text-unze-ink-secondary">
+              Community-Owner sind für externe Inhalte verantwortlich. UNZE kann bei
+              Missbrauch moderieren oder sperren.
+            </p>
+          </div>
+          <ReportDialog
+            targetType="post"
+            targetId={id}
+            communityId={post.communityId}
+            returnPath={`/post/${id}`}
+            label="Beitrag melden"
+          />
+        </section>
+      )}
 
       <section id="comments" className="mt-6 rounded-3xl bg-white p-4 shadow-card sm:p-5">
         <header className="mb-4 border-b border-unze-border/80 pb-3">

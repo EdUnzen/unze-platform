@@ -10,6 +10,11 @@ import { PostContextHeader } from "./PostContextHeader";
 import { PostEngagementBar } from "./PostEngagementBar";
 import { PostMediaGallery } from "./PostMediaGallery";
 import { PostVideoPreview } from "./PostVideoPreview";
+import { ExternalContentCard } from "@/components/external/ExternalContentCard";
+import {
+  getHostedMedia,
+  getPostExternalUrl,
+} from "@/lib/external/post-external";
 
 interface FeedPostCardProps {
   post: FeedPost;
@@ -25,16 +30,27 @@ function FeedPostCardInner({
   showCommunity = true,
 }: FeedPostCardProps) {
   const isDetail = variant === "detail";
-  const videoMedia = post.media.find((m) => m.type === "video");
-  const hasGallery = post.media.some((m) => m.type === "image");
-  const showMedia = post.media.length > 0;
+  const externalUrl = getPostExternalUrl(post);
+  const hostedMedia = getHostedMedia(post);
+  const videoMedia = hostedMedia.find((m) => m.type === "video");
+  const hasGallery = hostedMedia.some((m) => m.type === "image");
+  const showHostedMedia = hostedMedia.length > 0;
 
   const body = (
     <>
       {showCommunity && <PostContextHeader post={post} compact={variant === "swipe"} />}
 
       <div className={cn("space-y-3", !isDetail && "flex-1")}>
-        {showMedia && (
+        {externalUrl && (
+          <ExternalContentCard
+            url={externalUrl}
+            title={post.title ?? undefined}
+            communityTitle={post.community?.title}
+            variant={isDetail ? "detail" : "feed"}
+          />
+        )}
+
+        {showHostedMedia && (
           <div className="overflow-hidden">
             {videoMedia ? (
               <PostVideoPreview
@@ -44,7 +60,7 @@ function FeedPostCardInner({
               />
             ) : hasGallery ? (
               <PostMediaGallery
-                media={post.media}
+                media={hostedMedia}
                 variant={isDetail ? "detail" : "feed"}
               />
             ) : null}
