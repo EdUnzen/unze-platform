@@ -7,6 +7,8 @@ import {
   updateGroupInDb,
 } from "./group.repository";
 import { getCommunityActivityStats } from "@/services/platform/activity-stats.service";
+import { buildGroupCardEngagement } from "@/services/engagement/engagement.service";
+import { getGroupVisual } from "@/lib/demo/group-visuals";
 
 export async function getCommunityGroups(
   communityId: string,
@@ -21,10 +23,25 @@ export async function getDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> {
   const communityIds = [...new Set(groups.map((g) => g.communityId))];
   const stats = await getCommunityActivityStats(communityIds);
 
-  return groups.map((group) => ({
-    ...group,
-    weeklyPostCount: stats[group.communityId]?.weeklyPostCount ?? 0,
-  }));
+  return Promise.all(
+    groups.map(async (group) => {
+      const visual = getGroupVisual(group.communitySlug, group.slug);
+      const engagement = await buildGroupCardEngagement({
+        communitySlug: group.communitySlug,
+        groupSlug: group.slug,
+        isTrending: group.isTrending,
+        weeklyViews: group.viewCountWeekly,
+        shareCount: group.shareCount,
+        weeklyPostCount: stats[group.communityId]?.weeklyPostCount,
+        activityLabel: visual?.activityLabel,
+      });
+      return {
+        ...group,
+        weeklyPostCount: stats[group.communityId]?.weeklyPostCount ?? 0,
+        engagement,
+      };
+    }),
+  );
 }
 
 export async function createCommunityGroup(input: {

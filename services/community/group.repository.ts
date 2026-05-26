@@ -124,6 +124,8 @@ export async function fetchDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> 
       description,
       sort_order,
       is_public,
+      view_count_weekly,
+      share_count,
       community:communities!inner (
         slug,
         title,

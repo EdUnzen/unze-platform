@@ -30,6 +30,9 @@ export function mapCommunityRow(
     require_age_verification?: boolean;
     min_age?: number | null;
     required_platform_ids?: unknown;
+    view_count_total?: number;
+    view_count_weekly?: number;
+    share_count?: number;
   };
 
   const access = mapAccessConfigFromRow(rowExt);
@@ -62,6 +65,9 @@ export function mapCommunityRow(
     membership: extras?.membership,
     isFollowing: extras?.isFollowing,
     groupCount: extras?.groupCount,
+    viewCount: rowExt.view_count_total ?? undefined,
+    viewCountWeekly: rowExt.view_count_weekly ?? undefined,
+    shareCount: rowExt.share_count ?? undefined,
   };
 }
 
@@ -73,6 +79,8 @@ export function mapCommunityGroupRow(row: {
   description: string;
   sort_order: number;
   is_public: boolean;
+  view_count_weekly?: number;
+  share_count?: number;
 }): CommunityGroup {
   return {
     id: row.id,
@@ -109,6 +117,8 @@ export function mapDiscoverGroupRow(row: {
   description: string;
   sort_order: number;
   is_public: boolean;
+  view_count_weekly?: number;
+  share_count?: number;
   community: DiscoverGroupCommunityRow | DiscoverGroupCommunityRow[] | null;
 }): DiscoverGroup | null {
   const communityRaw = row.community;
@@ -133,5 +143,7 @@ export function mapDiscoverGroupRow(row: {
     rating: Number(community.rating_avg) || 0,
     reviewCount: community.review_count,
     isPremium: community.visibility === "premium",
+    viewCountWeekly: row.view_count_weekly ?? undefined,
+    shareCount: row.share_count ?? undefined,
   };
 }

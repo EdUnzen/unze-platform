@@ -2,6 +2,7 @@ import type { Community, CommunityFormInput } from "@/types/community";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { enableCreatorProfile } from "@/services/user/profile.service";
 import { isValidCommunitySlug, slugifyTitle } from "@/lib/utils/slug";
+import { enrichCommunitiesWithEngagement } from "@/services/engagement/engagement.service";
 import { enrichCommunitiesForViewer } from "./community.viewer-enrichment";
 import {
   createCommunityInDb,
@@ -21,8 +22,11 @@ export function formatMemberCount(count: number): string {
 
 async function withViewerContext(communities: Community[]): Promise<Community[]> {
   const user = await getCurrentUser();
-  if (!user || communities.length === 0) return communities;
-  return enrichCommunitiesForViewer(communities, user.id);
+  let result = communities;
+  if (user && communities.length > 0) {
+    result = await enrichCommunitiesForViewer(communities, user.id);
+  }
+  return enrichCommunitiesWithEngagement(result);
 }
 
 export async function getFeaturedCommunities(): Promise<Community[]> {
@@ -44,7 +48,14 @@ export async function getCommunityBySlug(
   inviteCode?: string | null,
 ): Promise<Community | null> {
   const user = await getCurrentUser();
-  return fetchCommunityBySlugFromDb(slug, user?.id ?? null, inviteCode);
+  const community = await fetchCommunityBySlugFromDb(
+    slug,
+    user?.id ?? null,
+    inviteCode,
+  );
+  if (!community) return null;
+  const [enriched] = await enrichCommunitiesWithEngagement([community]);
+  return enriched ?? community;
 }
 
 export async function getFollowedCommunities(): Promise<Community[]> {

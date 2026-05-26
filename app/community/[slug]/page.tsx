@@ -7,6 +7,7 @@ import { CommunityMetaGrid } from "@/components/community/CommunityMetaGrid";
 import { CommunityReviewsPrep } from "@/components/community/CommunityReviewsPrep";
 import { CommunityRulesSection } from "@/components/community/CommunityRulesSection";
 import { CommunitySocialProof } from "@/components/community/CommunitySocialProof";
+import { CommunityViewRecorder } from "@/components/community/CommunityViewRecorder";
 import { CreatorProfileCard } from "@/components/community/CreatorProfileCard";
 import { FeedPostList } from "@/components/feed/FeedPostList";
 import { ReportDialog } from "@/components/governance/ReportDialog";
@@ -50,6 +51,7 @@ export default async function CommunityPage({
 
   return (
     <div className="page-padding">
+      <CommunityViewRecorder communityId={community.id} />
       <div className="mb-4 flex items-center justify-between">
         <Link href="/discover" className="text-sm font-medium text-unze-green">
           ← Discover

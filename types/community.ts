@@ -3,6 +3,7 @@ import type {
   JoinAccessState,
   JoinApplication,
 } from "@/types/access";
+import type { CardEngagementMetrics } from "@/types/engagement";
 import type { CommunityRole } from "@/types/database";
 
 export type PlatformType =
@@ -39,6 +40,9 @@ export interface DiscoverGroup extends CommunityGroup {
   reviewCount: number;
   isPremium: boolean;
   weeklyPostCount?: number;
+  viewCountWeekly?: number;
+  shareCount?: number;
+  engagement?: CardEngagementMetrics;
 }
 
 export interface CommunityMembership {
@@ -81,6 +85,10 @@ export interface Community {
   region?: string;
   language?: string;
   viewCount?: number;
+  viewCountWeekly?: number;
+  shareCount?: number;
+  /** Kompakte Engagement-Anzeige für Cards */
+  engagement?: CardEngagementMetrics;
   priceLabel?: string | null;
 }
 

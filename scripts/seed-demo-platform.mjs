@@ -417,6 +417,58 @@ async function main() {
     await syncMemberCount(db, row.id);
   }
 
+  console.log("\n3b. Engagement-Metriken (Aufrufe & Shares)…");
+
+  const communityEngagement = {
+    gaming: {
+      view_count_total: 98_500,
+      view_count_weekly: 12_400,
+      share_count: 340,
+    },
+    business: {
+      view_count_total: 64_200,
+      view_count_weekly: 8_900,
+      share_count: 210,
+    },
+    entertainment: {
+      view_count_total: 156_000,
+      view_count_weekly: 24_600,
+      share_count: 520,
+    },
+  };
+
+  for (const { row, key } of communities) {
+    const metrics = communityEngagement[key];
+    if (!metrics) continue;
+    const { error } = await db
+      .from("communities")
+      .update(metrics)
+      .eq("id", row.id);
+    if (error?.message?.includes("view_count")) {
+      console.log("  ⚠ Engagement-Spalten fehlen — Migration 016 ausführen");
+      break;
+    }
+  }
+
+  const groupEngagementBySlug = {
+    coaching: { view_count_weekly: 4_200, share_count: 89 },
+    clips: { view_count_weekly: 6_800, share_count: 142 },
+    networking: { view_count_weekly: 3_100, share_count: 76 },
+    feed: { view_count_weekly: 9_400, share_count: 198 },
+  };
+
+  const communityIds = communities.map((c) => c.row.id);
+  const { data: groupRows } = await db
+    .from("community_groups")
+    .select("id, slug")
+    .in("community_id", communityIds);
+
+  for (const group of groupRows ?? []) {
+    const metrics = groupEngagementBySlug[group.slug];
+    if (!metrics) continue;
+    await db.from("community_groups").update(metrics).eq("id", group.id);
+  }
+
   console.log("\n4. Feed-Posts, Likes & Kommentare…");
 
   const posts = [

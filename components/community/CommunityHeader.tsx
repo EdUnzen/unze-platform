@@ -1,15 +1,22 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { CommunityStatusBadges } from "@/components/community/CommunityStatusBadges";
+import { ShareMenu } from "@/components/share/ShareMenu";
 import { formatMemberCount } from "@/services/community/community.service";
+import { formatWeeklyViewsLabel } from "@/lib/utils/format-metrics";
 import type { Community } from "@/types/community";
+import { getAppUrl } from "@/lib/env";
 import { cn } from "@/lib/utils/cn";
-import { Eye, Star, Users } from "lucide-react";
+import { Eye, Share2, Star, Users } from "lucide-react";
 
 interface CommunityHeaderProps {
   community: Community;
 }
 
 export function CommunityHeader({ community }: CommunityHeaderProps) {
+  const weeklyViews =
+    community.viewCountWeekly ?? community.engagement?.weeklyViews;
+  const shareCount = community.shareCount ?? community.engagement?.shareCount;
+
   return (
     <header className="overflow-hidden rounded-3xl bg-white shadow-card">
       <div
@@ -19,7 +26,16 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
         )}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-        <div className="absolute bottom-4 left-4 right-4 space-y-2">
+        <ShareMenu
+          className="absolute right-4 top-4 z-10"
+          target={{
+            type: "community",
+            title: community.title,
+            url: `${getAppUrl()}/community/${community.slug}`,
+            communityId: community.id,
+          }}
+        />
+        <div className="absolute bottom-4 left-4 right-16 space-y-2">
           <CommunityStatusBadges community={community} />
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
@@ -47,10 +63,16 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
           <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
           {community.rating} ({community.reviewCount})
         </span>
-        {community.viewCount !== undefined && (
+        {weeklyViews !== undefined && weeklyViews > 0 && (
           <span className="flex items-center gap-1.5">
             <Eye className="h-4 w-4" aria-hidden />
-            {community.viewCount.toLocaleString("de-DE")} Aufrufe
+            {formatWeeklyViewsLabel(weeklyViews)}
+          </span>
+        )}
+        {shareCount !== undefined && shareCount > 0 && (
+          <span className="flex items-center gap-1.5">
+            <Share2 className="h-4 w-4" aria-hidden />
+            {shareCount.toLocaleString("de-DE")}× geteilt
           </span>
         )}
       </div>
