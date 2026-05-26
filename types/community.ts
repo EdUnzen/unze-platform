@@ -25,6 +25,21 @@ export interface CommunityGroup {
   isPublic: boolean;
 }
 
+/** Gruppe + Community-Kontext für Discover-Cards */
+export interface DiscoverGroup extends CommunityGroup {
+  communitySlug: string;
+  communityTitle: string;
+  platformType: PlatformType;
+  memberCount: number;
+  bannerGradient: string;
+  isVerified: boolean;
+  isTrending: boolean;
+  category: string;
+  rating: number;
+  reviewCount: number;
+  isPremium: boolean;
+}
+
 export interface CommunityMembership {
   isMember: boolean;
   role: CommunityRole | null;

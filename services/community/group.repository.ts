@@ -1,6 +1,6 @@
-import { mapCommunityGroupRow } from "@/lib/mappers/community.mapper";
+import { mapCommunityGroupRow, mapDiscoverGroupRow } from "@/lib/mappers/community.mapper";
 import { createClient } from "@/lib/supabase/server";
-import type { CommunityGroup } from "@/types/community";
+import type { CommunityGroup, DiscoverGroup } from "@/types/community";
 
 export async function fetchGroupsByCommunityId(
   communityId: string,
@@ -107,4 +107,60 @@ export async function countGroupsByCommunityId(
     .eq("community_id", communityId);
 
   return count ?? 0;
+}
+
+export async function fetchDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("community_groups")
+    .select(
+      `
+      id,
+      community_id,
+      slug,
+      title,
+      description,
+      sort_order,
+      is_public,
+      community:communities!inner (
+        slug,
+        title,
+        platform_type,
+        member_count,
+        banner_gradient,
+        is_verified,
+        is_trending,
+        discover_enabled,
+        visibility,
+        category,
+        rating_avg,
+        review_count,
+        monetization_enabled
+      )
+    `,
+    )
+    .eq("is_public", true)
+    .order("sort_order", { ascending: true })
+    .limit(100);
+
+  if (error) {
+    console.error("[group.repository] discover:", error.message);
+    return [];
+  }
+
+  return (data ?? [])
+    .filter((row) => {
+      const community = Array.isArray(row.community)
+        ? row.community[0]
+        : row.community;
+      return (
+        community?.discover_enabled &&
+        ["public", "premium"].includes(community.visibility)
+      );
+    })
+    .map((row) => mapDiscoverGroupRow(row))
+    .filter((group): group is DiscoverGroup => Boolean(group))
+    .slice(0, limit);
 }

@@ -272,7 +272,7 @@ async function main() {
     externalUrl: "https://discord.com",
     joinApprovalMode: "manual_review",
     waitlistEnabled: true,
-    discoverScore: 200,
+    discoverScore: 220,
     rules:
       "Respektvoller Umgang · Kein Boosting-Verkauf · Replays nur in Coaching-Kanal · Mindest-Rang Diamond 2",
   });
@@ -287,7 +287,7 @@ async function main() {
     category: "Business",
     tags: ["Networking", "Marketing", "Unternehmer", "DACH"],
     joinApprovalMode: "manual_review",
-    discoverScore: 180,
+    discoverScore: 200,
     rules: "Kein Spam · Services klar kennzeichnen · Vertraulichkeit in Masterminds",
   });
 
@@ -301,7 +301,7 @@ async function main() {
     category: "Entertainment",
     tags: ["Creator", "Social", "Content", "Collab"],
     joinApprovalMode: "auto_accept",
-    discoverScore: 160,
+    discoverScore: 190,
   });
 
   const communities = [
@@ -487,6 +487,48 @@ async function main() {
       is_pinned: true,
       like_count: 88,
       comment_count: 1,
+    },
+    {
+      communityId: gaming.id,
+      authorId: members[0].id,
+      title: "Replay-Analyse: Champ 3 → SSL",
+      content:
+        "Wer heute Abend 20:00 Zeit hat — ich stream die Analyse live im Coaching-Kanal. Bringt 1 Replay mit.",
+      post_type: "event",
+      visibility: "public",
+      like_count: 31,
+      comment_count: 0,
+    },
+    {
+      communityId: gaming.id,
+      authorId: members[1].id,
+      title: "Scrims Samstag 18:00",
+      content: "3v3 Custom Lobby — SSL only. Meldet euch im Turniere-Kanal an.",
+      post_type: "event",
+      visibility: "public",
+      like_count: 22,
+      comment_count: 0,
+    },
+    {
+      communityId: business.id,
+      authorId: members[2].id,
+      title: "Intro: Agentur aus Wien",
+      content:
+        "Hi! Wir machen Performance Marketing für D2C-Brands. Suche Partner für Co-Marketing im DACH-Raum.",
+      post_type: "text",
+      visibility: "public",
+      like_count: 14,
+      comment_count: 0,
+    },
+    {
+      communityId: entertainment.id,
+      authorId: members[0].id,
+      title: "Trending Clip: Rocket League Montage",
+      content: "Cross-Post aus Gaming — wer will collab für einen Creator-Montage-Stream?",
+      post_type: "text",
+      visibility: "public",
+      like_count: 47,
+      comment_count: 0,
     },
   ];
 

@@ -2,7 +2,8 @@ import { AttentionBadge } from "@/components/dashboard/StatusBadge";
 import { canReviewApplications } from "@/lib/permissions/community.permissions";
 import { hasCommunityPermission } from "@/lib/permissions/community.permissions";
 import type { CommunityRole } from "@/types/database";
-import { ClipboardList, Settings, Shield } from "lucide-react";
+import { cn } from "@/lib/utils/cn";
+import { AlertCircle, ClipboardList, Settings, Shield } from "lucide-react";
 import Link from "next/link";
 
 interface DashboardAttentionPanelProps {
@@ -22,22 +23,40 @@ export function DashboardAttentionPanel({
 }: DashboardAttentionPanelProps) {
   const canReview = canReviewApplications(viewerRole);
   const canModerate = hasCommunityPermission(viewerRole, "moderate");
+  const urgentCount =
+    (canReview ? pendingApplications : 0) + (canModerate ? pendingReports : 0);
+  const hasUrgent = urgentCount > 0;
 
   return (
     <section
-      className="rounded-3xl bg-white p-4 shadow-card"
+      className={cn(
+        "rounded-3xl bg-white p-4 shadow-card",
+        hasUrgent && "border-l-4 border-amber-400",
+      )}
       data-testid="dashboard-attention-panel"
     >
-      <div className="mb-3 flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-unze-surface-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-unze-ink-secondary">
-          {accessStatusLabel}
-        </span>
-        {pendingApplications > 0 && canReview && (
-          <AttentionBadge count={pendingApplications} label="Offene Anträge" />
-        )}
-        {pendingReports > 0 && canModerate && (
-          <AttentionBadge count={pendingReports} label="Offene Meldungen" />
-        )}
+      <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h2 className="text-sm font-semibold text-unze-ink">
+            {hasUrgent ? "Aktion erforderlich" : "Community-Steuerung"}
+          </h2>
+          <p className="mt-0.5 text-xs text-unze-ink-secondary">
+            {hasUrgent
+              ? `${urgentCount} offene${urgentCount === 1 ? "r" : ""} Punkt${urgentCount === 1 ? "" : "e"} warten auf dich`
+              : "Anträge, Moderation und Zugang im Überblick"}
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-unze-surface-muted px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-unze-ink-secondary">
+            {accessStatusLabel}
+          </span>
+          {hasUrgent && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-900">
+              <AlertCircle className="h-3 w-3" aria-hidden />
+              {urgentCount} offen
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -45,7 +64,12 @@ export function DashboardAttentionPanel({
           <Link
             href={`/dashboard/community/${slug}/requests`}
             data-testid="dashboard-link-requests"
-            className="flex items-center gap-3 rounded-2xl border border-unze-border bg-unze-surface-muted/40 px-3 py-3 active:scale-[0.98]"
+            className={cn(
+              "flex items-center gap-3 rounded-2xl border px-3 py-3 active:scale-[0.98]",
+              pendingApplications > 0
+                ? "border-amber-200 bg-amber-50/80"
+                : "border-unze-border bg-unze-surface-muted/40",
+            )}
           >
             <ClipboardList className="h-5 w-5 text-unze-green" aria-hidden />
             <div className="min-w-0 flex-1">
@@ -66,7 +90,12 @@ export function DashboardAttentionPanel({
           <Link
             href={`/dashboard/community/${slug}/moderation`}
             data-testid="dashboard-link-moderation"
-            className="flex items-center gap-3 rounded-2xl border border-unze-border bg-unze-surface-muted/40 px-3 py-3 active:scale-[0.98]"
+            className={cn(
+              "flex items-center gap-3 rounded-2xl border px-3 py-3 active:scale-[0.98]",
+              pendingReports > 0
+                ? "border-amber-200 bg-amber-50/80"
+                : "border-unze-border bg-unze-surface-muted/40",
+            )}
           >
             <Shield className="h-5 w-5 text-unze-green" aria-hidden />
             <div className="min-w-0 flex-1">

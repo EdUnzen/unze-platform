@@ -11,7 +11,11 @@ export async function signInWithEmail(
   formData: FormData,
 ): Promise<{ error?: string }> {
   if (!isSupabaseConfigured()) {
-    return { error: "Supabase ist nicht konfiguriert. Siehe .env.example" };
+    return {
+      error: process.env.VERCEL
+        ? "Supabase ist nicht konfiguriert. Prüfe Vercel Environment Variables."
+        : "Supabase ist nicht konfiguriert. Siehe .env.example",
+    };
   }
 
   const email = String(formData.get("email") ?? "").trim();
@@ -39,7 +43,11 @@ export async function signUpWithEmail(
   formData: FormData,
 ): Promise<{ error?: string; success?: string }> {
   if (!isSupabaseConfigured()) {
-    return { error: "Supabase ist nicht konfiguriert. Siehe .env.example" };
+    return {
+      error: process.env.VERCEL
+        ? "Supabase ist nicht konfiguriert. Prüfe Vercel Environment Variables."
+        : "Supabase ist nicht konfiguriert. Siehe .env.example",
+    };
   }
 
   const email = String(formData.get("email") ?? "").trim();

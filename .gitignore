@@ -21,6 +21,7 @@
 # --- Environment & Secrets (NIEMALS committen) ---
 .env
 .env*.local
+.env.vercel.*
 !.env.example
 
 # --- Vercel / Deploy ---

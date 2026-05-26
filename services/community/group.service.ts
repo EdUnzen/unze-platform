@@ -1,7 +1,8 @@
-import type { CommunityGroup } from "@/types/community";
+import type { CommunityGroup, DiscoverGroup } from "@/types/community";
 import {
   createGroupInDb,
   deleteGroupInDb,
+  fetchDiscoverGroups,
   fetchGroupsByCommunityId,
   updateGroupInDb,
 } from "./group.repository";
@@ -10,6 +11,10 @@ export async function getCommunityGroups(
   communityId: string,
 ): Promise<CommunityGroup[]> {
   return fetchGroupsByCommunityId(communityId);
+}
+
+export async function getDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> {
+  return fetchDiscoverGroups(limit);
 }
 
 export async function createCommunityGroup(input: {

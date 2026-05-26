@@ -14,6 +14,8 @@
     "seed:demo": "node scripts/seed-demo-platform.mjs",
     "db:grants": "node scripts/apply-api-grants.mjs",
     "verify:demo": "node scripts/verify-demo-data.mjs",
+    "diagnose:schema": "node scripts/diagnose-schema-readiness.mjs",
+    "sync:vercel-env": "node scripts/sync-vercel-env.mjs",
     "db:bundle": "node scripts/bundle-migrations.mjs",
     "db:migrate": "node scripts/apply-migrations.mjs",
     "setup:demo": "node scripts/setup-platform.mjs",

@@ -1,4 +1,5 @@
 import { CommunityCardList } from "@/components/community/CommunityCardList";
+import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
 import { CreatorCardList } from "@/components/discover/CreatorCard";
 import { DiscoverTabs } from "@/components/discover/DiscoverTabs";
 import {
@@ -9,6 +10,7 @@ import { filterDiscoverCommunities } from "@/lib/discover/filter-communities";
 import { FeedPostList } from "@/components/feed/FeedPostList";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getDiscoverCommunities } from "@/services/community/community.service";
+import { getDiscoverGroups } from "@/services/community/group.service";
 import { getDiscoverCreators } from "@/services/creator/creator.service";
 import {
   getDiscoverFeedPosts,
@@ -37,6 +39,17 @@ async function DiscoverContent({
 }) {
   const communities = await getDiscoverCommunities();
   const filtered = filterDiscoverCommunities(communities, query, category);
+
+  if (tab === "groups") {
+    const groups = await getDiscoverGroups();
+    return (
+      <CommunityGroupCardList
+        groups={groups}
+        title="Gruppen entdecken"
+        subtitle="Aktive Bereiche in Communities — Coaching, Networking, Creator-Feed und mehr"
+      />
+    );
+  }
 
   if (tab === "feed") {
     const posts = await getDiscoverFeedPosts();
@@ -113,9 +126,18 @@ async function DiscoverContent({
 
   const trending = filtered.filter((c) => c.isTrending).slice(0, 3);
   const rest = filtered.filter((c) => !trending.includes(c));
+  const featuredGroups = await getDiscoverGroups(8);
 
   return (
     <div className="space-y-8">
+      {featuredGroups.length > 0 && (
+        <CommunityGroupCardList
+          groups={featuredGroups}
+          title="Aktive Gruppen"
+          subtitle="Beliebte Bereiche in Communities"
+          layout="horizontal"
+        />
+      )}
       {trending.length > 0 && (
         <CommunityCardList
           communities={trending}
@@ -172,13 +194,35 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         subtitle="Communities, Creator, Feed und Trends entdecken"
       />
 
-      {!schemaReady && (
+      {!schemaReady ? (
         <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
           <p className="font-semibold">Datenbank-Schema fehlt in Supabase</p>
           <p className="mt-1">
-            Führe <code className="rounded bg-amber-100 px-1">database/BUNDLE_all_migrations.sql</code> im
-            Supabase SQL Editor aus, dann{" "}
-            <code className="rounded bg-amber-100 px-1">npm run seed:demo</code>.
+            {process.env.VERCEL ? (
+              <>
+                Prüfe in Vercel → Settings → Environment Variables:{" "}
+                <code className="rounded bg-amber-100 px-1">NEXT_PUBLIC_SUPABASE_URL</code> und{" "}
+                <code className="rounded bg-amber-100 px-1">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>
+                . Danach Redeploy. Schema:{" "}
+                <code className="rounded bg-amber-100 px-1">database/BUNDLE_all_migrations.sql</code>
+              </>
+            ) : (
+              <>
+                Führe{" "}
+                <code className="rounded bg-amber-100 px-1">database/BUNDLE_all_migrations.sql</code> im
+                Supabase SQL Editor aus, dann{" "}
+                <code className="rounded bg-amber-100 px-1">npm run seed:demo</code>.
+              </>
+            )}
+          </p>
+        </div>
+      ) : (
+        <div className="mb-4 rounded-2xl border border-unze-green/25 bg-unze-green-muted/20 px-4 py-3 text-sm text-unze-green-dark">
+          <p className="font-semibold">Live-Plattform · Supabase verbunden</p>
+          <p className="mt-1 text-unze-ink-secondary">
+            Communities mit <span className="font-semibold text-amber-800">Demo</span>-Badge sind
+            Testdaten aus der Demo-Seed-Umgebung — echte Registrierung und Creator-Communities
+            funktionieren parallel.
           </p>
         </div>
       )}
@@ -187,7 +231,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         <DiscoverSearchBar />
       </Suspense>
 
-      {tab !== "creators" && tab !== "feed" && (
+      {tab !== "creators" && tab !== "feed" && tab !== "groups" && (
         <Suspense fallback={null}>
           <DiscoverCategoryFilter />
         </Suspense>

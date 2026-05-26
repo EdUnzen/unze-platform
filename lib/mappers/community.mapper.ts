@@ -1,5 +1,5 @@
 import { mapAccessConfigFromRow } from "@/lib/mappers/access.mapper";
-import type { Community, CommunityGroup } from "@/types/community";
+import type { Community, CommunityGroup, DiscoverGroup } from "@/types/community";
 import type { CommunityVisibility } from "@/types/community";
 import type { CommunityRole, CommunityWithCreator } from "@/types/database";
 
@@ -82,5 +82,56 @@ export function mapCommunityGroupRow(row: {
     description: row.description,
     sortOrder: row.sort_order,
     isPublic: row.is_public,
+  };
+}
+
+type DiscoverGroupCommunityRow = {
+  slug: string;
+  title: string;
+  platform_type: DiscoverGroup["platformType"];
+  member_count: number;
+  banner_gradient: string;
+  is_verified: boolean;
+  is_trending: boolean;
+  discover_enabled: boolean;
+  visibility: string;
+  category: string;
+  rating_avg: number | string;
+  review_count: number;
+  monetization_enabled?: boolean;
+};
+
+export function mapDiscoverGroupRow(row: {
+  id: string;
+  community_id: string;
+  slug: string;
+  title: string;
+  description: string;
+  sort_order: number;
+  is_public: boolean;
+  community: DiscoverGroupCommunityRow | DiscoverGroupCommunityRow[] | null;
+}): DiscoverGroup | null {
+  const communityRaw = row.community;
+  const community = Array.isArray(communityRaw)
+    ? communityRaw[0]
+    : communityRaw;
+
+  if (!community) return null;
+
+  const base = mapCommunityGroupRow(row);
+
+  return {
+    ...base,
+    communitySlug: community.slug,
+    communityTitle: community.title,
+    platformType: community.platform_type,
+    memberCount: community.member_count,
+    bannerGradient: community.banner_gradient,
+    isVerified: community.is_verified,
+    isTrending: community.is_trending,
+    category: community.category,
+    rating: Number(community.rating_avg) || 0,
+    reviewCount: community.review_count,
+    isPremium: community.visibility === "premium",
   };
 }

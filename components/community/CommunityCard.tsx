@@ -3,6 +3,7 @@ import type { Community } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { VISIBILITY_OPTIONS } from "@/lib/constants/community";
+import { isDemoCommunitySlug } from "@/lib/constants/demo";
 import { BadgeCheck, FolderOpen, Heart, Lock, Star, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { PlatformBadge } from "./PlatformBadge";
@@ -69,6 +70,11 @@ export function CommunityCard({
               <span className="inline-flex items-center gap-0.5 rounded-lg bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
                 <TrendingUp className="h-3 w-3" aria-hidden />
                 Trending
+              </span>
+            )}
+            {isDemoCommunitySlug(community.slug) && (
+              <span className="rounded-lg bg-amber-400/90 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-950 backdrop-blur-md">
+                Demo
               </span>
             )}
           </div>

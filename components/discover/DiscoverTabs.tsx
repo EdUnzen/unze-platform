@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 
 const TABS = [
   { id: "communities", label: "Communities" },
+  { id: "groups", label: "Gruppen" },
   { id: "feed", label: "Feed" },
   { id: "trends", label: "Trends" },
   { id: "new", label: "Neu" },
@@ -21,7 +22,7 @@ export function DiscoverTabs() {
 
   return (
     <div
-      className="mb-6 flex gap-1 rounded-2xl bg-unze-surface-muted p-1"
+      className="mb-6 flex gap-1 overflow-x-auto rounded-2xl bg-unze-surface-muted p-1 scrollbar-none"
       role="tablist"
       aria-label="Discover-Bereiche"
     >
@@ -35,7 +36,7 @@ export function DiscoverTabs() {
             role="tab"
             aria-selected={isActive}
             className={cn(
-              "flex-1 rounded-xl py-2.5 text-center text-sm font-medium transition-all",
+              "shrink-0 rounded-xl px-3 py-2.5 text-center text-sm font-medium transition-all sm:flex-1",
               isActive
                 ? "bg-white text-unze-ink shadow-sm"
                 : "text-unze-ink-muted",
