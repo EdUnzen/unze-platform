@@ -1,5 +1,7 @@
+import { EmptyStateVisual } from "@/components/visual/EmptyStateVisual";
 import type { DiscoverGroup } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
+import { FolderOpen } from "lucide-react";
 import { CommunityGroupCard } from "./CommunityGroupCard";
 
 interface CommunityGroupCardListProps {
@@ -17,9 +19,12 @@ export function CommunityGroupCardList({
 }: CommunityGroupCardListProps) {
   if (groups.length === 0) {
     return (
-      <p className="py-8 text-center text-sm text-unze-ink-muted">
-        Keine Gruppen gefunden.
-      </p>
+      <EmptyStateVisual
+        icon={FolderOpen}
+        title="Noch keine Gruppen"
+        description="Neue Gruppen erscheinen hier — mit modernen Community-Visuals statt leerer Flächen."
+        className="py-10"
+      />
     );
   }
 

@@ -43,6 +43,7 @@ export function mapCommunityRow(
     title: row.title,
     description: row.description,
     bannerGradient: row.banner_gradient,
+    bannerUrl: row.banner_url ?? null,
     platformType: row.platform_type,
     category: row.category,
     tags: row.tags ?? [],

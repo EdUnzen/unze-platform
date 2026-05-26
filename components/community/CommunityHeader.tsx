@@ -1,11 +1,11 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { CommunityStatusBadges } from "@/components/community/CommunityStatusBadges";
 import { ShareMenu } from "@/components/share/ShareMenu";
+import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { formatMemberCount } from "@/services/community/community.service";
 import { formatWeeklyViewsLabel } from "@/lib/utils/format-metrics";
 import type { Community } from "@/types/community";
 import { getAppUrl } from "@/lib/env";
-import { cn } from "@/lib/utils/cn";
 import { Eye, Share2, Star, Users } from "lucide-react";
 
 interface CommunityHeaderProps {
@@ -19,13 +19,14 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
 
   return (
     <header className="overflow-hidden rounded-3xl bg-white shadow-card">
-      <div
-        className={cn(
-          "relative h-44 bg-gradient-to-br sm:h-52",
-          community.bannerGradient,
-        )}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+      <div className="relative h-44 sm:h-52">
+        <CommunityCoverVisual
+          seed={community.slug}
+          bannerGradient={community.bannerGradient}
+          imageUrl={community.bannerUrl}
+          className="h-full"
+          overlay="hero"
+        />
         <ShareMenu
           className="absolute right-4 top-4 z-10"
           target={{
@@ -35,11 +36,11 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
             communityId: community.id,
           }}
         />
-        <div className="absolute bottom-4 left-4 right-16 space-y-2">
+        <div className="absolute bottom-4 left-4 right-16 z-10 space-y-2">
           <CommunityStatusBadges community={community} />
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <span className="mb-1 inline-block rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+              <span className="mb-1 inline-block rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
                 {community.category}
               </span>
               <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">

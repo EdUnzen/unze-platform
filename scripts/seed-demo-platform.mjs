@@ -854,6 +854,82 @@ async function main() {
     },
   ];
 
+  console.log("\n3. Referral & Revenue Sandbox…");
+  try {
+  await db
+    .from("profiles")
+    .update({ is_creator: true })
+    .eq("id", members[2].id);
+
+  await db.from("creator_profiles").upsert(
+    {
+      user_id: members[2].id,
+      headline: "Demo Creator — geworben über UNZE Referral",
+    },
+    { onConflict: "user_id" },
+  );
+
+  await db.from("creator_referrals").upsert(
+    {
+      referred_user_id: members[2].id,
+      referrer_user_id: creator.id,
+      status: "active",
+    },
+    { onConflict: "referred_user_id" },
+  );
+
+  const grossCents = 1999;
+  const stripeFee = Math.round(grossCents * 0.029 + 30);
+  const afterStripe = grossCents - stripeFee;
+  const platformFee = Math.round(afterStripe * 0.077);
+  const netPlatform = afterStripe - platformFee;
+  const referrerShare = Math.round(netPlatform * 0.11);
+
+  await db.from("revenue_share_ledger").insert({
+    community_id: gaming.id,
+    creator_user_id: creator.id,
+    referrer_user_id: null,
+    gross_amount_cents: grossCents,
+    platform_fee_cents: platformFee,
+    net_platform_cents: netPlatform,
+    referrer_share_cents: 0,
+    ledger_status: "sandbox",
+    metadata: { seed: "demo-creator-sale" },
+  });
+
+  await db.from("revenue_share_ledger").insert({
+    community_id: entertainment.id,
+    creator_user_id: members[2].id,
+    referrer_user_id: creator.id,
+    gross_amount_cents: 999,
+    platform_fee_cents: (() => {
+      const g = 999;
+      const s = Math.round(g * 0.029 + 30);
+      return Math.round((g - s) * 0.077);
+    })(),
+    net_platform_cents: (() => {
+      const g = 999;
+      const s = Math.round(g * 0.029 + 30);
+      const p = Math.round((g - s) * 0.077);
+      return g - s - p;
+    })(),
+    referrer_share_cents: (() => {
+      const g = 999;
+      const s = Math.round(g * 0.029 + 30);
+      const p = Math.round((g - s) * 0.077);
+      const n = g - s - p;
+      return Math.round(n * 0.11);
+    })(),
+    ledger_status: "sandbox",
+    metadata: { seed: "demo-referral-share" },
+  });
+  } catch (err) {
+    console.warn(
+      "  ⚠ Referral/Revenue Seed übersprungen — Migration 019 anwenden:",
+      err.message,
+    );
+  }
+
   for (const def of demoBadges) {
     const { data: badge, error: badgeError } = await db
       .from("badges")
@@ -891,6 +967,7 @@ async function main() {
   }
   console.log("\nDashboard:");
   console.log("  http://localhost:3002/dashboard");
+  console.log("  http://localhost:3002/dashboard/referrals");
   console.log("  http://localhost:3002/dashboard/community/rocket-league-ssl/requests");
   console.log("\nDiscover: http://localhost:3002/discover\n");
 }

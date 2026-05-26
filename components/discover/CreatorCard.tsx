@@ -1,6 +1,6 @@
 import { formatMemberCount } from "@/services/community/community.service";
 import type { PlatformCreator } from "@/types/creator";
-import { cn } from "@/lib/utils/cn";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { BadgeCheck, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -18,23 +18,12 @@ export function CreatorCard({ creator }: CreatorCardProps) {
       data-testid={`creator-card-${creator.id}`}
     >
       <article className="flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card">
-        {creator.avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={creator.avatarUrl}
-            alt=""
-            className="h-14 w-14 shrink-0 rounded-2xl object-cover"
-          />
-        ) : (
-          <div
-            className={cn(
-              "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-unze-green to-emerald-600 text-lg font-bold text-white",
-            )}
-            aria-hidden
-          >
-            {creator.name.charAt(0)}
-          </div>
-        )}
+        <UserAvatar
+          name={creator.name}
+          seed={creator.id}
+          avatarUrl={creator.avatarUrl}
+          size="lg"
+        />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             <h3 className="truncate font-semibold text-unze-ink">{creator.name}</h3>

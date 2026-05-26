@@ -1,14 +1,14 @@
 import { isDemoCommunitySlug } from "@/lib/constants/demo";
-import { getGroupVisual } from "@/lib/demo/group-visuals";
+import { getGroupVisual, getGroupVisualSeed } from "@/lib/demo/group-visuals";
 import { getAppUrl } from "@/lib/env";
 import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
 import { CardMetricsRow } from "@/components/share/CardMetricsRow";
 import { ShareMenu } from "@/components/share/ShareMenu";
+import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { DiscoverGroup } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
 import { BadgeCheck, Lock, Star, TrendingUp, Users } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { memo } from "react";
 import { PlatformBadge } from "./PlatformBadge";
@@ -27,6 +27,7 @@ function CommunityGroupCardInner({
   const href = `/community/${group.communitySlug}?group=${group.slug}`;
   const shareUrl = `${getAppUrl()}${href}`;
   const visual = getGroupVisual(group.communitySlug, group.slug);
+  const visualSeed = getGroupVisualSeed(group.communitySlug, group.slug);
 
   return (
     <article
@@ -42,26 +43,14 @@ function CommunityGroupCardInner({
           href={href}
           className="group block touch-target outline-none transition-transform active:scale-[0.99]"
         >
-          <div className={cn("relative overflow-hidden", compact ? "h-24" : "h-28")}>
-            {visual?.imageUrl ? (
-              <Image
-                src={visual.imageUrl}
-                alt=""
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes={compact ? "280px" : "100vw"}
-              />
-            ) : (
-              <div
-                className={cn(
-                  "absolute inset-0 bg-gradient-to-br",
-                  group.bannerGradient,
-                )}
-              />
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-
-            <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 pr-10">
+          <div className="relative">
+            <GroupCoverVisual
+              seed={visualSeed}
+              bannerGradient={group.bannerGradient}
+              className={compact ? "h-24" : "h-28"}
+              compact={compact}
+            />
+            <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 pr-10">
               <PlatformBadge platform={group.platformType} variant="overlay" />
               {group.isTrending && (
                 <span className="inline-flex items-center gap-0.5 rounded-lg bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
@@ -81,10 +70,9 @@ function CommunityGroupCardInner({
                 </span>
               )}
             </div>
-
             {group.isVerified && (
               <div
-                className="absolute bottom-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm"
+                className="absolute bottom-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm"
                 title="Verifiziert"
               >
                 <BadgeCheck
@@ -116,23 +104,29 @@ function CommunityGroupCardInner({
               {group.description}
             </p>
 
+            {visual?.activityLabel && (
+              <p className="mb-2 text-[11px] font-medium text-unze-green-dark">
+                {visual.activityLabel}
+              </p>
+            )}
+
             <CardEngagementStrip metrics={group.engagement} className="mb-2" max={2} />
 
-          <CardMetricsRow
-            metrics={group.engagement}
-            weeklyViews={group.viewCountWeekly}
-            shareCount={group.shareCount}
-            compact
-            className="mb-3"
-          />
+            <CardMetricsRow
+              metrics={group.engagement}
+              weeklyViews={group.viewCountWeekly}
+              shareCount={group.shareCount}
+              compact
+              className="mb-3"
+            />
 
             <div className="flex items-center justify-between border-t border-unze-border/80 pt-3">
               <div className="flex flex-wrap items-center gap-2">
                 <PlatformBadge platform={group.platformType} variant="footer" />
                 <span className="flex items-center gap-1 text-xs text-unze-ink-secondary">
-                <Users className="h-3.5 w-3.5" aria-hidden />
-                {formatMemberCount(group.memberCount)}
-              </span>
+                  <Users className="h-3.5 w-3.5" aria-hidden />
+                  {formatMemberCount(group.memberCount)}
+                </span>
               </div>
               <span className="text-[11px] text-unze-ink-muted">{group.category}</span>
             </div>

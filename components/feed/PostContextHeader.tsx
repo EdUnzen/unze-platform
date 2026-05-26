@@ -2,6 +2,7 @@ import type { FeedPost } from "@/lib/mappers/post.mapper";
 import { POST_TYPE_LABELS, POST_TYPE_STYLES } from "@/lib/constants/posts";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { cn } from "@/lib/utils/cn";
 import { BadgeCheck, FolderOpen, TrendingUp } from "lucide-react";
 import Link from "next/link";
@@ -14,25 +15,18 @@ interface PostContextHeaderProps {
 export function PostContextHeader({ post, compact = false }: PostContextHeaderProps) {
   const community = post.community;
   const author = post.author;
-  const authorInitial = (author?.name ?? "M").slice(0, 1).toUpperCase();
   const roleLabel = author?.communityRole
     ? ROLE_LABELS[author.communityRole] ?? author.communityRole
     : null;
 
   return (
     <header className={cn("flex gap-3", compact ? "mb-2" : "mb-3")}>
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-unze-green-muted text-sm font-bold text-unze-green-dark">
-        {author?.avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={author.avatarUrl}
-            alt=""
-            className="h-full w-full rounded-full object-cover"
-          />
-        ) : (
-          authorInitial
-        )}
-      </span>
+      <UserAvatar
+        name={author?.name ?? "Mitglied"}
+        seed={author?.id ?? post.authorId}
+        avatarUrl={author?.avatarUrl}
+        size="md"
+      />
 
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">

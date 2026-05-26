@@ -1,7 +1,9 @@
 import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
+import { EmptyStateVisual } from "@/components/visual/EmptyStateVisual";
 import { getGroupVisual } from "@/lib/demo/group-visuals";
 import { buildGroupCardEngagement } from "@/services/engagement/engagement.service";
 import type { Community, CommunityGroup, DiscoverGroup } from "@/types/community";
+import { FolderOpen } from "lucide-react";
 
 interface CommunityGroupSectionProps {
   community: Community;
@@ -12,7 +14,21 @@ export async function CommunityGroupSection({
   community,
   groups,
 }: CommunityGroupSectionProps) {
-  if (groups.length === 0) return null;
+  if (groups.length === 0) {
+    return (
+      <section className="rounded-3xl bg-white p-4 shadow-card">
+        <header className="mb-4">
+          <h2 className="text-sm font-semibold text-unze-ink">Gruppen & Bereiche</h2>
+        </header>
+        <EmptyStateVisual
+          icon={FolderOpen}
+          title="Noch keine Gruppen"
+          description="Sobald Gruppen angelegt werden, erscheinen sie hier mit modernen Netzwerk-Visuals."
+          className="py-8"
+        />
+      </section>
+    );
+  }
 
   const discoverGroups: DiscoverGroup[] = await Promise.all(
     groups.map(async (group) => {

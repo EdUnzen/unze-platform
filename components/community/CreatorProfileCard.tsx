@@ -1,6 +1,6 @@
 import { getCreatorById } from "@/services/creator/creator.service";
 import type { Community } from "@/types/community";
-import { cn } from "@/lib/utils/cn";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { BadgeCheck, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -15,23 +15,12 @@ export async function CreatorProfileCard({ community }: CreatorProfileCardProps)
     <section className="rounded-3xl bg-white p-4 shadow-card" data-testid="creator-profile">
       <h2 className="mb-3 text-sm font-semibold text-unze-ink">Creator</h2>
       <div className="flex items-start gap-3">
-        {community.creatorAvatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={community.creatorAvatarUrl}
-            alt=""
-            className="h-14 w-14 shrink-0 rounded-2xl object-cover"
-          />
-        ) : (
-          <div
-            className={cn(
-              "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-unze-green to-emerald-600 text-lg font-bold text-white",
-            )}
-            aria-hidden
-          >
-            {community.creatorName.charAt(0)}
-          </div>
-        )}
+        <UserAvatar
+          name={community.creatorName}
+          seed={community.creatorId}
+          avatarUrl={community.creatorAvatarUrl}
+          size="lg"
+        />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
             <p className="font-semibold text-unze-ink">{community.creatorName}</p>

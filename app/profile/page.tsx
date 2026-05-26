@@ -1,9 +1,10 @@
 import { SignOutButton } from "@/components/auth/SignOutButton";
 import { loadNotifications } from "@/app/notifications/actions";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { UserAvatar } from "@/components/ui/UserAvatar";
+import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getCurrentProfile, getCurrentUser } from "@/services/auth/auth.service";
-import { User } from "lucide-react";
 import Link from "next/link";
 
 export default async function ProfilePage() {
@@ -20,19 +21,21 @@ export default async function ProfilePage() {
       <PageHeader title="Profil" subtitle="Deine Identität auf UNZE" />
 
       <div className="overflow-hidden rounded-3xl bg-white shadow-card">
-        <div className="h-24 bg-gradient-to-br from-unze-green-light via-unze-green to-unze-green-dark" />
+        <CommunityCoverVisual
+          seed={user?.id ?? "guest"}
+          bannerGradient="from-unze-green-light via-unze-green to-unze-green-dark"
+          className="h-24"
+          overlay="subtle"
+        />
         <div className="relative px-4 pb-6">
-          <div className="-mt-10 mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-unze-surface-muted shadow-sm">
-            {profile?.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={profile.avatar_url}
-                alt=""
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <User className="h-10 w-10 text-unze-ink-muted" aria-hidden />
-            )}
+          <div className="-mt-10 mb-4">
+            <UserAvatar
+              name={displayName}
+              seed={user?.id}
+              avatarUrl={profile?.avatar_url}
+              size="xl"
+              className="border-4 border-white shadow-md"
+            />
           </div>
 
           <h2 className="text-lg font-semibold text-unze-ink">{displayName}</h2>
@@ -44,7 +47,7 @@ export default async function ProfilePage() {
           ) : (
             <p className="mt-2 text-sm text-unze-ink-secondary">
               {user
-                ? "Vervollständige dein Profil in den Einstellungen."
+                ? "Optional: Profilbild, Name und Bio in den Einstellungen anpassen."
                 : "Melde dich an, um dein Profil, Badges und Communities zu verwalten."}
             </p>
           )}
@@ -58,6 +61,12 @@ export default async function ProfilePage() {
           <div className="mt-4 flex flex-col gap-2">
             {user ? (
               <>
+                <Link
+                  href="/profile/settings"
+                  className="block w-full rounded-xl border border-unze-border bg-white py-3 text-center text-sm font-medium text-unze-ink"
+                >
+                  Profil bearbeiten
+                </Link>
                 <Link
                   href="/notifications"
                   className="flex items-center justify-between rounded-xl border border-unze-border bg-white px-4 py-3 text-sm font-medium text-unze-ink"

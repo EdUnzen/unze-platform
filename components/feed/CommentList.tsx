@@ -1,5 +1,6 @@
 import type { CommentView } from "@/types/comment";
 import { formatFeedRelativeDate } from "@/lib/feed/format-date";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 interface CommentListProps {
   comments: CommentView[];
@@ -22,9 +23,12 @@ export function CommentList({
           className="rounded-2xl border border-unze-border/60 bg-unze-surface-muted/40 px-3 py-3"
         >
           <div className="mb-2 flex items-center gap-2">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-unze-green-muted text-xs font-bold text-unze-green-dark">
-              {comment.authorName.slice(0, 1).toUpperCase()}
-            </span>
+            <UserAvatar
+              name={comment.authorName}
+              seed={comment.authorId}
+              avatarUrl={comment.authorAvatarUrl}
+              size="sm"
+            />
             <div className="min-w-0 flex-1">
               <span className="block text-sm font-semibold text-unze-ink">
                 {comment.authorName}

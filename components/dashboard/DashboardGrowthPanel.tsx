@@ -69,7 +69,7 @@ export function DashboardGrowthPanel({
       </div>
 
       <p className="mt-3 rounded-xl bg-white/60 px-3 py-2 text-[11px] text-unze-ink-secondary">
-        Einnahmen & Plattformgebühr folgen in Phase 5 — KPIs sind bereits vorbereitet.
+        Einnahmen & Revenue Share — Sandbox unter Dashboard → Einnahmen & Referrals.
       </p>
     </section>
   );

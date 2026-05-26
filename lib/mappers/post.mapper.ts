@@ -3,6 +3,7 @@ import type { PlatformType } from "@/types/community";
 import type { PostMediaItem, PostMetadata } from "@/types/post";
 
 export interface FeedPostAuthor {
+  id?: string;
   name: string;
   username: string | null;
   avatarUrl: string | null;

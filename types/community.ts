@@ -60,6 +60,7 @@ export interface Community {
   title: string;
   description: string;
   bannerGradient: string;
+  bannerUrl?: string | null;
   platformType: PlatformType;
   category: string;
   tags: string[];

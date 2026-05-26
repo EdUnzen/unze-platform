@@ -11,6 +11,8 @@ import { PostEngagementBar } from "./PostEngagementBar";
 import { PostMediaGallery } from "./PostMediaGallery";
 import { PostVideoPreview } from "./PostVideoPreview";
 import { ExternalContentCard } from "@/components/external/ExternalContentCard";
+import { EmptyStateVisual } from "@/components/visual/EmptyStateVisual";
+import { PostContentVisual } from "@/components/visual/PostContentVisual";
 import {
   getHostedMedia,
   getPostExternalUrl,
@@ -36,11 +38,18 @@ function FeedPostCardInner({
   const hasGallery = hostedMedia.some((m) => m.type === "image");
   const showHostedMedia = hostedMedia.length > 0;
 
+  const showTextVisual =
+    !externalUrl && !showHostedMedia && Boolean(post.content?.trim());
+
   const body = (
     <>
       {showCommunity && <PostContextHeader post={post} compact={variant === "swipe"} />}
 
       <div className={cn("space-y-3", !isDetail && "flex-1")}>
+        {showTextVisual && (
+          <PostContentVisual seed={post.id} className={isDetail ? "mb-1" : undefined} />
+        )}
+
         {externalUrl && (
           <ExternalContentCard
             url={externalUrl}
@@ -146,12 +155,12 @@ export const FeedPostCard = memo(FeedPostCardInner);
 
 export function FeedEmptyState({ message }: { message: string }) {
   return (
-    <div
-      className="rounded-3xl bg-white p-8 text-center shadow-card"
-      data-testid="feed-empty"
-    >
-      <Sparkles className="mx-auto mb-3 h-8 w-8 text-unze-ink-muted" aria-hidden />
-      <p className="text-sm text-unze-ink-secondary">{message}</p>
+    <div data-testid="feed-empty">
+      <EmptyStateVisual
+        icon={Sparkles}
+        title="Noch ruhig hier"
+        description={message}
+      />
     </div>
   );
 }

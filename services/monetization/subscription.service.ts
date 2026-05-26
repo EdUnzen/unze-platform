@@ -1,6 +1,6 @@
 /**
- * Stripe-Vorbereitung — architecture/modules/MONETIZATION_SYSTEM.md
- * Keine aktive Stripe-Integration in dieser Phase.
+ * Subscriptions — Schema vorbereitet; Checkout über Stripe Sandbox (Connect).
+ * Siehe services/monetization/stripe-connect.service.ts
  */
 
 import { createClient } from "@/lib/supabase/server";
@@ -44,11 +44,12 @@ export async function getSubscriptionForCommunity(
   };
 }
 
-/** Platzhalter für spätere Stripe-Checkout-Session */
-export async function prepareCheckout(_communityId: string) {
+/** Community-Checkout — nutzt Stripe Sandbox wenn konfiguriert */
+export async function prepareCheckout(communityId: string) {
   return {
     ready: false,
+    communityId,
     message:
-      "Stripe-Integration folgt in Phase 4. Schema (subscriptions) ist vorbereitet.",
+      "Checkout über Dashboard → Einnahmen & Referrals (Stripe Sandbox).",
   };
 }

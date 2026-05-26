@@ -1,22 +1,45 @@
-/**
- * Referral & Growth — Vorbereitung (keine DB-Migration in diesem Sprint).
- */
+/** Creator Referral — optional, kein MLM */
 
-export type ReferralStatus = "pending" | "active" | "converted";
+export type ReferralStatus = "pending" | "active" | "conflict" | "revoked";
 
-export interface CreatorReferralDraft {
-  referrerId: string;
+export interface CreatorReferral {
+  id: string;
   referredUserId: string;
-  communityId?: string;
+  referrerUserId: string;
   status: ReferralStatus;
+  conflictNote: string | null;
+  createdAt: string;
+  updatedAt: string;
+  referrerDisplayName?: string | null;
+  referrerUsername?: string | null;
+  referredDisplayName?: string | null;
+}
+
+export interface ReferralSummary {
+  myReferral: CreatorReferral | null;
+  referralsMade: CreatorReferral[];
+  activeCount: number;
+  conflictCount: number;
+}
+
+export interface RevenueLedgerEntry {
+  id: string;
+  communityId: string | null;
+  creatorUserId: string;
+  referrerUserId: string | null;
+  grossAmountCents: number;
+  platformFeeCents: number;
+  netPlatformCents: number;
+  referrerShareCents: number;
+  currency: string;
+  ledgerStatus: "sandbox" | "pending" | "paid" | "void";
   createdAt: string;
 }
 
-export interface CommunityGrowthSnapshot {
-  communityId: string;
-  shareCount: number;
-  weeklyViews: number;
-  memberCount: number;
-  followerCount: number;
-  shareAttributedGrowth?: number;
+export interface CreatorStripeStatus {
+  configured: boolean;
+  mode: "sandbox" | "live" | "disabled";
+  connectAccountId: string | null;
+  onboardingComplete: boolean;
+  message: string;
 }

@@ -1,11 +1,11 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { AttentionBadge } from "@/components/dashboard/StatusBadge";
+import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import { formatMemberCount } from "@/services/community/community.service";
 import { formatCompactCount } from "@/lib/utils/format-metrics";
 import type { ManagedCommunity } from "@/types/dashboard";
-import { cn } from "@/lib/utils/cn";
 import { ChevronRight, Eye, Share2, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -33,14 +33,13 @@ export function DashboardCommunityCard({
     >
       <article className="overflow-hidden rounded-3xl bg-white shadow-card transition-shadow group-hover:shadow-card-hover">
         <div className="relative h-24 overflow-hidden">
-          <div
-            className={cn(
-              "absolute inset-0 bg-gradient-to-br",
-              community.bannerGradient,
-            )}
+          <CommunityCoverVisual
+            seed={community.slug}
+            bannerGradient={community.bannerGradient}
+            className="h-full"
+            overlay="card"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/35 to-transparent" />
-          <div className="absolute bottom-3 left-3 right-3 flex items-end justify-between gap-2">
+          <div className="absolute bottom-3 left-3 right-3 z-10 flex items-end justify-between gap-2">
             <PlatformBadge platform={community.platformType} variant="overlay" />
             <div className="flex items-center gap-1.5">
               {pending > 0 && <AttentionBadge count={pending} />}

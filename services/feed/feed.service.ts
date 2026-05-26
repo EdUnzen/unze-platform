@@ -38,6 +38,7 @@ export async function getFeedAuthorMeta(
     data.map((row) => [
       row.id as string,
       {
+        id: row.id as string,
         name: (row.display_name as string) ?? (row.username as string) ?? "Mitglied",
         username: (row.username as string) ?? null,
         avatarUrl: (row.avatar_url as string) ?? null,

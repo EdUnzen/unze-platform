@@ -5,10 +5,11 @@ import {
   updateMemberRoleAction,
 } from "@/app/dashboard/actions";
 import { BanMemberButton } from "@/components/dashboard/RestrictionsPanel";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { ASSIGNABLE_ROLES, ROLE_LABELS } from "@/lib/constants/dashboard";
 import type { CommunityMemberView } from "@/types/dashboard";
 import type { CommunityRole } from "@/types/database";
-import { Trash2, User } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useTransition, useState } from "react";
 
 interface MemberListClientProps {
@@ -68,18 +69,12 @@ export function MemberListClient({
               key={member.id}
               className="flex items-center gap-3 rounded-2xl bg-white p-3 shadow-card"
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-unze-surface-muted">
-                {member.avatarUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={member.avatarUrl}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <User className="h-5 w-5 text-unze-ink-muted" aria-hidden />
-                )}
-              </div>
+              <UserAvatar
+                name={name}
+                seed={member.userId}
+                avatarUrl={member.avatarUrl}
+                size="md"
+              />
 
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium text-unze-ink">{name}</p>

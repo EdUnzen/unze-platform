@@ -2,7 +2,7 @@ import { DashboardCommunityCard } from "@/components/dashboard/DashboardCommunit
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getManagedCommunities } from "@/services/dashboard/dashboard.service";
-import { Plus } from "lucide-react";
+import { Coins, Plus } from "lucide-react";
 import Link from "next/link";
 
 export default async function DashboardHubPage() {
@@ -16,13 +16,22 @@ export default async function DashboardHubPage() {
         subtitle="Verwalte deine Communities, Mitglieder und Einstellungen"
       />
 
-      <Link
-        href="/create/community"
-        className="mb-6 flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-unze-green/40 bg-unze-green-muted/30 py-4 text-sm font-semibold text-unze-green-dark active:scale-[0.98]"
-      >
-        <Plus className="h-5 w-5" aria-hidden />
-        Neue Community erstellen
-      </Link>
+      <div className="mb-6 grid gap-3 sm:grid-cols-2">
+        <Link
+          href="/create/community"
+          className="flex items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-unze-green/40 bg-unze-green-muted/30 py-4 text-sm font-semibold text-unze-green-dark active:scale-[0.98]"
+        >
+          <Plus className="h-5 w-5" aria-hidden />
+          Neue Community erstellen
+        </Link>
+        <Link
+          href="/dashboard/referrals"
+          className="flex items-center justify-center gap-2 rounded-2xl border border-unze-border bg-white py-4 text-sm font-semibold text-unze-ink shadow-card active:scale-[0.98]"
+        >
+          <Coins className="h-5 w-5 text-unze-green" aria-hidden />
+          Einnahmen & Referrals
+        </Link>
+      </div>
 
       {communities.length === 0 ? (
         <div className="rounded-3xl bg-white py-16 text-center shadow-card">

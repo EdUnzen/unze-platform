@@ -1,8 +1,14 @@
 "use client";
 
 import { toggleMonetizationPrepAction } from "@/app/dashboard/actions";
+import { CommercialInfoDialog } from "@/components/referral/CommercialInfoDialog";
+import {
+  PLATFORM_FEE_LABEL,
+  REFERRER_SHARE_LABEL,
+} from "@/lib/constants/revenue";
 import { cn } from "@/lib/utils/cn";
-import { CreditCard, Lock, Wallet } from "lucide-react";
+import { CreditCard, Link2, Lock, Wallet } from "lucide-react";
+import Link from "next/link";
 import { useState, useTransition } from "react";
 
 interface MonetizationPrepPanelProps {
@@ -42,9 +48,19 @@ export function MonetizationPrepPanel({
         </div>
         <h3 className="text-lg font-semibold text-unze-ink">Monetarisierung</h3>
         <p className="mt-1 text-sm text-unze-ink-secondary">
-          Stripe Connect und Premium-Mitgliedschaften folgen in Phase 4. Du kannst
-          die Community bereits als kostenpflichtig vormerken.
+          Stripe Sandbox, optionaler Creator-Referral und Revenue Share sind
+          vorbereitet. Premium-Gruppen kannst du bereits vormerken.
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            href="/dashboard/referrals"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-1.5 text-xs font-semibold text-unze-green-dark"
+          >
+            <Link2 className="h-3.5 w-3.5" />
+            Einnahmen & Referrals
+          </Link>
+          <CommercialInfoDialog triggerClassName="inline-flex items-center gap-1 rounded-xl bg-white/60 px-3 py-1.5 text-xs font-medium text-unze-ink-muted" />
+        </div>
       </div>
 
       <div className="rounded-3xl bg-white p-4 shadow-card">
@@ -84,13 +100,13 @@ export function MonetizationPrepPanel({
         {[
           {
             icon: CreditCard,
-            title: "Stripe Connect",
-            desc: "Creator-Auszahlungen — Schema vorbereitet",
+            title: "Stripe Sandbox",
+            desc: "Testmodus — Connect & Checkout ohne Live-Abrechnung",
           },
           {
             icon: Lock,
-            title: "Mitgliedschaften",
-            desc: "Monatlich / jährlich — subscriptions-Tabelle",
+            title: "Revenue Share",
+            desc: `${PLATFORM_FEE_LABEL}, ${REFERRER_SHARE_LABEL} — kein MLM`,
           },
         ].map(({ icon: Icon, title, desc }) => (
           <li

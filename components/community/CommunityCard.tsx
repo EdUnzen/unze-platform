@@ -8,10 +8,11 @@ import { getAppUrl } from "@/lib/env";
 import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
 import { CardMetricsRow } from "@/components/share/CardMetricsRow";
 import { ShareMenu } from "@/components/share/ShareMenu";
+import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { BadgeCheck, FolderOpen, Heart, Lock, Star, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
-import { PlatformBadge } from "./PlatformBadge";
+import { PlatformBadge } from "@/components/community/PlatformBadge";
 
 interface CommunityCardProps {
   community: Community;
@@ -48,16 +49,15 @@ function CommunityCardInner({
           className="group block touch-target outline-none transition-transform active:scale-[0.99]"
           prefetch={priority}
         >
-          <div className="relative h-28 overflow-hidden">
-            <div
-              className={cn(
-                "absolute inset-0 bg-gradient-to-br",
-                community.bannerGradient,
-              )}
+          <div className="relative">
+            <CommunityCoverVisual
+              seed={community.slug}
+              bannerGradient={community.bannerGradient}
+              imageUrl={community.bannerUrl}
+              className="h-28"
+              overlay="card"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-
-            <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 pr-12">
+            <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 pr-12">
               <PlatformBadge platform={community.platformType} variant="overlay" />
               {community.visibility !== "public" && (
                 <span className="inline-flex items-center gap-0.5 rounded-lg bg-black/35 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
@@ -85,7 +85,7 @@ function CommunityCardInner({
 
             {community.isVerified && (
               <div
-                className="absolute bottom-3 right-3 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm"
+                className="absolute bottom-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm"
                 title="Verifiziert"
               >
                 <BadgeCheck
@@ -121,12 +121,12 @@ function CommunityCardInner({
 
             <CardEngagementStrip metrics={community.engagement} className="mb-2" />
 
-          <CardMetricsRow
-            metrics={community.engagement}
-            weeklyViews={community.viewCountWeekly}
-            shareCount={community.shareCount}
-            className="mb-3"
-          />
+            <CardMetricsRow
+              metrics={community.engagement}
+              weeklyViews={community.viewCountWeekly}
+              shareCount={community.shareCount}
+              className="mb-3"
+            />
 
             <div className="mb-3 flex flex-wrap gap-1.5">
               {community.tags.slice(0, 3).map((tag) => (
