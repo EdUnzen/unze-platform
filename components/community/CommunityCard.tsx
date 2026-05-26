@@ -6,6 +6,7 @@ import { VISIBILITY_OPTIONS } from "@/lib/constants/community";
 import { isDemoCommunitySlug } from "@/lib/constants/demo";
 import { BadgeCheck, FolderOpen, Heart, Lock, Star, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
+import { memo } from "react";
 import { PlatformBadge } from "./PlatformBadge";
 
 interface CommunityCardProps {
@@ -14,7 +15,7 @@ interface CommunityCardProps {
   priority?: boolean;
 }
 
-export function CommunityCard({
+function CommunityCardInner({
   community,
   className,
   priority = false,
@@ -104,6 +105,11 @@ export function CommunityCard({
                 aria-hidden
               />
               <span className="text-xs font-medium">{community.rating}</span>
+              {community.reviewCount > 0 && (
+                <span className="text-[10px] text-unze-ink-muted">
+                  ({community.reviewCount})
+                </span>
+              )}
             </div>
           </div>
 
@@ -171,3 +177,5 @@ export function CommunityCard({
     </Link>
   );
 }
+
+export const CommunityCard = memo(CommunityCardInner);

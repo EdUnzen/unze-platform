@@ -4,8 +4,11 @@ import { CommunityManageButton } from "@/components/community/CommunityManageBut
 import { CommunityAtAGlance } from "@/components/community/CommunityAtAGlance";
 import { CommunityHeader } from "@/components/community/CommunityHeader";
 import { CommunityMetaGrid } from "@/components/community/CommunityMetaGrid";
+import { CommunityReviewsPrep } from "@/components/community/CommunityReviewsPrep";
 import { CommunityRulesSection } from "@/components/community/CommunityRulesSection";
+import { CommunitySocialProof } from "@/components/community/CommunitySocialProof";
 import { CreatorProfileCard } from "@/components/community/CreatorProfileCard";
+import { FeedPostList } from "@/components/feed/FeedPostList";
 import { ReportDialog } from "@/components/governance/ReportDialog";
 import { getEffectiveJoinQuestions } from "@/lib/access/join-questions";
 import { getJoinQuestions } from "@/services/access/access.service";
@@ -13,6 +16,8 @@ import { getCurrentUser } from "@/services/auth/auth.service";
 import { getCommunityBySlug } from "@/services/community/community.service";
 import { getCommunityGroups } from "@/services/community/group.service";
 import { canEditCommunity } from "@/services/community/member.service";
+import { getCommunityPosts } from "@/services/feed/feed.service";
+import { getCommunityActivityStats } from "@/services/platform/activity-stats.service";
 import { ExternalLink, Pencil } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -35,6 +40,9 @@ export default async function CommunityPage({
   const user = await getCurrentUser();
 
   const groups = await getCommunityGroups(community.id);
+  const posts = await getCommunityPosts(community.id, 8);
+  const activityStats = await getCommunityActivityStats([community.id]);
+  const stats = activityStats[community.id];
   const rawQuestions = await getJoinQuestions(community.id, true);
   const questions = getEffectiveJoinQuestions(rawQuestions, community.access);
 
@@ -59,6 +67,12 @@ export default async function CommunityPage({
 
       <div className="space-y-4">
         <CommunityHeader community={community} />
+
+        <CommunitySocialProof
+          community={community}
+          weeklyPostCount={stats?.weeklyPostCount}
+          totalPostCount={stats?.totalPostCount}
+        />
 
         <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
           <div className="space-y-4">
@@ -93,9 +107,36 @@ export default async function CommunityPage({
             </section>
 
             <CommunityMetaGrid community={community} />
+            <CommunityReviewsPrep community={community} />
             <CommunityRulesSection community={community} />
             <CreatorProfileCard community={community} />
             <CommunityGroupList groups={groups} />
+
+            {posts.length > 0 && (
+              <section className="rounded-3xl bg-white p-4 shadow-card">
+                <header className="mb-4 flex items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-sm font-semibold text-unze-ink">
+                      Community-Feed
+                    </h2>
+                    <p className="text-xs text-unze-ink-secondary">
+                      Aktuelle Beiträge und Updates
+                    </p>
+                  </div>
+                  <Link
+                    href="/discover?tab=feed"
+                    className="text-xs font-semibold text-unze-green"
+                  >
+                    Mehr →
+                  </Link>
+                </header>
+                <FeedPostList
+                  posts={posts}
+                  isLoggedIn={Boolean(user)}
+                  emptyMessage="Noch keine Beiträge."
+                />
+              </section>
+            )}
           </div>
 
           <div className="space-y-4 lg:sticky lg:top-20 lg:self-start">

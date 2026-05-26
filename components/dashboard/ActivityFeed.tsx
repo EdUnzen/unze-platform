@@ -1,4 +1,12 @@
 import type { ActivityFeedItem } from "@/types/events";
+import {
+  Award,
+  CreditCard,
+  Shield,
+  UserPlus,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 
 interface ActivityFeedProps {
   items: ActivityFeedItem[];
@@ -17,16 +25,16 @@ function formatRelativeTime(iso: string): string {
   return `vor ${diffD} Tag${diffD === 1 ? "" : "en"}`;
 }
 
-const DOMAIN_LABELS: Record<string, string> = {
-  community: "Community",
-  membership: "Mitgliedschaft",
-  verification: "Verifizierung",
-  moderation: "Moderation",
-  trust: "Trust",
-  billing: "Billing",
-  badge: "Badge",
-  governance: "Governance",
-  invite: "Einladung",
+const DOMAIN_ICONS: Record<string, LucideIcon> = {
+  community: Users,
+  membership: UserPlus,
+  verification: Shield,
+  moderation: Shield,
+  trust: Shield,
+  billing: CreditCard,
+  badge: Award,
+  governance: Shield,
+  invite: UserPlus,
 };
 
 export function ActivityFeed({
@@ -41,22 +49,25 @@ export function ActivityFeed({
 
   return (
     <ul className="space-y-3">
-      {items.map((item) => (
-        <li
-          key={item.id}
-          className="flex items-start gap-3 rounded-2xl bg-unze-surface-muted/60 px-3 py-2.5"
-        >
-          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-[10px] font-bold uppercase text-unze-ink-secondary shadow-sm">
-            {(DOMAIN_LABELS[item.domain] ?? item.domain).slice(0, 2)}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-medium text-unze-ink">{item.label}</p>
-            <p className="text-xs text-unze-ink-secondary">
-              {formatRelativeTime(item.createdAt)}
-            </p>
-          </div>
-        </li>
-      ))}
+      {items.map((item) => {
+        const Icon = DOMAIN_ICONS[item.domain] ?? Users;
+        return (
+          <li
+            key={item.id}
+            className="flex items-start gap-3 rounded-2xl border border-unze-border/60 bg-unze-surface-muted/40 px-3 py-2.5"
+          >
+            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-unze-green shadow-sm">
+              <Icon className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-unze-ink">{item.label}</p>
+              <p className="text-xs text-unze-ink-secondary">
+                {formatRelativeTime(item.createdAt)}
+              </p>
+            </div>
+          </li>
+        );
+      })}
     </ul>
   );
 }

@@ -6,6 +6,7 @@ import {
   fetchGroupsByCommunityId,
   updateGroupInDb,
 } from "./group.repository";
+import { getCommunityActivityStats } from "@/services/platform/activity-stats.service";
 
 export async function getCommunityGroups(
   communityId: string,
@@ -14,7 +15,16 @@ export async function getCommunityGroups(
 }
 
 export async function getDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> {
-  return fetchDiscoverGroups(limit);
+  const groups = await fetchDiscoverGroups(limit);
+  if (groups.length === 0) return groups;
+
+  const communityIds = [...new Set(groups.map((g) => g.communityId))];
+  const stats = await getCommunityActivityStats(communityIds);
+
+  return groups.map((group) => ({
+    ...group,
+    weeklyPostCount: stats[group.communityId]?.weeklyPostCount ?? 0,
+  }));
 }
 
 export async function createCommunityGroup(input: {

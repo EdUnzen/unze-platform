@@ -1,8 +1,10 @@
 import { CommunityCardList } from "@/components/community/CommunityCardList";
+import { FeedPostList } from "@/components/feed/FeedPostList";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getFeaturedCommunities } from "@/services/community/community.service";
 import { getManagedCommunities } from "@/services/dashboard/dashboard.service";
+import { getDiscoverFeedPosts } from "@/services/feed/feed.service";
 import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
 import {
   Bell,
@@ -16,6 +18,7 @@ import Link from "next/link";
 export default async function HomePage() {
   const user = await getCurrentUser();
   const featured = await getFeaturedCommunities();
+  const recentPosts = await getDiscoverFeedPosts(5);
   const managed = user ? await getManagedCommunities(user.id) : [];
   const unreadCount = user ? await getUnreadNotificationCount(user.id) : 0;
 
@@ -86,6 +89,28 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {recentPosts.length > 0 && (
+        <section className="mb-6">
+          <header className="mb-4 flex items-end justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight text-unze-ink">
+                Aktuell im Netzwerk
+              </h2>
+              <p className="mt-0.5 text-sm text-unze-ink-secondary">
+                Frische Beiträge aus Communities
+              </p>
+            </div>
+            <Link
+              href="/discover?tab=feed"
+              className="text-sm font-semibold text-unze-green"
+            >
+              Feed →
+            </Link>
+          </header>
+          <FeedPostList posts={recentPosts.slice(0, 3)} isLoggedIn={Boolean(user)} />
+        </section>
+      )}
 
       <CommunityCardList
         communities={featured}

@@ -9,13 +9,11 @@ import {
 import { filterDiscoverCommunities } from "@/lib/discover/filter-communities";
 import { FeedPostList } from "@/components/feed/FeedPostList";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDiscoverCommunities } from "@/services/community/community.service";
 import { getDiscoverGroups } from "@/services/community/group.service";
 import { getDiscoverCreators } from "@/services/creator/creator.service";
-import {
-  getDiscoverFeedPosts,
-  getFeedCommunityMeta,
-} from "@/services/feed/feed.service";
+import { getDiscoverFeedPosts } from "@/services/feed/feed.service";
 import { isPlatformSchemaReady } from "@/services/platform/schema.service";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -53,10 +51,7 @@ async function DiscoverContent({
 
   if (tab === "feed") {
     const posts = await getDiscoverFeedPosts();
-    const communityIds = posts
-      .map((p) => p.communityId)
-      .filter((id): id is string => Boolean(id));
-    const communityNames = await getFeedCommunityMeta(communityIds);
+    const user = await getCurrentUser();
 
     return (
       <section>
@@ -65,10 +60,14 @@ async function DiscoverContent({
             Feed Discover
           </h2>
           <p className="mt-0.5 text-sm text-unze-ink-secondary">
-            Öffentliche Beiträge aus dem Netzwerk
+            Öffentliche Beiträge — Liste oder Swipe-Ansicht
           </p>
         </header>
-        <FeedPostList posts={posts} communityNames={communityNames} />
+        <FeedPostList
+          posts={posts}
+          isLoggedIn={Boolean(user)}
+          interactive
+        />
       </section>
     );
   }

@@ -1,11 +1,13 @@
 import { isDemoCommunitySlug } from "@/lib/constants/demo";
 import { getGroupVisual } from "@/lib/demo/group-visuals";
 import { formatMemberCount } from "@/services/community/community.service";
+import { formatWeeklyActivityLabel } from "@/services/platform/activity-stats.service";
 import type { DiscoverGroup } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
 import { Activity, BadgeCheck, Lock, Star, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { memo } from "react";
 import { PlatformBadge } from "./PlatformBadge";
 
 interface CommunityGroupCardProps {
@@ -14,13 +16,16 @@ interface CommunityGroupCardProps {
   compact?: boolean;
 }
 
-export function CommunityGroupCard({
+function CommunityGroupCardInner({
   group,
   className,
   compact = false,
 }: CommunityGroupCardProps) {
   const visual = getGroupVisual(group.communitySlug, group.slug);
   const href = `/community/${group.communitySlug}?group=${group.slug}`;
+  const activityLabel =
+    visual?.activityLabel ??
+    formatWeeklyActivityLabel(group.weeklyPostCount ?? 0);
 
   return (
     <Link
@@ -105,10 +110,10 @@ export function CommunityGroupCard({
             {group.description}
           </p>
 
-          {visual?.activityLabel && (
+          {activityLabel && (
             <p className="mb-3 inline-flex items-center gap-1 rounded-full bg-unze-green-muted/60 px-2.5 py-1 text-[11px] font-semibold text-unze-green-dark">
               <Activity className="h-3 w-3" aria-hidden />
-              {visual.activityLabel}
+              {activityLabel}
             </p>
           )}
 
@@ -117,10 +122,16 @@ export function CommunityGroupCard({
               <Users className="h-3.5 w-3.5" aria-hidden />
               {formatMemberCount(group.memberCount)}
             </span>
-            <span className="text-[11px] text-unze-ink-muted">{group.category}</span>
+            <span className="text-[11px] text-unze-ink-muted">
+              {group.reviewCount > 0
+                ? `${group.reviewCount} Reviews`
+                : group.category}
+            </span>
           </div>
         </div>
       </article>
     </Link>
   );
 }
+
+export const CommunityGroupCard = memo(CommunityGroupCardInner);

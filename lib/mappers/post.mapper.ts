@@ -1,5 +1,16 @@
 import type { PostRow } from "@/types/database";
 
+export interface FeedPostAuthor {
+  name: string;
+  username: string | null;
+  avatarUrl: string | null;
+}
+
+export interface FeedPostCommunity {
+  title: string;
+  slug: string;
+}
+
 export interface FeedPost {
   id: string;
   authorId: string;
@@ -11,6 +22,10 @@ export interface FeedPost {
   likeCount: number;
   commentCount: number;
   createdAt: string;
+  isPinned?: boolean;
+  author?: FeedPostAuthor;
+  community?: FeedPostCommunity;
+  isLikedByViewer?: boolean;
 }
 
 export function mapPostRow(row: PostRow): FeedPost {
@@ -25,5 +40,6 @@ export function mapPostRow(row: PostRow): FeedPost {
     likeCount: row.like_count,
     commentCount: row.comment_count,
     createdAt: row.created_at,
+    isPinned: row.is_pinned ?? false,
   };
 }

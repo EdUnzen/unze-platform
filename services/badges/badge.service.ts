@@ -4,6 +4,7 @@ import {
   createBadgeInDb,
   deleteBadgeInDb,
   fetchBadgesByCommunity,
+  grantBadgeInDb,
 } from "./badge.repository";
 
 export async function getCommunityBadges(communityId: string) {
@@ -23,7 +24,7 @@ export async function deleteCommunityBadge(badgeId: string) {
   return deleteBadgeInDb(badgeId);
 }
 
-/** Badge an Mitglied vergeben — DB-Tabelle user_badges folgt; Event wird emittiert */
+/** Badge an Mitglied vergeben — schreibt user_badges + emittiert Event */
 export async function grantBadgeToMember(input: {
   badgeId: string;
   userId: string;
@@ -31,7 +32,16 @@ export async function grantBadgeToMember(input: {
   grantedBy: string;
   badgeName?: string;
 }) {
-  return publishPlatformEvent({
+  const dbResult = await grantBadgeInDb({
+    badgeId: input.badgeId,
+    userId: input.userId,
+    communityId: input.communityId,
+    grantedBy: input.grantedBy,
+  });
+
+  if (dbResult.error) return dbResult;
+
+  await publishPlatformEvent({
     eventType: "badge.granted",
     actorId: input.grantedBy,
     targetUserId: input.userId,
@@ -43,4 +53,6 @@ export async function grantBadgeToMember(input: {
       badgeName: input.badgeName,
     },
   });
+
+  return { error: null };
 }

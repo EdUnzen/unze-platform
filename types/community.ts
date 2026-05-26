@@ -38,6 +38,7 @@ export interface DiscoverGroup extends CommunityGroup {
   rating: number;
   reviewCount: number;
   isPremium: boolean;
+  weeklyPostCount?: number;
 }
 
 export interface CommunityMembership {

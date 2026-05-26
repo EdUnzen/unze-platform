@@ -1,7 +1,7 @@
 "use server";
 
 import { getCurrentUser } from "@/services/auth/auth.service";
-import { createCommunityBadge, deleteCommunityBadge } from "@/services/badges/badge.service";
+import { createCommunityBadge, deleteCommunityBadge, grantBadgeToMember } from "@/services/badges/badge.service";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
 import {
   canManageRoles,
@@ -115,6 +115,30 @@ export async function deleteBadgeAction(slug: string, badgeId: string) {
   if (result.error) return { error: result.error };
 
   revalidatePath(`/dashboard/community/${slug}/badges`);
+  return { success: true };
+}
+
+export async function grantBadgeAction(
+  slug: string,
+  badgeId: string,
+  userId: string,
+  badgeName?: string,
+) {
+  const check = await requireManager(slug);
+  if (check.error || !check.ctx) return { error: check.error };
+
+  const result = await grantBadgeToMember({
+    badgeId,
+    userId,
+    communityId: check.ctx.community.id,
+    grantedBy: check.ctx.user.id,
+    badgeName,
+  });
+
+  if (result.error) return { error: result.error };
+
+  revalidatePath(`/dashboard/community/${slug}/badges`);
+  revalidatePath(`/dashboard/community/${slug}/members`);
   return { success: true };
 }
 

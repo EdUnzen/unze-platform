@@ -2,7 +2,8 @@
 
 import { createBadgeAction, deleteBadgeAction } from "@/app/dashboard/actions";
 import type { CommunityBadgeView } from "@/types/dashboard";
-import { Award, Trash2 } from "lucide-react";
+import { CommunityBadgeIcon } from "@/components/badges/UserBadgeChip";
+import { Trash2 } from "lucide-react";
 import { useActionState, useTransition } from "react";
 
 const inputClass =
@@ -37,9 +38,7 @@ export function BadgeManager({ slug, badges }: BadgeManagerProps) {
               key={badge.id}
               className="flex items-center gap-3 rounded-2xl bg-white p-4 shadow-card"
             >
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-unze-green-muted text-unze-green-dark">
-                <Award className="h-5 w-5" aria-hidden />
-              </span>
+              <CommunityBadgeIcon name={badge.name} badgeType={badge.badgeType} size="sm" />
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-unze-ink">{badge.name}</p>
                 <p className="text-xs text-unze-ink-muted">
@@ -84,7 +83,7 @@ export function BadgeManager({ slug, badges }: BadgeManagerProps) {
           {pending ? "…" : "Badge erstellen"}
         </button>
         <p className="text-xs text-unze-ink-muted">
-          Vergeben/Entziehen an Mitglieder folgt in der nächsten Phase.
+          Badges können an Mitglieder über die Mitgliederliste vergeben werden.
         </p>
       </form>
     </div>

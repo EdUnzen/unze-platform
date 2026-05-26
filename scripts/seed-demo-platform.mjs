@@ -676,6 +676,66 @@ async function main() {
     });
   }
 
+  console.log("\n6. Badges & Auszeichnungen…");
+
+  const demoBadges = [
+    {
+      communityId: gaming.id,
+      name: "SSL Scholar",
+      description: "Aktives Coaching-Mitglied",
+      badgeType: "permanent",
+      grantTo: [members[0].id],
+    },
+    {
+      communityId: gaming.id,
+      name: "Clip Master",
+      description: "Top-Clip der Woche",
+      badgeType: "event",
+      grantTo: [members[1].id],
+    },
+    {
+      communityId: business.id,
+      name: "DACH Connector",
+      description: "Aktives Networking",
+      badgeType: "permanent",
+      grantTo: [members[1].id, members[2].id],
+    },
+    {
+      communityId: entertainment.id,
+      name: "Trending Creator",
+      description: "Hohes Engagement im Feed",
+      badgeType: "temporary",
+      grantTo: [members[2].id],
+    },
+  ];
+
+  for (const def of demoBadges) {
+    const { data: badge, error: badgeError } = await db
+      .from("badges")
+      .insert({
+        community_id: def.communityId,
+        name: def.name,
+        description: def.description,
+        badge_type: def.badgeType,
+      })
+      .select("id")
+      .single();
+
+    if (badgeError) throw new Error(`Badge ${def.name}: ${badgeError.message}`);
+
+    for (const userId of def.grantTo) {
+      await db.from("user_badges").upsert(
+        {
+          user_id: userId,
+          badge_id: badge.id,
+          community_id: def.communityId,
+          granted_by: creator.id,
+        },
+        { onConflict: "user_id,badge_id" },
+      );
+    }
+  }
+
   console.log("\n=== Demo Seed ERFOLGREICH ===\n");
   console.log("Creator-Login:");
   console.log(`  E-Mail:    ${DEMO_CREATOR_EMAIL}`);
