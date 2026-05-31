@@ -5,7 +5,7 @@ import {
   DiscoverSearchBar,
 } from "@/components/discover/DiscoverFilters";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { isPlatformSchemaReady } from "@/services/platform/schema.service";
+import { isPlatformSchemaReady, getPlatformMigrationStatus } from "@/services/platform/schema.service";
 import { Suspense } from "react";
 
 interface DiscoverPageProps {
@@ -22,6 +22,12 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   const query = params.q ?? "";
   const category = params.category ?? "Alle";
   const schemaReady = await isPlatformSchemaReady();
+  const migrationStatus = schemaReady ? await getPlatformMigrationStatus() : null;
+  const needsPhase1Migrations =
+    migrationStatus &&
+    (!migrationStatus.featureFlags ||
+      !migrationStatus.communityEvents ||
+      !migrationStatus.groupExtensions);
 
   return (
     <div className="page-padding">
@@ -50,6 +56,16 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
                 <code className="rounded bg-amber-100 px-1">npm run seed:demo</code>.
               </>
             )}
+          </p>
+        </div>
+      ) : needsPhase1Migrations ? (
+        <div className="mb-4 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+          <p className="font-semibold">Phase-1-Migrationen fehlen teilweise</p>
+          <p className="mt-1">
+            Führe in Supabase nacheinander aus:{" "}
+            <code className="rounded bg-amber-100 px-1">021_platform_feature_flags.sql</code> und{" "}
+            <code className="rounded bg-amber-100 px-1">022_platform_core_entities.sql</code>
+            . Events, Gruppen-Typen und Feature-Flags funktionieren erst danach vollständig.
           </p>
         </div>
       ) : (

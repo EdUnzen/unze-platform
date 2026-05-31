@@ -1,5 +1,4 @@
 import type { Community, CommunityFormInput } from "@/types/community";
-import { unstable_cache } from "next/cache";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { enableCreatorProfile } from "@/services/user/profile.service";
 import { isValidCommunitySlug, slugifyTitle } from "@/lib/utils/slug";
@@ -30,14 +29,10 @@ async function withViewerContext(communities: Community[]): Promise<Community[]>
   return enrichCommunitiesWithEngagement(result);
 }
 
-const getDiscoverCommunitiesCached = unstable_cache(
-  async () => {
-    const rows = await fetchCommunitiesFromDb({ discover: true, limit: 50 });
-    return rows ?? [];
-  },
-  ["discover-communities-list"],
-  { revalidate: 60, tags: ["discover-communities"] },
-);
+export async function getDiscoverCommunities(): Promise<Community[]> {
+  const fromDb = await fetchCommunitiesFromDb({ discover: true, limit: 50 });
+  return withViewerContext(fromDb ?? []);
+}
 
 export async function getFeaturedCommunities(): Promise<Community[]> {
   const fromDb = await fetchCommunitiesFromDb({
@@ -46,11 +41,6 @@ export async function getFeaturedCommunities(): Promise<Community[]> {
     limit: 10,
   });
   return withViewerContext(fromDb ?? []);
-}
-
-export async function getDiscoverCommunities(): Promise<Community[]> {
-  const fromDb = await getDiscoverCommunitiesCached();
-  return withViewerContext(fromDb);
 }
 
 export async function getCommunityBySlug(
