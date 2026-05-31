@@ -17,7 +17,9 @@ import {
 } from "@/services/community/member.service";
 import {
   followCommunity,
+  followGroup,
   unfollowCommunity,
+  unfollowGroup,
 } from "@/services/follow/follow.service";
 import type { CommunityFormInput } from "@/types/community";
 import { revalidatePath } from "next/cache";
@@ -111,6 +113,25 @@ export async function toggleFollowCommunity(
   return { success: true };
 }
 
+export async function toggleFollowGroup(
+  groupId: string,
+  communitySlug: string,
+  groupSlug: string,
+  currentlyFollowing: boolean,
+) {
+  const result = currentlyFollowing
+    ? await unfollowGroup(groupId)
+    : await followGroup(groupId);
+
+  if (result.error) {
+    return { error: result.error.message };
+  }
+
+  revalidatePath(`/community/${communitySlug}/group/${groupSlug}`);
+  revalidatePath("/");
+  return { success: true };
+}
+
 export async function leaveCommunityAction(communityId: string, slug: string) {
   const user = await getCurrentUser();
   if (!user) return { error: "Nicht angemeldet" };
@@ -151,12 +172,20 @@ export async function createGroupAction(
     return { error: "Gruppe: Titel und gültiger Slug erforderlich" };
   }
 
+  const groupType = (String(formData.get("groupType") ?? "group") === "service"
+    ? "service"
+    : "group") as "group" | "service";
+  const priceRaw = String(formData.get("groupPriceCents") ?? "").trim();
+  const priceCents = priceRaw ? Math.max(0, Math.round(Number(priceRaw) * 100)) : null;
+
   const group = await createCommunityGroup({
     communityId,
     slug: groupSlug,
     title,
     description: String(formData.get("groupDescription") ?? "").trim(),
     isPublic: formData.get("groupIsPublic") === "on",
+    groupType,
+    priceCents: Number.isFinite(priceCents as number) ? priceCents : null,
   });
 
   if (!group) return { error: "Gruppe konnte nicht erstellt werden" };

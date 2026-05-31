@@ -24,7 +24,7 @@ function CommunityGroupCardInner({
   className,
   compact = false,
 }: CommunityGroupCardProps) {
-  const href = `/community/${group.communitySlug}?group=${group.slug}`;
+  const href = `/community/${group.communitySlug}/group/${group.slug}`;
   const shareUrl = `${getAppUrl()}${href}`;
   const visual = getGroupVisual(group.communitySlug, group.slug);
   const visualSeed = getGroupVisualSeed(group.communitySlug, group.slug);

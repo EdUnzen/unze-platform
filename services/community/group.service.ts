@@ -3,6 +3,7 @@ import {
   createGroupInDb,
   deleteGroupInDb,
   fetchDiscoverGroups,
+  fetchGroupBySlugsFromDb,
   fetchGroupsByCommunityId,
   updateGroupInDb,
 } from "./group.repository";
@@ -47,12 +48,21 @@ export async function getDiscoverGroups(
   );
 }
 
+export async function getGroupBySlugs(
+  communitySlug: string,
+  groupSlug: string,
+): Promise<DiscoverGroup | null> {
+  return fetchGroupBySlugsFromDb(communitySlug, groupSlug);
+}
+
 export async function createCommunityGroup(input: {
   communityId: string;
   slug: string;
   title: string;
   description: string;
   isPublic?: boolean;
+  groupType?: "group" | "service";
+  priceCents?: number | null;
 }) {
   return createGroupInDb(input);
 }

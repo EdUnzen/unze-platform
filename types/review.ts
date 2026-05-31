@@ -1,8 +1,4 @@
-/**
- * Vorbereitung für Community-Reviews (Sprint 2+).
- * Aggregierte Werte bleiben in communities.rating_avg / review_count.
- * Vollständiges Review-System = additive Migration ab 017.
- */
+export type ReviewTarget = "community" | "group";
 
 export type ReviewSort = "newest" | "highest" | "lowest";
 
@@ -14,13 +10,39 @@ export interface CommunityReviewDraft {
   body: string;
 }
 
-export interface CommunityReviewView extends CommunityReviewDraft {
+export interface CommunityReviewView {
   id: string;
+  communityId: string;
+  authorId: string;
+  rating: number;
+  title?: string;
+  body: string;
   createdAt: string;
   authorName: string;
   isVerifiedMember: boolean;
 }
 
-/** UI-Hinweis bis Review-UI vollständig angebunden ist */
-export const REVIEWS_COMING_SOON_MESSAGE =
-  "Mitgliedsbewertungen mit Kommentaren — Schema bereit (Migration 022). Vollständige UI folgt in Phase 2.";
+export interface ReviewCommentView {
+  id: string;
+  reviewId: string;
+  reviewTarget: ReviewTarget;
+  authorId: string;
+  authorName: string;
+  body: string;
+  createdAt: string;
+}
+
+export interface EntityReviewContext {
+  target: ReviewTarget;
+  targetId: string;
+  title: string;
+  rating: number;
+  reviewCount: number;
+  returnPath: string;
+  canReview: boolean;
+}
+
+export type ReviewWithComments = {
+  review: CommunityReviewView;
+  comments: ReviewCommentView[];
+};

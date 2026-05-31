@@ -22,6 +22,70 @@ export async function fetchGroupsByCommunityId(
   return (data ?? []).map((row) => mapCommunityGroupRow(row));
 }
 
+export async function fetchGroupBySlugsFromDb(
+  communitySlug: string,
+  groupSlug: string,
+): Promise<DiscoverGroup | null> {
+  const supabase = await createClient();
+  if (!supabase) return null;
+
+  const { data: community, error: communityError } = await supabase
+    .from("communities")
+    .select("id")
+    .eq("slug", communitySlug)
+    .maybeSingle();
+
+  if (communityError || !community) return null;
+
+  const { data, error } = await supabase
+    .from("community_groups")
+    .select(
+      `
+      id,
+      community_id,
+      slug,
+      title,
+      description,
+      sort_order,
+      is_public,
+      group_type,
+      cover_url,
+      price_cents,
+      currency,
+      rating_avg,
+      review_count,
+      member_count,
+      view_count_weekly,
+      share_count,
+      community:communities!inner (
+        slug,
+        title,
+        platform_type,
+        member_count,
+        banner_gradient,
+        is_verified,
+        is_trending,
+        discover_enabled,
+        visibility,
+        category,
+        rating_avg,
+        review_count,
+        monetization_enabled
+      )
+    `,
+    )
+    .eq("community_id", community.id)
+    .eq("slug", groupSlug)
+    .maybeSingle();
+
+  if (error || !data) {
+    if (error) console.error("[group.repository] bySlug:", error.message);
+    return null;
+  }
+
+  return mapDiscoverGroupRow(data);
+}
+
 export async function createGroupInDb(input: {
   communityId: string;
   slug: string;
@@ -29,6 +93,8 @@ export async function createGroupInDb(input: {
   description: string;
   isPublic?: boolean;
   sortOrder?: number;
+  groupType?: "group" | "service";
+  priceCents?: number | null;
 }): Promise<CommunityGroup | null> {
   const supabase = await createClient();
   if (!supabase) return null;
@@ -42,6 +108,8 @@ export async function createGroupInDb(input: {
       description: input.description,
       is_public: input.isPublic ?? true,
       sort_order: input.sortOrder ?? 0,
+      group_type: input.groupType ?? "group",
+      price_cents: input.priceCents ?? null,
     })
     .select()
     .single();

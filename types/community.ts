@@ -50,6 +50,7 @@ export interface DiscoverGroup extends CommunityGroup {
   rating: number;
   reviewCount: number;
   isPremium: boolean;
+  groupType?: "group" | "service";
   weeklyPostCount?: number;
   viewCountWeekly?: number;
   shareCount?: number;

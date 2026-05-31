@@ -85,6 +85,21 @@ export function CommunityGroupManager({
           <input type="checkbox" name="groupIsPublic" defaultChecked className="rounded" />
           Öffentlich sichtbar
         </label>
+        <label className="block text-sm text-unze-ink-secondary">
+          Typ
+          <select name="groupType" className={`${inputClass} mt-1`} defaultValue="group">
+            <option value="group">Gruppe</option>
+            <option value="service">Dienstleistung</option>
+          </select>
+        </label>
+        <input
+          name="groupPriceCents"
+          type="number"
+          min={0}
+          step="0.01"
+          className={inputClass}
+          placeholder="Preis in EUR (optional, für Dienstleistungen)"
+        />
         {state?.error && (
           <p className="text-sm text-red-600">{state.error}</p>
         )}

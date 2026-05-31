@@ -5,7 +5,7 @@ import { CommunityAtAGlance } from "@/components/community/CommunityAtAGlance";
 import { CommunityHeader } from "@/components/community/CommunityHeader";
 import { CommunityMetaGrid } from "@/components/community/CommunityMetaGrid";
 import { CommunityPlatformLinksSection } from "@/components/community/CommunityPlatformLinksSection";
-import { CommunityReviewsPrep } from "@/components/community/CommunityReviewsPrep";
+import { EntityReviewsSection } from "@/components/reviews/EntityReviewsSection";
 import { CommunityRulesSection } from "@/components/community/CommunityRulesSection";
 import { CommunitySocialProof } from "@/components/community/CommunitySocialProof";
 import { CommunityViewRecorder } from "@/components/community/CommunityViewRecorder";
@@ -110,7 +110,18 @@ export default async function CommunityPage({
             />
             <CommunityMetaGrid community={community} />
             <CommunityEventsSection communitySlug={slug} events={events} />
-            <CommunityReviewsPrep community={community} />
+            <EntityReviewsSection
+              isLoggedIn={Boolean(user)}
+              context={{
+                target: "community",
+                targetId: community.id,
+                title: community.title,
+                rating: community.rating,
+                reviewCount: community.reviewCount,
+                returnPath: `/community/${slug}`,
+                canReview: Boolean(user && community.membership?.isMember),
+              }}
+            />
             <CommunityRulesSection community={community} />
             <CreatorProfileCard community={community} />
             <CommunityGroupSection community={community} groups={groups} />
