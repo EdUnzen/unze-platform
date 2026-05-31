@@ -21,6 +21,6 @@ export interface CommunityReviewView extends CommunityReviewDraft {
   isVerifiedMember: boolean;
 }
 
-/** UI-Platzhalter bis Review-Tabelle existiert */
+/** UI-Hinweis bis Review-UI vollständig angebunden ist */
 export const REVIEWS_COMING_SOON_MESSAGE =
-  "Mitgliedsbewertungen werden in Phase 3 freigeschaltet. Aggregierte Ratings stammen aus Demo-/Curated-Daten.";
+  "Mitgliedsbewertungen mit Kommentaren — Schema bereit (Migration 022). Vollständige UI folgt in Phase 2.";

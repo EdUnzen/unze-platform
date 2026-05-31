@@ -43,6 +43,7 @@ export function PermissionOverridesPanel({
       member: 0,
       verified_member: 0,
       moderator: 1,
+      expert: 1,
       admin: 2,
       creator: 3,
     };

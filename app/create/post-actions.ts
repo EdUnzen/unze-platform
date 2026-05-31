@@ -1,5 +1,6 @@
 "use server";
 
+import { isFeedEnabled } from "@/lib/features/platform-features";
 import { createPost } from "@/services/feed/feed.service";
 import {
   isExternalPlatformUrl,
@@ -75,6 +76,10 @@ export async function createPostAction(
   _prev: { error?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string }> {
+  if (!isFeedEnabled()) {
+    return { error: "Feed ist deaktiviert. Nutze Events und Plattform-Links." };
+  }
+
   const content = String(formData.get("content") ?? "").trim();
   const title = String(formData.get("title") ?? "").trim();
   const communityId = String(formData.get("communityId") ?? "").trim();
@@ -125,5 +130,5 @@ export async function createPostAction(
 
   revalidatePath("/discover");
   revalidatePath("/");
-  redirect("/discover?tab=feed");
+  redirect("/discover?tab=events");
 }

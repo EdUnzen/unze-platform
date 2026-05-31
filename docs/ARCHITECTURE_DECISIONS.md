@@ -55,17 +55,16 @@ Nutzer können:
 
 ## Feed-Vereinfachung
 
-- Kein TikTok-Feed
-- Keine Videos
-- Keine Livestreams
-- Keine Storys
+**Phase 1 (aktiv): Feed vollständig deaktiviert.**
 
-Der Feed dient **ausschließlich** für:
+- Kein TikTok-Feed, keine Videos, keine Livestreams, keine Storys
+- Tabellen `posts`, `comments`, `post_likes` bleiben erhalten (Feature-Flags + RLS)
+- Stattdessen: **Events** (`community_events`), **Gruppen**, **Plattform-Links**
 
-- Ankündigungen
-- Events
-- Community-Aktivitäten
-- Externe Inhalte
+Historisch geplant (nicht Feed):
+
+- Ankündigungen über Events und Benachrichtigungen
+- Externe Inhalte nur als Link-Karten (Mods+)
 
 ---
 

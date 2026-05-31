@@ -28,6 +28,13 @@ export interface CommunityGroup {
   description: string;
   sortOrder: number;
   isPublic: boolean;
+  groupType?: "group" | "service";
+  coverUrl?: string | null;
+  priceCents?: number | null;
+  currency?: string;
+  rating?: number;
+  reviewCount?: number;
+  memberCount?: number;
 }
 
 /** Gruppe + Community-Kontext für Discover-Cards */

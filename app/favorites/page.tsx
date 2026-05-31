@@ -12,7 +12,7 @@ export default async function FavoritesPage() {
   return (
     <div className="page-padding">
       <PageHeader
-        title="Favoriten"
+        title="Folge ich"
         subtitle="Communities, denen du folgst"
       />
 

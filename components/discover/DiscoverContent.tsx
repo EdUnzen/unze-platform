@@ -1,13 +1,10 @@
 import { CommunityCardList } from "@/components/community/CommunityCardList";
 import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
-import { CreatorCardList } from "@/components/discover/CreatorCard";
+import { DiscoverEventList } from "@/components/events/CommunityEventsSection";
 import { filterDiscoverCommunities } from "@/lib/discover/filter-communities";
-import { FeedPostList } from "@/components/feed/FeedPostList";
-import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDiscoverCommunities } from "@/services/community/community.service";
 import { getDiscoverGroups } from "@/services/community/group.service";
-import { getDiscoverCreators } from "@/services/creator/creator.service";
-import { getDiscoverFeedPosts, getPersonalFeedPosts } from "@/services/feed/feed.service";
+import { getDiscoverEvents } from "@/services/events/event.service";
 import Link from "next/link";
 
 interface DiscoverContentProps {
@@ -16,101 +13,78 @@ interface DiscoverContentProps {
   category: string;
 }
 
+const LEGACY_TABS = new Set(["feed", "trends", "new", "creators"]);
+
 export async function DiscoverContent({ tab, query, category }: DiscoverContentProps) {
-  if (tab === "feed") {
-    const user = await getCurrentUser();
-    const posts = user
-      ? await getPersonalFeedPosts(24)
-      : await getDiscoverFeedPosts(24);
+  const effectiveTab = LEGACY_TABS.has(tab) ? "communities" : tab;
+
+  if (effectiveTab === "events") {
+    const events = await getDiscoverEvents(24);
+    const filtered = query
+      ? events.filter(
+          (e) =>
+            e.title.toLowerCase().includes(query.toLowerCase()) ||
+            e.communityTitle?.toLowerCase().includes(query.toLowerCase()) ||
+            e.communitySlug?.toLowerCase().includes(query.toLowerCase()),
+        )
+      : events;
 
     return (
-      <section>
-        <header className="mb-4">
-          <h2 className="text-lg font-semibold tracking-tight text-unze-ink">
-            {user ? "Dein Feed" : "Feed Discover"}
-          </h2>
-          <p className="mt-0.5 text-sm text-unze-ink-secondary">
-            {user
-              ? "Follows + Entdecken — Liste oder Swipe-Ansicht"
-              : "Öffentliche Beiträge — Liste oder Swipe-Ansicht"}
-          </p>
-        </header>
-        <FeedPostList posts={posts} isLoggedIn={Boolean(user)} interactive />
-      </section>
-    );
-  }
-
-  if (tab === "groups") {
-    const groups = await getDiscoverGroups();
-    return (
-      <CommunityGroupCardList
-        groups={groups}
-        title="Gruppen entdecken"
-        subtitle="Aktive Bereiche in Communities — Coaching, Networking und mehr"
+      <DiscoverEventList
+        events={filtered}
+        title="Events entdecken"
+        subtitle="Kommende Termine aus Communities und Gruppen"
       />
     );
   }
 
-  if (tab === "creators") {
-    const creators = await getDiscoverCreators();
-    if (creators.length === 0) {
+  if (effectiveTab === "groups") {
+    const groups = await getDiscoverGroups(24, { groupType: "group" });
+    return (
+      <CommunityGroupCardList
+        groups={groups}
+        title="Gruppen entdecken"
+        subtitle="Bereiche innerhalb von Communities — Coaching, Teams, Networking"
+      />
+    );
+  }
+
+  if (effectiveTab === "services") {
+    const services = await getDiscoverGroups(24, { groupType: "service" });
+    if (services.length === 0) {
       return (
         <section className="rounded-3xl bg-white p-8 text-center shadow-card">
-          <p className="text-sm text-unze-ink-secondary">
-            Noch keine Creator im Netzwerk. Erstelle eine Community und werde der
-            erste Creator auf UNZE.
+          <p className="text-sm font-medium text-unze-ink">Noch keine Dienstleistungen</p>
+          <p className="mt-1 text-sm text-unze-ink-secondary">
+            Dienstleistungen werden als Gruppentyp „Service“ in Communities angelegt.
           </p>
         </section>
       );
     }
     return (
-      <CreatorCardList
-        creators={creators}
-        title="Creator"
-        subtitle="Verifizierte Community-Builder im Netzwerk"
+      <CommunityGroupCardList
+        groups={services}
+        title="Dienstleistungen"
+        subtitle="Angebote und Services aus dem Netzwerk"
       />
     );
   }
 
   const communities = await getDiscoverCommunities();
   const filtered = filterDiscoverCommunities(communities, query, category);
-
-  if (tab === "trends") {
-    const trending = filterDiscoverCommunities(
-      communities.filter((c) => c.isTrending),
-      query,
-      category,
-    );
-    return (
-      <CommunityCardList
-        communities={trending}
-        title="Trending"
-        subtitle="Wachsende und aktive Communities"
-      />
-    );
-  }
-
-  if (tab === "new") {
-    const sorted = [...filtered].sort((a, b) => {
-      const da = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const db = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return db - da;
-    });
-    return (
-      <CommunityCardList
-        communities={sorted}
-        title="Neue Communities"
-        subtitle="Zuletzt gestartete Communities"
-      />
-    );
-  }
-
-  const trending = filtered.filter((c) => c.isTrending).slice(0, 3);
-  const rest = filtered.filter((c) => !trending.includes(c));
-  const featuredGroups = await getDiscoverGroups(8);
+  const featuredGroups = await getDiscoverGroups(6, { groupType: "group" });
+  const featuredEvents = await getDiscoverEvents(4);
 
   return (
     <div className="space-y-8">
+      {featuredEvents.length > 0 && (
+        <DiscoverEventList
+          events={featuredEvents}
+          title="Kommende Events"
+          subtitle="Termine aus dem Netzwerk"
+        />
+      )}
+
       {featuredGroups.length > 0 && (
         <CommunityGroupCardList
           groups={featuredGroups}
@@ -119,22 +93,17 @@ export async function DiscoverContent({ tab, query, category }: DiscoverContentP
           layout="horizontal"
         />
       )}
-      {trending.length > 0 && (
-        <CommunityCardList
-          communities={trending}
-          title="Trending"
-          subtitle="Beliebt und aktiv"
-        />
-      )}
+
       <CommunityCardList
-        communities={rest.length > 0 ? rest : filtered}
-        title="Alle Communities"
+        communities={filtered}
+        title="Communities"
         subtitle={
           query || category !== "Alle"
             ? `${filtered.length} Ergebnis${filtered.length === 1 ? "" : "se"}`
             : "Finde deine nächste Community"
         }
       />
+
       {filtered.length === 0 && communities.length === 0 && (
         <section className="rounded-3xl bg-white p-8 text-center shadow-card">
           <p className="text-sm font-medium text-unze-ink">

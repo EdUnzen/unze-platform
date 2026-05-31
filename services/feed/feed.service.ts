@@ -1,3 +1,4 @@
+import { isFeedEnabled } from "@/lib/features/platform-features";
 import {
   mapPostRow,
   type FeedPost,
@@ -124,6 +125,7 @@ export async function enrichFeedPosts(posts: FeedPost[]): Promise<FeedPost[]> {
 }
 
 export async function getPostById(postId: string): Promise<FeedPost | null> {
+  if (!isFeedEnabled()) return null;
   const supabase = await createClient();
   if (!supabase) return null;
 
@@ -140,6 +142,7 @@ export async function getPostById(postId: string): Promise<FeedPost | null> {
 }
 
 export async function getDiscoverFeedPosts(limit = 20): Promise<FeedPost[]> {
+  if (!isFeedEnabled()) return [];
   const supabase = await createClient();
   if (!supabase) return [];
 
@@ -218,6 +221,7 @@ export async function getFeedGroupMeta(
 }
 
 export async function getPersonalFeedPosts(limit = 20): Promise<FeedPost[]> {
+  if (!isFeedEnabled()) return [];
   return getBlendedFeedPosts(limit);
 }
 
@@ -326,6 +330,7 @@ export async function getCommunityPosts(
   communityId: string,
   limit = 20,
 ): Promise<FeedPost[]> {
+  if (!isFeedEnabled()) return [];
   const supabase = await createClient();
   if (!supabase) return [];
 
@@ -355,6 +360,9 @@ export async function createPost(input: {
   media?: PostMediaItem[];
   metadata?: PostMetadata;
 }) {
+  if (!isFeedEnabled()) {
+    return { data: null, error: new Error("Feed ist deaktiviert") };
+  }
   const supabase = await createClient();
   if (!supabase) return { data: null, error: new Error("Supabase nicht konfiguriert") };
 

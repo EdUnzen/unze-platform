@@ -109,11 +109,14 @@ export async function countGroupsByCommunityId(
   return count ?? 0;
 }
 
-export async function fetchDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> {
+export async function fetchDiscoverGroups(
+  limit = 24,
+  options?: { groupType?: "group" | "service" },
+): Promise<DiscoverGroup[]> {
   const supabase = await createClient();
   if (!supabase) return [];
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("community_groups")
     .select(
       `
@@ -124,6 +127,8 @@ export async function fetchDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> 
       description,
       sort_order,
       is_public,
+      group_type,
+      price_cents,
       view_count_weekly,
       share_count,
       community:communities!inner (
@@ -146,6 +151,12 @@ export async function fetchDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> 
     .eq("is_public", true)
     .order("sort_order", { ascending: true })
     .limit(100);
+
+  if (options?.groupType) {
+    query = query.eq("group_type", options.groupType);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.error("[group.repository] discover:", error.message);

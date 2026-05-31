@@ -16,7 +16,7 @@ const COMMUNITY_SELECT = `
   )
 `;
 
-const MANAGER_ROLES: CommunityRole[] = ["creator", "admin", "moderator"];
+const MANAGER_ROLES: CommunityRole[] = ["creator", "admin", "moderator", "expert"];
 
 async function fetchCommunityStats(
   communityId: string,

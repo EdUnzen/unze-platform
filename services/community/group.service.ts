@@ -16,8 +16,11 @@ export async function getCommunityGroups(
   return fetchGroupsByCommunityId(communityId);
 }
 
-export async function getDiscoverGroups(limit = 24): Promise<DiscoverGroup[]> {
-  const groups = await fetchDiscoverGroups(limit);
+export async function getDiscoverGroups(
+  limit = 24,
+  options?: { groupType?: "group" | "service" },
+): Promise<DiscoverGroup[]> {
+  const groups = await fetchDiscoverGroups(limit, options);
   if (groups.length === 0) return groups;
 
   const communityIds = [...new Set(groups.map((g) => g.communityId))];

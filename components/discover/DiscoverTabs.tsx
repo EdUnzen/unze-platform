@@ -7,18 +7,26 @@ import { usePathname, useSearchParams } from "next/navigation";
 const TABS = [
   { id: "communities", label: "Communities" },
   { id: "groups", label: "Gruppen" },
-  { id: "feed", label: "Feed" },
-  { id: "trends", label: "Trends" },
-  { id: "new", label: "Neu" },
-  { id: "creators", label: "Creator" },
+  { id: "events", label: "Events" },
+  { id: "services", label: "Dienstleistungen" },
 ] as const;
 
 export type DiscoverTabId = (typeof TABS)[number]["id"];
 
+/** Legacy-Tabs aus alten Links → Communities */
+const LEGACY_TAB_MAP: Record<string, DiscoverTabId> = {
+  feed: "communities",
+  trends: "communities",
+  new: "communities",
+  creators: "communities",
+};
+
 export function DiscoverTabs() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const active = (searchParams.get("tab") as DiscoverTabId) || "communities";
+  const rawTab = searchParams.get("tab") ?? "communities";
+  const active: DiscoverTabId =
+    LEGACY_TAB_MAP[rawTab] ?? (TABS.some((t) => t.id === rawTab) ? (rawTab as DiscoverTabId) : "communities");
 
   return (
     <div

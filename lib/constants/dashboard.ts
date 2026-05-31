@@ -110,16 +110,17 @@ export const DASHBOARD_TABS: DashboardTab[] = [
 ];
 
 export const ROLE_LABELS: Record<string, string> = {
-  creator: "Owner / Creator",
+  creator: "Creator",
   admin: "Admin",
-  moderator: "Moderator",
+  expert: "Experte / Coach",
+  moderator: "Experte / Coach",
   verified_member: "Verifiziertes Mitglied",
   member: "Mitglied",
 };
 
 export const ASSIGNABLE_ROLES = [
   "admin",
-  "moderator",
+  "expert",
   "verified_member",
   "member",
 ] as const;

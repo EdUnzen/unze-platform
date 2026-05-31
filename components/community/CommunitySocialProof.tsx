@@ -1,21 +1,29 @@
 import { SocialProofBar } from "@/components/social/SocialProofBar";
+import { isFeedEnabled } from "@/lib/features/platform-features";
 import { formatMemberCount } from "@/services/community/community.service";
-import { formatWeeklyActivityLabel } from "@/services/platform/activity-stats.service";
+import {
+  formatWeeklyActivityLabel,
+  formatWeeklyEventLabel,
+} from "@/services/platform/activity-stats.service";
 import type { Community } from "@/types/community";
-import { FileText, MessageSquare, Star, Users } from "lucide-react";
+import { Calendar, FileText, Star, Users } from "lucide-react";
 
 interface CommunitySocialProofProps {
   community: Community;
   weeklyPostCount?: number;
   totalPostCount?: number;
+  weeklyEventCount?: number;
 }
 
 export function CommunitySocialProof({
   community,
   weeklyPostCount = 0,
   totalPostCount,
+  weeklyEventCount = 0,
 }: CommunitySocialProofProps) {
-  const activityLabel = formatWeeklyActivityLabel(weeklyPostCount);
+  const activityLabel = isFeedEnabled()
+    ? formatWeeklyActivityLabel(weeklyPostCount)
+    : formatWeeklyEventLabel(weeklyEventCount);
 
   return (
     <SocialProofBar
@@ -29,10 +37,10 @@ export function CommunitySocialProof({
           label: `${community.rating} · ${community.reviewCount} Bewertungen`,
         },
         ...(activityLabel
-          ? [{ icon: FileText, label: activityLabel, highlight: true }]
+          ? [{ icon: isFeedEnabled() ? FileText : Calendar, label: activityLabel, highlight: true }]
           : []),
-        ...(totalPostCount && totalPostCount > 0
-          ? [{ icon: MessageSquare, label: `${totalPostCount} Beiträge gesamt` }]
+        ...(isFeedEnabled() && totalPostCount && totalPostCount > 0
+          ? [{ icon: FileText, label: `${totalPostCount} Beiträge gesamt` }]
           : []),
       ]}
     />

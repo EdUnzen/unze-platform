@@ -2,12 +2,11 @@
 
 import { PLUS_MENU_ITEMS } from "@/lib/constants/navigation";
 import { cn } from "@/lib/utils/cn";
-import { LayoutDashboard, MessageSquarePlus, UsersRound, X } from "lucide-react";
+import { LayoutDashboard, UsersRound, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect } from "react";
 
 const MENU_ICONS = {
-  post: MessageSquarePlus,
   community: UsersRound,
   dashboard: LayoutDashboard,
 } as const;

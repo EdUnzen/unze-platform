@@ -19,8 +19,13 @@ export type CommunityRole =
   | "creator"
   | "admin"
   | "moderator"
+  | "expert"
   | "member"
   | "verified_member";
+
+export type CommunityGroupType = "group" | "service";
+
+export type FollowTarget = "user" | "community" | "group";
 
 export type CommunityAccessStatus =
   | "open"
@@ -81,7 +86,6 @@ export type PostType =
   | "question"
   | "request";
 export type PostVisibility = "public" | "followers" | "community" | "private";
-export type FollowTarget = "user" | "community";
 export type SubscriptionStatus =
   | "inactive"
   | "trialing"

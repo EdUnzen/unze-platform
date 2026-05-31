@@ -80,6 +80,13 @@ export function mapCommunityGroupRow(row: {
   description: string;
   sort_order: number;
   is_public: boolean;
+  group_type?: string;
+  cover_url?: string | null;
+  price_cents?: number | null;
+  currency?: string;
+  rating_avg?: number | string;
+  review_count?: number;
+  member_count?: number;
   view_count_weekly?: number;
   share_count?: number;
 }): CommunityGroup {
@@ -91,6 +98,13 @@ export function mapCommunityGroupRow(row: {
     description: row.description,
     sortOrder: row.sort_order,
     isPublic: row.is_public,
+    groupType: (row.group_type as CommunityGroup["groupType"]) ?? "group",
+    coverUrl: row.cover_url ?? null,
+    priceCents: row.price_cents ?? null,
+    currency: row.currency ?? "eur",
+    rating: Number(row.rating_avg) || 0,
+    reviewCount: row.review_count ?? 0,
+    memberCount: row.member_count ?? 0,
   };
 }
 

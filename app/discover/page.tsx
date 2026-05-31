@@ -27,7 +27,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
     <div className="page-padding">
       <PageHeader
         title="Discover"
-        subtitle="Communities, Creator, Feed und Trends entdecken"
+        subtitle="Communities, Gruppen, Events und Dienstleistungen entdecken"
       />
 
       {!schemaReady ? (
@@ -67,7 +67,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         <DiscoverSearchBar />
       </Suspense>
 
-      {tab !== "creators" && tab !== "feed" && tab !== "groups" && (
+      {tab !== "events" && tab !== "services" && (
         <Suspense fallback={null}>
           <DiscoverCategoryFilter />
         </Suspense>
