@@ -1,19 +1,22 @@
-import { CommunityCardList } from "@/components/community/CommunityCardList";
+import { FavoritesSections } from "@/components/favorites/FavoritesSections";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
-import { getFollowedCommunities } from "@/services/community/community.service";
+import {
+  getFavoritesBundle,
+  hasAnyFavorites,
+} from "@/services/favorites/favorites.service";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 
 export default async function FavoritesPage() {
   const user = await getCurrentUser();
-  const followed = user ? await getFollowedCommunities() : [];
+  const bundle = user ? await getFavoritesBundle() : null;
 
   return (
     <div className="page-padding">
       <PageHeader
-        title="Folge ich"
-        subtitle="Communities, denen du folgst"
+        title="Favoriten"
+        subtitle="Communities, Gruppen, Events und Dienstleistungen, denen du folgst"
       />
 
       {!user ? (
@@ -23,7 +26,7 @@ export default async function FavoritesPage() {
           </div>
           <p className="text-sm font-medium text-unze-ink">Anmelden erforderlich</p>
           <p className="mt-1 max-w-xs text-center text-sm text-unze-ink-secondary">
-            Folge Communities aus Discover, um sie hier zu sehen.
+            Folge Communities und Gruppen in Discover — sie erscheinen hier.
           </p>
           <Link
             href="/auth/login"
@@ -32,8 +35,8 @@ export default async function FavoritesPage() {
             Jetzt anmelden
           </Link>
         </div>
-      ) : followed.length > 0 ? (
-        <CommunityCardList communities={followed} />
+      ) : bundle && hasAnyFavorites(bundle) ? (
+        <FavoritesSections bundle={bundle} />
       ) : (
         <div className="flex flex-col items-center justify-center rounded-3xl bg-white py-16 shadow-card">
           <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-unze-green-muted">
@@ -41,7 +44,8 @@ export default async function FavoritesPage() {
           </div>
           <p className="text-sm font-medium text-unze-ink">Noch keine Favoriten</p>
           <p className="mt-1 max-w-xs text-center text-sm text-unze-ink-secondary">
-            Folge Communities in Discover — sie erscheinen hier.
+            Folge Communities und Gruppen in Discover. Events aus gefolgten
+            Communities erscheinen hier automatisch.
           </p>
           <Link
             href="/discover"

@@ -33,10 +33,10 @@ export const NAV_ITEMS: NavItem[] = [
   },
   {
     id: "favorites",
-    label: "Folge ich",
+    label: "Favoriten",
     href: "/favorites",
     icon: Heart,
-    description: "Communities, denen du folgst",
+    description: "Gefolgte Communities, Gruppen, Events und Dienstleistungen",
   },
   {
     id: "profile",

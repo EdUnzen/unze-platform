@@ -183,11 +183,9 @@ export async function fetchDiscoverGroups(
 ): Promise<DiscoverGroup[]> {
   const supabase = await createClient();
   if (!supabase) return [];
+  const client = supabase;
 
-  let query = supabase
-    .from("community_groups")
-    .select(
-      `
+  const extendedSelect = `
       id,
       community_id,
       slug,
@@ -214,24 +212,72 @@ export async function fetchDiscoverGroups(
         review_count,
         monetization_enabled
       )
-    `,
-    )
-    .eq("is_public", true)
-    .order("sort_order", { ascending: true })
-    .limit(100);
+    `;
 
-  if (options?.groupType) {
-    query = query.eq("group_type", options.groupType);
+  const legacySelect = `
+      id,
+      community_id,
+      slug,
+      title,
+      description,
+      sort_order,
+      is_public,
+      view_count_weekly,
+      share_count,
+      community:communities!inner (
+        slug,
+        title,
+        platform_type,
+        member_count,
+        banner_gradient,
+        is_verified,
+        is_trending,
+        discover_enabled,
+        visibility,
+        category,
+        rating_avg,
+        review_count,
+        monetization_enabled
+      )
+    `;
+
+  async function runQuery(select: string, applyGroupType: boolean) {
+    let query = client
+      .from("community_groups")
+      .select(select)
+      .eq("is_public", true)
+      .order("sort_order", { ascending: true })
+      .limit(100);
+
+    if (applyGroupType && options?.groupType) {
+      query = query.eq("group_type", options.groupType);
+    }
+
+    return query;
   }
 
-  const { data, error } = await query;
+  let { data, error } = await runQuery(extendedSelect, true);
+
+  if (error?.code === "42703") {
+    ({ data, error } = await runQuery(legacySelect, false));
+  }
 
   if (error) {
     console.error("[group.repository] discover:", error.message);
     return [];
   }
 
-  return (data ?? [])
+  let rows = (data ?? []) as unknown as Array<
+    Record<string, unknown> & { community: unknown }
+  >;
+
+  if (options?.groupType && rows.length > 0 && rows[0].group_type == null) {
+    rows = rows.filter(
+      (row) => ((row.group_type as string | undefined) ?? "group") === options.groupType,
+    );
+  }
+
+  return rows
     .filter((row) => {
       const community = Array.isArray(row.community)
         ? row.community[0]
@@ -241,7 +287,9 @@ export async function fetchDiscoverGroups(
         ["public", "premium"].includes(community.visibility)
       );
     })
-    .map((row) => mapDiscoverGroupRow(row))
+    .map((row) =>
+      mapDiscoverGroupRow(row as Parameters<typeof mapDiscoverGroupRow>[0]),
+    )
     .filter((group): group is DiscoverGroup => Boolean(group))
     .slice(0, limit);
 }
