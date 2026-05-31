@@ -1,5 +1,7 @@
 # AI WORKFLOW SYSTEM
 
+> **Verbindliche Architektur:** `docs/ARCHITECTURE_DECISIONS.md` · Cursor-Rule: `.cursor/rules/unze-architecture.mdc`
+
 # Grundprinzip
 
 UNZE wird mit einem KI-gestützten Entwicklungsworkflow aufgebaut.

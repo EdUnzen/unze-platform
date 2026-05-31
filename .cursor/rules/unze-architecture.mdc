@@ -1,0 +1,33 @@
+---
+description: Verbindliche UNZE-Architektur, PWA, Performance-Priorität
+alwaysApply: true
+---
+
+# UNZE Architektur (verbindlich)
+
+Vollständig: `docs/ARCHITECTURE_DECISIONS.md` — **Vorrang vor älteren Sprint-Docs.**
+
+## Plattform
+Verwaltungs-/Organisations-/Monetarisierungsebene für Communities & Gruppen. **Kein Social Media.** Kein Video-Hosting, Livestreams, Stories, Messenger, öffentliche View-/Reichweiten-Zähler.
+
+## UX
+- **Swipe = Kern-Entdeckung** (Communities, Gruppen, Events, Dienstleistungen, Aktivitäten)
+- Fokus Communities/Gruppen, nicht Personen
+- Follow: Community + Gruppe
+
+## Feed
+Nur Ankündigungen, Events, Aktivität, **externe Link-Karten** (Titel/Bild/Beschreibung/Link — kein Re-Upload). Externe Links: nur Owner/Admin/autor. Mods.
+
+## Titelbilder
+Upload oder Standard-Katalog; ohne Upload → Standard pflicht. Upload: Auto-Moderation + Meldesystem.
+
+## Reichweite
+Keine öffentlichen Views/Impressionen. Erlaubt: Neu, Aktiv, Beliebt, Verifiziert.
+
+## PWA
+Homescreen, Icon, Standalone, Manifest, iOS/Android — native App-Feel.
+
+## Entwicklungs-Priorität (vor neuen Features)
+1. N+1 fixen 2. Home/Discover parallel 3. Indizes 4. Caching 5. Client-JS reduzieren 6. Lazy load 7. Messen + Bericht
+
+Modular erweitern, keine destruktiven Rewrites.

@@ -1,5 +1,7 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { ProfileRow } from "@/types/database";
+import type { User } from "@supabase/supabase-js";
 
 export async function getSession() {
   const supabase = await createClient();
@@ -12,7 +14,7 @@ export async function getSession() {
   return { user: session?.user ?? null, session };
 }
 
-export async function getCurrentUser() {
+export const getCurrentUser = cache(async (): Promise<User | null> => {
   const supabase = await createClient();
   if (!supabase) return null;
 
@@ -23,7 +25,7 @@ export async function getCurrentUser() {
 
   if (error || !user) return null;
   return user;
-}
+});
 
 export async function getCurrentProfile(): Promise<ProfileRow | null> {
   const supabase = await createClient();

@@ -17,12 +17,13 @@ import Link from "next/link";
 
 export default async function HomePage() {
   const user = await getCurrentUser();
-  const featured = await getFeaturedCommunities();
-  const recentPosts = user
-    ? await getPersonalFeedPosts(5)
-    : await getDiscoverFeedPosts(5);
-  const managed = user ? await getManagedCommunities(user.id) : [];
-  const unreadCount = user ? await getUnreadNotificationCount(user.id) : 0;
+
+  const [featured, recentPosts, managed, unreadCount] = await Promise.all([
+    getFeaturedCommunities(),
+    user ? getPersonalFeedPosts(5) : getDiscoverFeedPosts(5),
+    user ? getManagedCommunities(user.id) : Promise.resolve([]),
+    user ? getUnreadNotificationCount(user.id) : Promise.resolve(0),
+  ]);
 
   return (
     <div className="page-padding">

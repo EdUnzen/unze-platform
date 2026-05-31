@@ -5,6 +5,7 @@ export type CommunityActivityStats = {
   totalPostCount: number;
 };
 
+/** Count-basiert — kein Full-Row-Scan mehr */
 export async function getCommunityActivityStats(
   communityIds: string[],
 ): Promise<Record<string, CommunityActivityStats>> {
@@ -16,14 +17,19 @@ export async function getCommunityActivityStats(
 
   const since = new Date();
   since.setDate(since.getDate() - 7);
+  const sinceIso = since.toISOString();
 
-  const { data, error } = await supabase
-    .from("posts")
-    .select("community_id, created_at")
-    .in("community_id", unique);
+  const [totalRes, weeklyRes] = await Promise.all([
+    supabase.from("posts").select("community_id").in("community_id", unique),
+    supabase
+      .from("posts")
+      .select("community_id")
+      .in("community_id", unique)
+      .gte("created_at", sinceIso),
+  ]);
 
-  if (error) {
-    console.error("[activity-stats] posts:", error.message);
+  if (totalRes.error) {
+    console.error("[activity-stats] posts:", totalRes.error.message);
     return {};
   }
 
@@ -32,13 +38,14 @@ export async function getCommunityActivityStats(
     result[id] = { weeklyPostCount: 0, totalPostCount: 0 };
   }
 
-  for (const row of data ?? []) {
-    const communityId = row.community_id as string;
-    if (!result[communityId]) continue;
-    result[communityId].totalPostCount += 1;
-    if (new Date(row.created_at as string) >= since) {
-      result[communityId].weeklyPostCount += 1;
-    }
+  for (const row of totalRes.data ?? []) {
+    const id = row.community_id as string;
+    if (result[id]) result[id].totalPostCount += 1;
+  }
+
+  for (const row of weeklyRes.data ?? []) {
+    const id = row.community_id as string;
+    if (result[id]) result[id].weeklyPostCount += 1;
   }
 
   return result;

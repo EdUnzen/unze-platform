@@ -1,15 +1,18 @@
-import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import { PlatformTopBarActions } from "@/components/layout/PlatformTopBarActions";
+import { hasManagedCommunities } from "@/services/dashboard/dashboard.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
-import { getManagedCommunities } from "@/services/dashboard/dashboard.service";
 import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
-import { LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 
 export async function PlatformTopBar() {
   const user = await getCurrentUser();
-  const unreadCount = user ? await getUnreadNotificationCount(user.id) : 0;
-  const managed = user ? await getManagedCommunities(user.id) : [];
-  const showDashboard = managed.length > 0;
+
+  const [unreadCount, showDashboard] = user
+    ? await Promise.all([
+        getUnreadNotificationCount(user.id),
+        hasManagedCommunities(user.id),
+      ])
+    : [0, false];
 
   return (
     <header
@@ -25,32 +28,11 @@ export async function PlatformTopBar() {
           UNZE
         </Link>
 
-        <div className="flex items-center gap-2">
-          {showDashboard && (
-            <Link
-              href="/dashboard"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-white shadow-sm"
-              aria-label="Creator Dashboard"
-              data-testid="platform-dashboard-link"
-            >
-              <LayoutDashboard className="h-4 w-4 text-unze-green" aria-hidden />
-            </Link>
-          )}
-          {user ? (
-            <NotificationCenter
-              compact
-              notifications={[]}
-              unreadCount={unreadCount}
-            />
-          ) : (
-            <Link
-              href="/auth/login"
-              className="rounded-xl bg-unze-green px-3 py-1.5 text-xs font-semibold text-white"
-            >
-              Anmelden
-            </Link>
-          )}
-        </div>
+        <PlatformTopBarActions
+          userId={user?.id ?? null}
+          unreadCount={unreadCount}
+          showDashboard={showDashboard}
+        />
       </div>
     </header>
   );

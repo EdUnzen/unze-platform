@@ -256,21 +256,26 @@ async function fetchExploreFeedPosts(
   }));
 }
 
-async function fetchFollowFeedPosts(limit: number): Promise<FeedPost[]> {
+async function fetchFollowFeedPosts(
+  limit: number,
+  options?: { followedCommunityIds?: string[]; userId?: string | null },
+): Promise<FeedPost[]> {
   const supabase = await createClient();
   if (!supabase) return [];
 
-  const followedCommunityIds = await getFollowedCommunityIds();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const followedCommunityIds =
+    options?.followedCommunityIds ?? (await getFollowedCommunityIds());
+  const userId =
+    options?.userId !== undefined
+      ? options.userId
+      : (await supabase.auth.getUser()).data.user?.id ?? null;
 
-  if (!user && followedCommunityIds.length === 0) {
+  if (!userId && followedCommunityIds.length === 0) {
     return [];
   }
 
   const filters: string[] = [];
-  if (user) filters.push(`author_id.eq.${user.id}`);
+  if (userId) filters.push(`author_id.eq.${userId}`);
   if (followedCommunityIds.length > 0) {
     filters.push(`community_id.in.(${followedCommunityIds.join(",")})`);
   }
@@ -306,7 +311,10 @@ export async function getBlendedFeedPosts(limit = 20): Promise<FeedPost[]> {
   }
 
   const [followPosts, explorePosts] = await Promise.all([
-    fetchFollowFeedPosts(followCount),
+    fetchFollowFeedPosts(followCount, {
+      followedCommunityIds: followedIds,
+      userId: user?.id ?? null,
+    }),
     fetchExploreFeedPosts(exploreCount + 4, followedIds),
   ]);
 

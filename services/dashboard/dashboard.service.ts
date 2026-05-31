@@ -3,10 +3,7 @@ import { hasCommunityPermission } from "@/lib/permissions/community.permissions"
 import { createClient } from "@/lib/supabase/server";
 import type { ManagedCommunity, CommunityDashboardStats } from "@/types/dashboard";
 import type { CommunityRole, CommunityWithCreator } from "@/types/database";
-import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
-import { countGroupsByCommunityId } from "@/services/community/group.repository";
-import { fetchBadgesByCommunity } from "@/services/badges/badge.repository";
-import { getCommunityActivityStats } from "@/services/platform/activity-stats.service";
+import { fetchBatchCommunityDashboardStats } from "./dashboard-stats.batch";
 
 const COMMUNITY_SELECT = `
   *,
@@ -26,40 +23,39 @@ async function fetchCommunityStats(
   memberCount: number,
   engagement?: { view_count_weekly?: number; share_count?: number },
 ): Promise<CommunityDashboardStats> {
+  const { stats } = await fetchBatchCommunityDashboardStats(
+    [communityId],
+    { [communityId]: memberCount },
+    { [communityId]: engagement ?? {} },
+  );
+  return (
+    stats[communityId] ?? {
+      memberCount,
+      groupCount: 0,
+      postCount: 0,
+      followerCount: 0,
+      badgeCount: 0,
+      weeklyViews: engagement?.view_count_weekly ?? 0,
+      shareCount: engagement?.share_count ?? 0,
+      weeklyPosts: 0,
+    }
+  );
+}
+
+export async function hasManagedCommunities(userId: string): Promise<boolean> {
   const supabase = await createClient();
-  const groupCount = await countGroupsByCommunityId(communityId);
-  const badges = await fetchBadgesByCommunity(communityId);
-  const activity = await getCommunityActivityStats([communityId]);
+  if (!supabase) return false;
 
-  let postCount = 0;
-  let followerCount = 0;
+  const { data, error } = await supabase
+    .from("community_members")
+    .select("id")
+    .eq("user_id", userId)
+    .in("role", MANAGER_ROLES)
+    .limit(1)
+    .maybeSingle();
 
-  if (supabase) {
-    const { count: posts } = await supabase
-      .from("posts")
-      .select("*", { count: "exact", head: true })
-      .eq("community_id", communityId);
-
-    const { count: followers } = await supabase
-      .from("follows")
-      .select("*", { count: "exact", head: true })
-      .eq("target_type", "community")
-      .eq("target_community_id", communityId);
-
-    postCount = posts ?? 0;
-    followerCount = followers ?? 0;
-  }
-
-  return {
-    memberCount,
-    groupCount,
-    postCount,
-    followerCount,
-    badgeCount: badges.length,
-    weeklyViews: engagement?.view_count_weekly ?? 0,
-    shareCount: engagement?.share_count ?? 0,
-    weeklyPosts: activity[communityId]?.weeklyPostCount ?? 0,
-  };
+  if (error) return false;
+  return Boolean(data);
 }
 
 export async function getManagedCommunities(
@@ -84,35 +80,43 @@ export async function getManagedCommunities(
     return [];
   }
 
-  const results: ManagedCommunity[] = [];
+  const rows: {
+    community: CommunityWithCreator;
+    role: CommunityRole;
+  }[] = [];
 
   for (const row of data) {
     const rawCommunity = row.community as CommunityWithCreator | CommunityWithCreator[] | null;
     const community = Array.isArray(rawCommunity) ? rawCommunity[0] : rawCommunity;
     if (!community) continue;
-
-    const stats = await fetchCommunityStats(
-      community.id,
-      community.member_count,
-      {
-        view_count_weekly: (community as { view_count_weekly?: number }).view_count_weekly,
-        share_count: (community as { share_count?: number }).share_count,
-      },
-    );
-
-    const pendingApplicationCount = await countPendingApplicationsFromDb(
-      community.id,
-    );
-
-    results.push({
-      ...mapCommunityRow(community),
-      viewerRole: row.role as CommunityRole,
-      stats,
-      pendingApplicationCount,
-    });
+    rows.push({ community, role: row.role as CommunityRole });
   }
 
-  return results;
+  if (rows.length === 0) return [];
+
+  const memberCounts: Record<string, number> = {};
+  const engagement: Record<string, { view_count_weekly?: number; share_count?: number }> = {};
+
+  for (const { community } of rows) {
+    memberCounts[community.id] = community.member_count;
+    engagement[community.id] = {
+      view_count_weekly: (community as { view_count_weekly?: number }).view_count_weekly,
+      share_count: (community as { share_count?: number }).share_count,
+    };
+  }
+
+  const { stats, pendingApplications } = await fetchBatchCommunityDashboardStats(
+    rows.map((r) => r.community.id),
+    memberCounts,
+    engagement,
+  );
+
+  return rows.map(({ community, role }) => ({
+    ...mapCommunityRow(community),
+    viewerRole: role,
+    stats: stats[community.id]!,
+    pendingApplicationCount: pendingApplications[community.id] ?? 0,
+  }));
 }
 
 export async function getDashboardCommunityAccess(

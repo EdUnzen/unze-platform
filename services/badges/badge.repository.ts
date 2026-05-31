@@ -20,26 +20,29 @@ export async function fetchBadgesByCommunity(
   }
 
   const badges = data ?? [];
-  const result: CommunityBadgeView[] = [];
+  if (badges.length === 0) return [];
 
-  for (const badge of badges) {
-    const { count } = await supabase
-      .from("user_badges")
-      .select("*", { count: "exact", head: true })
-      .eq("badge_id", badge.id);
+  const badgeIds = badges.map((b) => b.id as string);
+  const { data: grants } = await supabase
+    .from("user_badges")
+    .select("badge_id")
+    .in("badge_id", badgeIds);
 
-    result.push({
-      id: badge.id,
-      communityId: badge.community_id,
-      name: badge.name,
-      description: badge.description,
-      badgeType: badge.badge_type as BadgeType,
-      iconUrl: badge.icon_url,
-      grantedCount: count ?? 0,
-    });
+  const grantCounts: Record<string, number> = {};
+  for (const row of grants ?? []) {
+    const id = row.badge_id as string;
+    grantCounts[id] = (grantCounts[id] ?? 0) + 1;
   }
 
-  return result;
+  return badges.map((badge) => ({
+    id: badge.id,
+    communityId: badge.community_id,
+    name: badge.name,
+    description: badge.description,
+    badgeType: badge.badge_type as BadgeType,
+    iconUrl: badge.icon_url,
+    grantedCount: grantCounts[badge.id as string] ?? 0,
+  }));
 }
 
 export async function createBadgeInDb(input: {
