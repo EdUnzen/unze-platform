@@ -10,11 +10,10 @@ interface CreatorProfileCardProps {
 
 export async function CreatorProfileCard({ community }: CreatorProfileCardProps) {
   const creator = await getCreatorById(community.creatorId);
-  const profilePath =
-    getCreatorProfilePath({
-      username: community.creatorUsername ?? creator?.username ?? null,
-      id: community.creatorId,
-    }) ?? null;
+  const profilePath = getCreatorProfilePath({
+    username: community.creatorUsername ?? creator?.username ?? null,
+    id: community.creatorId,
+  });
 
   const cardContent = (
     <>
@@ -63,16 +62,12 @@ export async function CreatorProfileCard({ community }: CreatorProfileCardProps)
   return (
     <section className="rounded-3xl bg-white p-4 shadow-card" data-testid="creator-profile">
       <h2 className="mb-3 text-sm font-semibold text-unze-ink">Creator</h2>
-      {profilePath ? (
-        <Link
-          href={profilePath}
-          className="block touch-target rounded-2xl transition-colors hover:bg-unze-surface-muted/40 active:scale-[0.99]"
-        >
-          {cardContent}
-        </Link>
-      ) : (
-        cardContent
-      )}
+      <Link
+        href={profilePath}
+        className="block touch-target rounded-2xl transition-colors hover:bg-unze-surface-muted/40 active:scale-[0.99]"
+      >
+        {cardContent}
+      </Link>
       <Link
         href="/discover"
         className="mt-3 inline-block text-xs font-semibold text-unze-green"

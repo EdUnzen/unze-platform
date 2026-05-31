@@ -1,9 +1,10 @@
+import type { CreatorNetworkReview, PlatformCreator } from "@/types/creator";
 import type { Community, DiscoverGroup } from "@/types/community";
-import type { PlatformCreator } from "@/types/creator";
 import {
   fetchCreatorByIdFromDb,
   fetchCreatorByUsernameFromDb,
   fetchCreatorCommunitiesFromDb,
+  fetchCreatorNetworkReviewsFromDb,
   fetchCreatorPublicGroupsFromDb,
   fetchDiscoverCreatorsFromDb,
 } from "./creator.repository";
@@ -12,6 +13,19 @@ export interface CreatorPublicProfile {
   creator: PlatformCreator;
   communities: Community[];
   groups: DiscoverGroup[];
+  reviews: CreatorNetworkReview[];
+}
+
+async function loadCreatorPublicProfile(
+  creator: PlatformCreator,
+): Promise<CreatorPublicProfile> {
+  const [communities, groups, reviews] = await Promise.all([
+    fetchCreatorCommunitiesFromDb(creator.id),
+    fetchCreatorPublicGroupsFromDb(creator.id),
+    fetchCreatorNetworkReviewsFromDb(creator.id),
+  ]);
+
+  return { creator, communities, groups, reviews };
 }
 
 export async function getDiscoverCreators(limit = 20): Promise<PlatformCreator[]> {
@@ -35,21 +49,23 @@ export async function getCreatorPublicProfile(
 ): Promise<CreatorPublicProfile | null> {
   const creator = await fetchCreatorByUsernameFromDb(username);
   if (!creator) return null;
+  return loadCreatorPublicProfile(creator);
+}
 
-  const [communities, groups] = await Promise.all([
-    fetchCreatorCommunitiesFromDb(creator.id),
-    fetchCreatorPublicGroupsFromDb(creator.id),
-  ]);
-
-  return { creator, communities, groups };
+export async function getCreatorPublicProfileById(
+  creatorId: string,
+): Promise<CreatorPublicProfile | null> {
+  const creator = await fetchCreatorByIdFromDb(creatorId);
+  if (!creator) return null;
+  return loadCreatorPublicProfile(creator);
 }
 
 export function getCreatorProfilePath(creator: {
   username: string | null;
   id: string;
-}): string | null {
+}): string {
   if (creator.username) {
     return `/creator/${encodeURIComponent(creator.username.toLowerCase())}`;
   }
-  return null;
+  return `/creator/id/${creator.id}`;
 }

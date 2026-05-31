@@ -20,7 +20,8 @@
     "db:migrate": "node scripts/apply-migrations.mjs",
     "setup:demo": "node scripts/setup-platform.mjs",
     "setup:full": "node scripts/run-full-setup.mjs",
-    "test:e2e-urls": "node scripts/test-e2e-urls.mjs"
+    "test:e2e-urls": "node scripts/test-e2e-urls.mjs",
+    "check:migrations": "node scripts/check-migrations.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

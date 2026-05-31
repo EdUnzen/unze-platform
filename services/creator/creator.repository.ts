@@ -2,7 +2,7 @@ import { mapCommunityRow } from "@/lib/mappers/community.mapper";
 import { mapDiscoverGroupRow } from "@/lib/mappers/community.mapper";
 import { createClient } from "@/lib/supabase/server";
 import type { Community, DiscoverGroup } from "@/types/community";
-import type { PlatformCreator } from "@/types/creator";
+import type { CreatorNetworkReview, PlatformCreator } from "@/types/creator";
 import type { CommunityWithCreator } from "@/types/database";
 
 function mapProfileRowToCreator(
@@ -205,6 +205,132 @@ export async function fetchCreatorPublicGroupsFromDb(
       mapDiscoverGroupRow(row as Parameters<typeof mapDiscoverGroupRow>[0]),
     )
     .filter((group): group is DiscoverGroup => Boolean(group));
+}
+
+export async function fetchCreatorNetworkReviewsFromDb(
+  creatorId: string,
+  limit = 12,
+): Promise<CreatorNetworkReview[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data: communities } = await supabase
+    .from("communities")
+    .select("id, slug, title")
+    .eq("creator_id", creatorId)
+    .in("visibility", ["public", "premium"]);
+
+  const communityRows = communities ?? [];
+  const communityIds = communityRows.map((c) => c.id as string);
+  if (communityIds.length === 0) return [];
+
+  const communityById = new Map(
+    communityRows.map((c) => [c.id as string, c as { id: string; slug: string; title: string }]),
+  );
+
+  const [communityReviewsRes, groupsRes] = await Promise.all([
+    supabase
+      .from("community_reviews")
+      .select(
+        `
+        id,
+        community_id,
+        rating,
+        title,
+        body,
+        created_at,
+        profile:profiles!author_id (display_name, username)
+      `,
+      )
+      .in("community_id", communityIds)
+      .order("created_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("community_groups")
+      .select("id, slug, title, community_id")
+      .in("community_id", communityIds),
+  ]);
+
+  const reviews: CreatorNetworkReview[] = [];
+
+  for (const row of communityReviewsRes.data ?? []) {
+    const community = communityById.get(row.community_id as string);
+    if (!community) continue;
+    const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
+    reviews.push({
+      id: row.id as string,
+      target: "community",
+      targetTitle: community.title,
+      targetSlug: community.slug,
+      communitySlug: community.slug,
+      rating: Number(row.rating),
+      title: (row.title as string) ?? undefined,
+      body: row.body as string,
+      authorName:
+        (profile?.display_name as string) ??
+        (profile?.username as string) ??
+        "Mitglied",
+      createdAt: row.created_at as string,
+    });
+  }
+
+  const groups = groupsRes.data ?? [];
+  const groupById = new Map(
+    groups.map((g) => [
+      g.id as string,
+      g as { id: string; slug: string; title: string; community_id: string },
+    ]),
+  );
+  const groupIds = groups.map((g) => g.id as string);
+
+  if (groupIds.length > 0 && reviews.length < limit) {
+    const { data: groupReviews } = await supabase
+      .from("group_reviews")
+      .select(
+        `
+        id,
+        group_id,
+        rating,
+        title,
+        body,
+        created_at,
+        profile:profiles!author_id (display_name, username)
+      `,
+      )
+      .in("group_id", groupIds)
+      .order("created_at", { ascending: false })
+      .limit(limit);
+
+    for (const row of groupReviews ?? []) {
+      const group = groupById.get(row.group_id as string);
+      if (!group) continue;
+      const community = communityById.get(group.community_id);
+      if (!community) continue;
+      const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
+      reviews.push({
+        id: row.id as string,
+        target: "group",
+        targetTitle: group.title,
+        targetSlug: group.slug,
+        communitySlug: community.slug,
+        rating: Number(row.rating),
+        title: (row.title as string) ?? undefined,
+        body: row.body as string,
+        authorName:
+          (profile?.display_name as string) ??
+          (profile?.username as string) ??
+          "Mitglied",
+        createdAt: row.created_at as string,
+      });
+    }
+  }
+
+  return reviews
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .slice(0, limit);
 }
 
 export async function fetchDiscoverCreatorsFromDb(
