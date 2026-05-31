@@ -8,12 +8,28 @@ const PROTECTED_PREFIXES = [
   "/profile",
 ] as const;
 
+/** Geschützte Profil-Unterseiten (Root /profile ist öffentlich). */
+export const PROTECTED_PROFILE_PREFIXES = [
+  "/profile/settings",
+  "/profile/billing",
+] as const;
+
 const AUTH_ONLY_PREFIXES = ["/auth/login", "/auth/signup"] as const;
 
+/** Profil-Root ist öffentlich (Gast-Ansicht); Unterseiten bleiben geschützt. */
+const PROFILE_PUBLIC_PATHS = new Set(["/profile"]);
+
 export function isProtectedPath(pathname: string): boolean {
-  return PROTECTED_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
+  if (PROFILE_PUBLIC_PATHS.has(pathname)) return false;
+
+  if (pathname.startsWith("/profile/")) {
+    return true;
+  }
+
+  return PROTECTED_PREFIXES.some((prefix) => {
+    if (prefix === "/profile") return false;
+    return pathname === prefix || pathname.startsWith(`${prefix}/`);
+  });
 }
 
 export function isAuthPage(pathname: string): boolean {

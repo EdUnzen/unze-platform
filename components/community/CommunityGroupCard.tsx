@@ -2,8 +2,8 @@ import { isDemoCommunitySlug } from "@/lib/constants/demo";
 import { getGroupVisual, getGroupVisualSeed } from "@/lib/demo/group-visuals";
 import { getAppUrl } from "@/lib/env";
 import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
-import { CardMetricsRow } from "@/components/share/CardMetricsRow";
 import { ShareMenu } from "@/components/share/ShareMenu";
+import { GroupPriceBadge } from "@/components/ui/PriceBadge";
 import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { DiscoverGroup } from "@/types/community";
@@ -116,13 +116,16 @@ function CommunityGroupCardInner({
 
             <CardEngagementStrip metrics={group.engagement} className="mb-2" max={2} />
 
-            <CardMetricsRow
-              metrics={group.engagement}
-              weeklyViews={group.viewCountWeekly}
-              shareCount={group.shareCount}
-              compact
-              className="mb-3"
-            />
+            {(group.priceCents != null && group.priceCents > 0) ||
+            group.groupType === "service" ? (
+              <div className="mb-3">
+                <GroupPriceBadge
+                  priceCents={group.priceCents}
+                  currency={group.currency}
+                  isService={group.groupType === "service"}
+                />
+              </div>
+            ) : null}
 
             <div className="flex items-center justify-between border-t border-unze-border/80 pt-3">
               <div className="flex flex-wrap items-center gap-2">

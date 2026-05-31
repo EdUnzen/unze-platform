@@ -1,11 +1,6 @@
 import type { CardEngagementMetrics, EngagementPill } from "@/types/engagement";
-import {
-  formatNetworkFollowLabel,
-  formatShareCountLabel,
-  formatWeeklyViewsLabel,
-} from "@/lib/utils/format-metrics";
 
-/** Max. 2 Pills — priorisiert, nicht überladen */
+/** Max. 2 Pills — ohne öffentliche Aufrufe/Shares */
 export function buildEngagementPills(
   metrics: CardEngagementMetrics,
   max = 2,
@@ -16,24 +11,13 @@ export function buildEngagementPills(
     pills.push({ key: "trending", label: "Trending", highlight: true });
   }
 
-  if ((metrics.weeklyViews ?? 0) >= 500) {
-    pills.push({
-      key: "views",
-      label: formatWeeklyViewsLabel(metrics.weeklyViews!),
-    });
-  }
-
-  if ((metrics.shareCount ?? 0) >= 10) {
-    pills.push({
-      key: "shares",
-      label: formatShareCountLabel(metrics.shareCount!),
-    });
-  }
-
   if ((metrics.networkFollowCount ?? 0) >= 1) {
     pills.push({
       key: "network",
-      label: formatNetworkFollowLabel(metrics.networkFollowCount!),
+      label:
+        metrics.networkFollowCount === 1
+          ? "1 Kontakt folgt"
+          : `${metrics.networkFollowCount} Kontakte folgen`,
       highlight: true,
     });
   }

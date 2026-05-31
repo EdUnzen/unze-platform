@@ -44,4 +44,12 @@
   .page-padding {
     @apply px-4 pb-[calc(var(--nav-height)+env(safe-area-inset-bottom,0px)+1rem)] pt-4;
   }
+
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
 }

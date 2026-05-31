@@ -18,6 +18,7 @@ export async function followUser(targetUserId: string) {
     target_user_id: targetUserId,
     target_community_id: null,
     target_group_id: null,
+    target_event_id: null,
   });
   return { error };
 }
@@ -37,6 +38,7 @@ export async function followCommunity(targetCommunityId: string) {
     target_user_id: null,
     target_community_id: targetCommunityId,
     target_group_id: null,
+    target_event_id: null,
   });
   return { error };
 }
@@ -56,6 +58,7 @@ export async function followGroup(targetGroupId: string) {
     target_user_id: null,
     target_community_id: null,
     target_group_id: targetGroupId,
+    target_event_id: null,
   });
   return { error };
 }
@@ -216,4 +219,72 @@ export async function isFollowingCommunity(
 ): Promise<boolean> {
   const ids = await getFollowedCommunityIds();
   return ids.includes(communityId);
+}
+
+export async function followEvent(targetEventId: string) {
+  const supabase = await createClient();
+  if (!supabase) return { error: new Error("Supabase nicht konfiguriert") };
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: new Error("Nicht angemeldet") };
+
+  const { error } = await supabase.from("follows").insert({
+    follower_id: user.id,
+    target_type: "event" as FollowTarget,
+    target_user_id: null,
+    target_community_id: null,
+    target_group_id: null,
+    target_event_id: targetEventId,
+  });
+  return { error };
+}
+
+export async function unfollowEvent(targetEventId: string) {
+  const supabase = await createClient();
+  if (!supabase) return { error: new Error("Supabase nicht konfiguriert") };
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { error: new Error("Nicht angemeldet") };
+
+  const { error } = await supabase
+    .from("follows")
+    .delete()
+    .eq("follower_id", user.id)
+    .eq("target_type", "event")
+    .eq("target_event_id", targetEventId);
+  return { error };
+}
+
+export async function getFollowedEventIds(): Promise<string[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("follows")
+    .select("target_event_id")
+    .eq("follower_id", user.id)
+    .eq("target_type", "event");
+
+  if (error) {
+    if (error.code === "42703") return [];
+    return [];
+  }
+
+  return (data ?? [])
+    .map((r: { target_event_id: string | null }) => r.target_event_id)
+    .filter((id): id is string => Boolean(id));
+}
+
+export async function isFollowingEvent(eventId: string): Promise<boolean> {
+  const ids = await getFollowedEventIds();
+  return ids.includes(eventId);
 }

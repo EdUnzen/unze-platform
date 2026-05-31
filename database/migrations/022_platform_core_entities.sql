@@ -66,45 +66,82 @@ CREATE INDEX IF NOT EXISTS idx_community_events_featured
   ON public.community_events(is_featured, starts_at DESC)
   WHERE is_public = TRUE AND is_featured = TRUE;
 
+DROP TRIGGER IF EXISTS community_events_updated_at ON public.community_events;
 CREATE TRIGGER community_events_updated_at
   BEFORE UPDATE ON public.community_events
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
 -- Bestehende Event-Posts nach community_events kopieren (Daten bleiben in posts)
-INSERT INTO public.community_events (
-  community_id,
-  group_id,
-  slug,
-  title,
-  description,
-  starts_at,
-  ends_at,
-  location,
-  external_url,
-  created_by,
-  created_at,
-  updated_at
-)
-SELECT
-  p.community_id,
-  p.group_id,
-  'event-' || LEFT(REPLACE(p.id::TEXT, '-', ''), 12),
-  COALESCE(NULLIF(TRIM(p.title), ''), 'Community-Event'),
-  COALESCE(NULLIF(TRIM(p.content), ''), ''),
-  COALESCE(
-    NULLIF(p.metadata->>'startsAt', '')::TIMESTAMPTZ,
-    p.created_at
-  ),
-  NULLIF(p.metadata->>'endsAt', '')::TIMESTAMPTZ,
-  NULLIF(p.metadata->>'location', ''),
-  NULLIF(p.metadata->>'externalUrl', ''),
-  p.author_id,
-  p.created_at,
-  p.updated_at
-FROM public.posts p
-WHERE p.post_type = 'event'
-  AND p.community_id IS NOT NULL
-ON CONFLICT (community_id, slug) DO NOTHING;
+-- Schema-sicher: posts.group_id / posts.metadata existieren erst ab Migration 017
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'posts' AND column_name = 'group_id'
+  ) AND EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_schema = 'public' AND table_name = 'posts' AND column_name = 'metadata'
+  ) THEN
+    INSERT INTO public.community_events (
+      community_id,
+      group_id,
+      slug,
+      title,
+      description,
+      starts_at,
+      ends_at,
+      location,
+      external_url,
+      created_by,
+      created_at,
+      updated_at
+    )
+    SELECT
+      p.community_id,
+      p.group_id,
+      'event-' || LEFT(REPLACE(p.id::TEXT, '-', ''), 12),
+      COALESCE(NULLIF(TRIM(p.title), ''), 'Community-Event'),
+      COALESCE(NULLIF(TRIM(p.content), ''), ''),
+      COALESCE(
+        NULLIF(p.metadata->>'startsAt', '')::TIMESTAMPTZ,
+        p.created_at
+      ),
+      NULLIF(p.metadata->>'endsAt', '')::TIMESTAMPTZ,
+      NULLIF(p.metadata->>'location', ''),
+      NULLIF(p.metadata->>'externalUrl', ''),
+      p.author_id,
+      p.created_at,
+      p.updated_at
+    FROM public.posts p
+    WHERE p.post_type = 'event'
+      AND p.community_id IS NOT NULL
+    ON CONFLICT (community_id, slug) DO NOTHING;
+  ELSE
+    INSERT INTO public.community_events (
+      community_id,
+      slug,
+      title,
+      description,
+      starts_at,
+      created_by,
+      created_at,
+      updated_at
+    )
+    SELECT
+      p.community_id,
+      'event-' || LEFT(REPLACE(p.id::TEXT, '-', ''), 12),
+      COALESCE(NULLIF(TRIM(p.title), ''), 'Community-Event'),
+      COALESCE(NULLIF(TRIM(p.content), ''), ''),
+      p.created_at,
+      p.author_id,
+      p.created_at,
+      p.updated_at
+    FROM public.posts p
+    WHERE p.post_type = 'event'
+      AND p.community_id IS NOT NULL
+    ON CONFLICT (community_id, slug) DO NOTHING;
+  END IF;
+END $$;
 
 -- =============================================================================
 -- Gruppen-Follow (follows erweitern)
@@ -191,14 +228,17 @@ CREATE INDEX IF NOT EXISTS idx_group_reviews_group
 CREATE INDEX IF NOT EXISTS idx_review_comments_review
   ON public.review_comments(review_id, review_target, created_at);
 
+DROP TRIGGER IF EXISTS community_reviews_updated_at ON public.community_reviews;
 CREATE TRIGGER community_reviews_updated_at
   BEFORE UPDATE ON public.community_reviews
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS group_reviews_updated_at ON public.group_reviews;
 CREATE TRIGGER group_reviews_updated_at
   BEFORE UPDATE ON public.group_reviews
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
+DROP TRIGGER IF EXISTS review_comments_updated_at ON public.review_comments;
 CREATE TRIGGER review_comments_updated_at
   BEFORE UPDATE ON public.review_comments
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -208,6 +248,7 @@ CREATE TRIGGER review_comments_updated_at
 -- =============================================================================
 ALTER TABLE public.community_events ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "community_events_select_public" ON public.community_events;
 CREATE POLICY "community_events_select_public"
   ON public.community_events FOR SELECT
   USING (
@@ -215,11 +256,13 @@ CREATE POLICY "community_events_select_public"
     AND public.is_community_visible(community_id)
   );
 
+DROP POLICY IF EXISTS "community_events_select_member" ON public.community_events;
 CREATE POLICY "community_events_select_member"
   ON public.community_events FOR SELECT
   TO authenticated
   USING (public.is_community_member(community_id));
 
+DROP POLICY IF EXISTS "community_events_manage" ON public.community_events;
 CREATE POLICY "community_events_manage"
   ON public.community_events FOR ALL
   TO authenticated

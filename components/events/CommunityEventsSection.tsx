@@ -1,4 +1,5 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
+import { FollowEventButton } from "@/components/events/FollowEventButton";
 import type { CommunityEvent } from "@/types/event";
 import { Calendar, ExternalLink, MapPin, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -6,6 +7,8 @@ import Link from "next/link";
 interface CommunityEventsSectionProps {
   communitySlug: string;
   events: CommunityEvent[];
+  followedEventIds?: string[];
+  showFollowButtons?: boolean;
 }
 
 function formatEventDate(iso: string): string {
@@ -21,7 +24,10 @@ function formatEventDate(iso: string): string {
 export function CommunityEventsSection({
   communitySlug,
   events,
+  followedEventIds = [],
+  showFollowButtons = false,
 }: CommunityEventsSectionProps) {
+  const followedSet = new Set(followedEventIds);
   if (events.length === 0) return null;
 
   return (
@@ -81,6 +87,13 @@ export function CommunityEventsSection({
                   )}
                 </div>
               </div>
+              {showFollowButtons && (
+                <FollowEventButton
+                  eventId={event.id}
+                  communitySlug={communitySlug}
+                  initialFollowing={followedSet.has(event.id)}
+                />
+              )}
             </div>
             {event.externalUrl && (
               <a
@@ -104,13 +117,18 @@ interface DiscoverEventListProps {
   events: CommunityEvent[];
   title?: string;
   subtitle?: string;
+  followedEventIds?: string[];
+  showFollowButtons?: boolean;
 }
 
 export function DiscoverEventList({
   events,
   title = "Events",
   subtitle = "Kommende Termine aus dem Netzwerk",
+  followedEventIds = [],
+  showFollowButtons = false,
 }: DiscoverEventListProps) {
+  const followedSet = new Set(followedEventIds);
   if (events.length === 0) {
     return (
       <section className="rounded-3xl bg-white p-8 text-center shadow-card">
@@ -143,14 +161,23 @@ export function DiscoverEventList({
               ) : (
                 <span />
               )}
-              {event.communitySlug && (
-                <Link
-                  href={`/community/${event.communitySlug}`}
-                  className="text-xs font-semibold text-unze-green"
-                >
-                  {event.communityTitle}
-                </Link>
-              )}
+              <div className="flex items-center gap-2">
+                {event.communitySlug && (
+                  <Link
+                    href={`/community/${event.communitySlug}`}
+                    className="text-xs font-semibold text-unze-green"
+                  >
+                    {event.communityTitle}
+                  </Link>
+                )}
+                {showFollowButtons && event.communitySlug && (
+                  <FollowEventButton
+                    eventId={event.id}
+                    communitySlug={event.communitySlug}
+                    initialFollowing={followedSet.has(event.id)}
+                  />
+                )}
+              </div>
             </div>
             <h3 className="font-semibold text-unze-ink">{event.title}</h3>
             <p className="mt-1 line-clamp-2 text-sm text-unze-ink-secondary">

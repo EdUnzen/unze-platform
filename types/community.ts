@@ -103,6 +103,16 @@ export interface Community {
   /** Kompakte Engagement-Anzeige für Cards */
   engagement?: CardEngagementMetrics;
   priceLabel?: string | null;
+  pricing?: {
+    monthlyCents?: number | null;
+    semiannualCents?: number | null;
+    yearlyCents?: number | null;
+  };
+  subscriptionPlans?: {
+    monthly: boolean;
+    semiannual: boolean;
+    yearly: boolean;
+  };
 }
 
 export interface CommunityFormInput {

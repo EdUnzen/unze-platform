@@ -258,7 +258,12 @@ export async function fetchDiscoverGroups(
 
   let { data, error } = await runQuery(extendedSelect, true);
 
-  if (error?.code === "42703") {
+  const missingColumn =
+    error?.code === "42703" ||
+    error?.code === "PGRST204" ||
+    (error?.message?.includes("does not exist") ?? false);
+
+  if (missingColumn) {
     ({ data, error } = await runQuery(legacySelect, false));
   }
 

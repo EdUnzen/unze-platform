@@ -1,3 +1,4 @@
+import { GroupCheckoutButton } from "@/components/billing/GroupCheckoutButton";
 import { RatingSummary } from "@/components/ui/RatingSummary";
 import { FollowGroupButton } from "@/components/community/FollowGroupButton";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
@@ -8,7 +9,7 @@ import { formatMemberCount } from "@/services/community/community.service";
 import { getGroupBySlugs } from "@/services/community/group.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getCommunityEvents } from "@/services/events/event.service";
-import { isFollowingGroup } from "@/services/follow/follow.service";
+import { getFollowedEventIds, isFollowingGroup } from "@/services/follow/follow.service";
 import { CommunityEventsSection } from "@/components/events/CommunityEventsSection";
 import { BadgeCheck, Users, Wrench } from "lucide-react";
 import Link from "next/link";
@@ -32,9 +33,10 @@ export default async function GroupPage({ params }: GroupPageProps) {
   if (!group || !group.isPublic) notFound();
 
   const user = await getCurrentUser();
-  const [following, events] = await Promise.all([
+  const [following, events, followedEventIds] = await Promise.all([
     user ? isFollowingGroup(group.id) : Promise.resolve(false),
     getCommunityEvents(group.communityId, 6),
+    user ? getFollowedEventIds() : Promise.resolve([]),
   ]);
 
   const groupEvents = events.filter((e) => e.groupId === group.id || !e.groupId);
@@ -102,7 +104,12 @@ export default async function GroupPage({ params }: GroupPageProps) {
             </p>
           </section>
 
-          <CommunityEventsSection communitySlug={slug} events={groupEvents} />
+          <CommunityEventsSection
+            communitySlug={slug}
+            events={groupEvents}
+            followedEventIds={followedEventIds}
+            showFollowButtons={Boolean(user)}
+          />
 
           <EntityReviewsSection
             isLoggedIn={Boolean(user)}
@@ -119,6 +126,32 @@ export default async function GroupPage({ params }: GroupPageProps) {
         </div>
 
         <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+          {isService && priceLabel && group.priceCents && group.priceCents > 0 ? (
+            user ? (
+              <section className="rounded-3xl bg-white p-4 shadow-card">
+                <h2 className="mb-2 text-sm font-semibold text-unze-ink">Buchen</h2>
+                <p className="mb-3 text-lg font-bold text-unze-ink">{priceLabel}</p>
+                <GroupCheckoutButton
+                  communityId={group.communityId}
+                  communitySlug={slug}
+                  groupId={group.id}
+                  groupSlug={groupSlug}
+                  groupTitle={group.title}
+                  priceCents={group.priceCents}
+                />
+              </section>
+            ) : (
+              <section className="rounded-3xl bg-white p-4 shadow-card text-center">
+                <p className="text-sm text-unze-ink-secondary">
+                  <Link href="/auth/login" className="font-semibold text-unze-green">
+                    Anmelden
+                  </Link>
+                  , um diese Dienstleistung zu buchen ({priceLabel}).
+                </p>
+              </section>
+            )
+          ) : null}
+
           {user ? (
             <section className="rounded-3xl bg-white p-4 shadow-card">
               <h2 className="mb-3 text-sm font-semibold text-unze-ink">Gruppe folgen</h2>

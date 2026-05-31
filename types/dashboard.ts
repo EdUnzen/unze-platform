@@ -52,6 +52,7 @@ export type DashboardTabId =
   | "roles"
   | "badges"
   | "monetization"
+  | "events"
   | "settings";
 
 export interface JoinApplicationView {

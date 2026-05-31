@@ -6,6 +6,7 @@ import {
   withdrawJoinApplicationAction,
 } from "@/app/community/access-actions";
 import { toggleFollowCommunity } from "@/app/community/actions";
+import { SubscribeCommunityPanel } from "@/components/billing/SubscribeCommunityPanel";
 import { ApplicationStatusBadge, MemberRestrictionBadge } from "@/components/dashboard/StatusBadge";
 import { PLATFORM_IDENTITY_OPTIONS } from "@/lib/constants/access";
 import { formatMaxSizeHint } from "@/lib/storage/validation";
@@ -67,15 +68,28 @@ export function CommunityJoinPanel({
   const loginHref = `/auth/login?next=${encodeURIComponent(`/community/${slug}${inviteCode ? `?invite=${inviteCode}` : ""}`)}`;
 
   if (!isLoggedIn) {
+    const signupHref = `/auth/login?mode=signup&next=${encodeURIComponent(`/community/${slug}${inviteCode ? `?invite=${inviteCode}` : ""}`)}`;
+
     return (
-      <Link
-        href={loginHref}
-        data-testid="join-login-link"
-        className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-unze-green py-3.5 text-sm font-semibold text-white active:scale-[0.98]"
-      >
-        <LogIn className="h-4 w-4" aria-hidden />
-        Anmelden zum Beitreten
-      </Link>
+      <div className="mt-6 space-y-3">
+        <p className="text-center text-sm text-unze-ink-secondary">
+          Folge dieser Community oder tritt bei — kostenlos anmelden oder registrieren.
+        </p>
+        <Link
+          href={loginHref}
+          data-testid="join-login-link"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-unze-green py-3.5 text-sm font-semibold text-white active:scale-[0.98]"
+        >
+          <LogIn className="h-4 w-4" aria-hidden />
+          Anmelden
+        </Link>
+        <Link
+          href={signupHref}
+          className="flex w-full items-center justify-center rounded-xl border border-unze-border bg-white py-3.5 text-sm font-semibold text-unze-ink active:scale-[0.98]"
+        >
+          Kostenlos registrieren
+        </Link>
+      </div>
     );
   }
 
@@ -147,12 +161,42 @@ export function CommunityJoinPanel({
   const requiredPlatforms = access?.requiredPlatformIds ?? [];
 
   return (
-    <div className="mt-6 space-y-3">
-      {isMember && (
-        <div className="rounded-xl bg-unze-green-muted px-3 py-2 text-center text-xs font-semibold text-unze-green-dark">
-          {isCreator ? ROLE_LABELS.creator : `Rolle: ${ROLE_LABELS[role ?? "member"]}`}
+    <div className="mt-6 space-y-4">
+      {isMember ? (
+        <div className="rounded-xl bg-unze-green-muted px-3 py-2.5 text-center text-xs font-semibold text-unze-green-dark">
+          {isCreator ? ROLE_LABELS.creator : `Mitglied · ${ROLE_LABELS[role ?? "member"]}`}
+        </div>
+      ) : (
+        <div className="rounded-xl border border-unze-border bg-unze-surface-muted/40 px-3 py-2.5 text-xs text-unze-ink-secondary">
+          <p className="font-semibold text-unze-ink">So trittst du bei</p>
+          <ol className="mt-1.5 list-inside list-decimal space-y-0.5">
+            <li>Community folgen (optional)</li>
+            <li>
+              {joinAccess?.requiresApplication || joinAccess?.waitlistAtCapacity
+                ? "Beitrittsantrag stellen"
+                : joinAccess?.requiresInvite
+                  ? "Einladungslink verwenden"
+                  : community.visibility === "premium" && community.monetizationEnabled
+                    ? "Abo abschließen oder beitreten"
+                    : "Beitreten"}
+            </li>
+          </ol>
         </div>
       )}
+
+      {!isMember &&
+        community.visibility === "premium" &&
+        community.monetizationEnabled && (
+          <SubscribeCommunityPanel
+            communityId={community.id}
+            slug={slug}
+            monetizationEnabled={Boolean(community.monetizationEnabled)}
+            pricing={community.pricing}
+            hasMonthly={community.subscriptionPlans?.monthly}
+            hasSemiannual={community.subscriptionPlans?.semiannual}
+            hasYearly={community.subscriptionPlans?.yearly}
+          />
+        )}
 
       {access && !isMember && (
         <div className="rounded-xl border border-unze-border bg-unze-surface-muted/50 px-3 py-2 text-xs text-unze-ink-secondary">
@@ -170,8 +214,8 @@ export function CommunityJoinPanel({
           {access.accessStatus === "invite_only" && (
             <p>Nur auf Einladung</p>
           )}
-          {community.visibility === "premium" && (
-            <p>Kostenpflichtig (vorbereitet)</p>
+          {community.visibility === "premium" && !community.monetizationEnabled && !isMember && (
+            <p className="text-xs text-unze-ink-secondary">Kostenpflichtig — Preise folgen</p>
           )}
         </div>
       )}

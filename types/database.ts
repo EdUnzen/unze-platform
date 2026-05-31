@@ -25,7 +25,7 @@ export type CommunityRole =
 
 export type CommunityGroupType = "group" | "service";
 
-export type FollowTarget = "user" | "community" | "group";
+export type FollowTarget = "user" | "community" | "group" | "event";
 
 export type CommunityAccessStatus =
   | "open"

@@ -2,56 +2,102 @@ import { CommunityCardList } from "@/components/community/CommunityCardList";
 import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
 import { DiscoverEventList } from "@/components/events/CommunityEventsSection";
 import { filterDiscoverCommunities } from "@/lib/discover/filter-communities";
+import {
+  filterDiscoverEvents,
+  filterDiscoverGroups,
+} from "@/lib/discover/search";
+import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDiscoverCommunities } from "@/services/community/community.service";
 import { getDiscoverGroups } from "@/services/community/group.service";
 import { getDiscoverEvents } from "@/services/events/event.service";
+import { getFollowedEventIds } from "@/services/follow/follow.service";
 import Link from "next/link";
 
 interface DiscoverContentProps {
   tab: string;
   query: string;
   category: string;
+  migrationDetails?: {
+    communityEventsTable?: boolean;
+    groupTypeColumn?: boolean;
+  };
 }
 
 const LEGACY_TABS = new Set(["feed", "trends", "new", "creators"]);
 
-export async function DiscoverContent({ tab, query, category }: DiscoverContentProps) {
+export async function DiscoverContent({
+  tab,
+  query,
+  category,
+  migrationDetails,
+}: DiscoverContentProps) {
   const effectiveTab = LEGACY_TABS.has(tab) ? "communities" : tab;
+  const eventsAvailable = migrationDetails?.communityEventsTable !== false;
+  const groupTypesAvailable = migrationDetails?.groupTypeColumn !== false;
 
   if (effectiveTab === "events") {
-    const events = await getDiscoverEvents(24);
-    const filtered = query
-      ? events.filter(
-          (e) =>
-            e.title.toLowerCase().includes(query.toLowerCase()) ||
-            e.communityTitle?.toLowerCase().includes(query.toLowerCase()) ||
-            e.communitySlug?.toLowerCase().includes(query.toLowerCase()),
-        )
-      : events;
+    if (!eventsAvailable) {
+      return (
+        <section className="rounded-3xl bg-white p-8 text-center shadow-card">
+          <p className="text-sm font-medium text-unze-ink">Events noch nicht verfügbar</p>
+          <p className="mt-1 text-sm text-unze-ink-secondary">
+            Events werden nach Plattform-Update freigeschaltet.
+          </p>
+        </section>
+      );
+    }
+    const user = await getCurrentUser();
+    const [events, followedEventIds] = await Promise.all([
+      getDiscoverEvents(24),
+      user ? getFollowedEventIds() : Promise.resolve([]),
+    ]);
+    const filtered = filterDiscoverEvents(events, query);
 
     return (
       <DiscoverEventList
         events={filtered}
         title="Events entdecken"
-        subtitle="Kommende Termine aus Communities und Gruppen"
+        subtitle={
+          query
+            ? `${filtered.length} Ergebnis${filtered.length === 1 ? "" : "se"}`
+            : "Kommende Termine aus Communities und Gruppen"
+        }
+        followedEventIds={followedEventIds}
+        showFollowButtons={Boolean(user)}
       />
     );
   }
 
   if (effectiveTab === "groups") {
-    const groups = await getDiscoverGroups(24, { groupType: "group" });
+    const groups = await getDiscoverGroups(48, { groupType: "group" });
+    const filtered = filterDiscoverGroups(groups, query);
     return (
       <CommunityGroupCardList
-        groups={groups}
+        groups={filtered}
         title="Gruppen entdecken"
-        subtitle="Bereiche innerhalb von Communities — Coaching, Teams, Networking"
+        subtitle={
+          query
+            ? `${filtered.length} Ergebnis${filtered.length === 1 ? "" : "se"}`
+            : "Bereiche innerhalb von Communities — Coaching, Teams, Networking"
+        }
       />
     );
   }
 
   if (effectiveTab === "services") {
-    const services = await getDiscoverGroups(24, { groupType: "service" });
-    if (services.length === 0) {
+    if (!groupTypesAvailable) {
+      return (
+        <section className="rounded-3xl bg-white p-8 text-center shadow-card">
+          <p className="text-sm font-medium text-unze-ink">Dienstleistungen noch nicht verfügbar</p>
+          <p className="mt-1 text-sm text-unze-ink-secondary">
+            Dienstleistungen werden nach Plattform-Update freigeschaltet.
+          </p>
+        </section>
+      );
+    }
+    const services = await getDiscoverGroups(48, { groupType: "service" });
+    const filtered = filterDiscoverGroups(services, query);
+    if (filtered.length === 0 && services.length === 0) {
       return (
         <section className="rounded-3xl bg-white p-8 text-center shadow-card">
           <p className="text-sm font-medium text-unze-ink">Noch keine Dienstleistungen</p>
@@ -63,21 +109,27 @@ export async function DiscoverContent({ tab, query, category }: DiscoverContentP
     }
     return (
       <CommunityGroupCardList
-        groups={services}
+        groups={filtered}
         title="Dienstleistungen"
-        subtitle="Angebote und Services aus dem Netzwerk"
+        subtitle={
+          query
+            ? `${filtered.length} Ergebnis${filtered.length === 1 ? "" : "se"}`
+            : "Angebote und Services aus dem Netzwerk"
+        }
       />
     );
   }
 
   const communities = await getDiscoverCommunities();
   const filtered = filterDiscoverCommunities(communities, query, category);
-  const featuredGroups = await getDiscoverGroups(6, { groupType: "group" });
-  const featuredEvents = await getDiscoverEvents(4);
+  const featuredGroups = groupTypesAvailable
+    ? await getDiscoverGroups(6, { groupType: "group" })
+    : await getDiscoverGroups(6);
+  const featuredEvents = eventsAvailable ? await getDiscoverEvents(4) : [];
 
   return (
     <div className="space-y-8">
-      {featuredEvents.length > 0 && (
+      {featuredEvents.length > 0 && !query && (
         <DiscoverEventList
           events={featuredEvents}
           title="Kommende Events"
@@ -85,7 +137,7 @@ export async function DiscoverContent({ tab, query, category }: DiscoverContentP
         />
       )}
 
-      {featuredGroups.length > 0 && (
+      {featuredGroups.length > 0 && !query && (
         <CommunityGroupCardList
           groups={featuredGroups}
           title="Aktive Gruppen"

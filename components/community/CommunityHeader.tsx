@@ -2,22 +2,18 @@ import { RatingSummary } from "@/components/ui/RatingSummary";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { CommunityStatusBadges } from "@/components/community/CommunityStatusBadges";
 import { ShareMenu } from "@/components/share/ShareMenu";
+import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { formatMemberCount } from "@/services/community/community.service";
-import { formatWeeklyViewsLabel } from "@/lib/utils/format-metrics";
 import type { Community } from "@/types/community";
 import { getAppUrl } from "@/lib/env";
-import { Eye, Share2, Users } from "lucide-react";
+import { Users } from "lucide-react";
 
 interface CommunityHeaderProps {
   community: Community;
 }
 
 export function CommunityHeader({ community }: CommunityHeaderProps) {
-  const weeklyViews =
-    community.viewCountWeekly ?? community.engagement?.weeklyViews;
-  const shareCount = community.shareCount ?? community.engagement?.shareCount;
-
   return (
     <header className="overflow-hidden rounded-3xl bg-white shadow-card">
       <div className="relative h-44 sm:h-52">
@@ -53,7 +49,7 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 border-b border-unze-border px-4 py-3 text-sm text-unze-ink-secondary">
+      <div className="flex flex-wrap items-center gap-4 border-b border-unze-border px-4 py-3 text-sm text-unze-ink-secondary">
         <span className="flex items-center gap-1.5">
           <Users className="h-4 w-4 text-unze-green" aria-hidden />
           <strong className="font-semibold text-unze-ink">
@@ -66,17 +62,8 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
           reviewCount={community.reviewCount}
           className="text-sm text-unze-ink-secondary"
         />
-        {weeklyViews !== undefined && weeklyViews > 0 && (
-          <span className="flex items-center gap-1.5">
-            <Eye className="h-4 w-4" aria-hidden />
-            {formatWeeklyViewsLabel(weeklyViews)}
-          </span>
-        )}
-        {shareCount !== undefined && shareCount > 0 && (
-          <span className="flex items-center gap-1.5">
-            <Share2 className="h-4 w-4" aria-hidden />
-            {shareCount.toLocaleString("de-DE")}× geteilt
-          </span>
+        {community.priceLabel && (
+          <PriceBadge label={community.priceLabel} variant="inline" className="text-unze-green-dark" />
         )}
       </div>
     </header>

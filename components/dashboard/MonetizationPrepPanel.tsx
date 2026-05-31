@@ -1,5 +1,6 @@
 "use client";
 
+import { saveCommunityPricingAction } from "@/app/billing/actions";
 import { toggleMonetizationPrepAction } from "@/app/dashboard/actions";
 import { CommercialInfoDialog } from "@/components/referral/CommercialInfoDialog";
 import {
@@ -9,22 +10,29 @@ import {
 import { cn } from "@/lib/utils/cn";
 import { CreditCard, Link2, Lock, Wallet } from "lucide-react";
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useActionState, useState, useTransition } from "react";
+
+const inputClass =
+  "mt-1 w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm outline-none focus:border-unze-green";
 
 interface MonetizationPrepPanelProps {
   slug: string;
   monetizationEnabled: boolean;
   isCreator: boolean;
+  pricing?: { monthly: string; semiannual: string; yearly: string };
 }
 
 export function MonetizationPrepPanel({
   slug,
   monetizationEnabled: initialEnabled,
   isCreator,
+  pricing = { monthly: "", semiannual: "", yearly: "" },
 }: MonetizationPrepPanelProps) {
   const [enabled, setEnabled] = useState(initialEnabled);
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState<string | null>(null);
+  const boundPricing = saveCommunityPricingAction.bind(null, slug);
+  const [pricingState, pricingAction, pricingPending] = useActionState(boundPricing, null);
 
   const toggle = () => {
     if (!isCreator) return;
@@ -46,10 +54,10 @@ export function MonetizationPrepPanel({
         <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-unze-green text-white">
           <Wallet className="h-6 w-6" aria-hidden />
         </div>
-        <h3 className="text-lg font-semibold text-unze-ink">Monetarisierung</h3>
+        <h3 className="text-lg font-semibold text-unze-ink">Stripe & Preise</h3>
         <p className="mt-1 text-sm text-unze-ink-secondary">
-          Stripe Sandbox, optionaler Creator-Referral und Revenue Share sind
-          vorbereitet. Premium-Gruppen kannst du bereits vormerken.
+          Abos (monatlich, halbjährlich, jährlich) und Einmalzahlungen über Stripe.
+          Kündigungen laufen über das Stripe-Kundenportal.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
@@ -57,7 +65,7 @@ export function MonetizationPrepPanel({
             className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-1.5 text-xs font-semibold text-unze-green-dark"
           >
             <Link2 className="h-3.5 w-3.5" />
-            Einnahmen & Referrals
+            Stripe Connect
           </Link>
           <CommercialInfoDialog triggerClassName="inline-flex items-center gap-1 rounded-xl bg-white/60 px-3 py-1.5 text-xs font-medium text-unze-ink-muted" />
         </div>
@@ -66,10 +74,8 @@ export function MonetizationPrepPanel({
       <div className="rounded-3xl bg-white p-4 shadow-card">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="font-medium text-unze-ink">Premium vormerken</p>
-            <p className="text-xs text-unze-ink-muted">
-              Aktiviert Premium-Sichtbarkeit (Zahlung folgt)
-            </p>
+            <p className="font-medium text-unze-ink">Monetarisierung aktiv</p>
+            <p className="text-xs text-unze-ink-muted">Ermöglicht kostenpflichtige Abos</p>
           </div>
           <button
             type="button"
@@ -91,23 +97,42 @@ export function MonetizationPrepPanel({
             />
           </button>
         </div>
-        {message && (
-          <p className="mt-2 text-xs text-red-600">{message}</p>
-        )}
+        {message && <p className="mt-2 text-xs text-red-600">{message}</p>}
       </div>
+
+      {isCreator && (
+        <form action={pricingAction} className="rounded-3xl bg-white p-4 shadow-card space-y-3">
+          <h3 className="text-sm font-semibold text-unze-ink">Abo-Preise (EUR)</h3>
+          <label className="block text-sm text-unze-ink-secondary">
+            Monatlich
+            <input name="priceMonthly" defaultValue={pricing.monthly} className={inputClass} placeholder="9.99" />
+          </label>
+          <label className="block text-sm text-unze-ink-secondary">
+            Halbjährlich
+            <input name="priceSemiannual" defaultValue={pricing.semiannual} className={inputClass} placeholder="49.99" />
+          </label>
+          <label className="block text-sm text-unze-ink-secondary">
+            Jährlich
+            <input name="priceYearly" defaultValue={pricing.yearly} className={inputClass} placeholder="89.99" />
+          </label>
+          {pricingState?.error && <p className="text-xs text-red-600">{pricingState.error}</p>}
+          {pricingState?.success && (
+            <p className="text-xs text-unze-green">Preise gespeichert und mit Stripe synchronisiert.</p>
+          )}
+          <button
+            type="submit"
+            disabled={pricingPending}
+            className="w-full rounded-xl bg-unze-green py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+          >
+            {pricingPending ? "…" : "Preise speichern"}
+          </button>
+        </form>
+      )}
 
       <ul className="space-y-2">
         {[
-          {
-            icon: CreditCard,
-            title: "Stripe Sandbox",
-            desc: "Testmodus — Connect & Checkout ohne Live-Abrechnung",
-          },
-          {
-            icon: Lock,
-            title: "Revenue Share",
-            desc: `${PLATFORM_FEE_LABEL}, ${REFERRER_SHARE_LABEL} — kein MLM`,
-          },
+          { icon: CreditCard, title: "Stripe Abos", desc: "Monatlich · Halbjährlich · Jährlich" },
+          { icon: Lock, title: "Revenue Share", desc: `${PLATFORM_FEE_LABEL}, ${REFERRER_SHARE_LABEL}` },
         ].map(({ icon: Icon, title, desc }) => (
           <li
             key={title}

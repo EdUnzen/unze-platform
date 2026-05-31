@@ -1,6 +1,7 @@
 import type { DashboardTabId } from "@/types/dashboard";
 import {
   Award,
+  Calendar,
   ClipboardList,
   FolderOpen,
   KeyRound,
@@ -94,6 +95,13 @@ export const DASHBOARD_TABS: DashboardTab[] = [
     minRole: "admin",
   },
   {
+    id: "events",
+    label: "Events",
+    href: (slug) => `/dashboard/community/${slug}/events`,
+    icon: Calendar,
+    minRole: "admin",
+  },
+  {
     id: "monetization",
     label: "Monetarisierung",
     href: (slug) => `/dashboard/community/${slug}/monetization`,
@@ -107,6 +115,34 @@ export const DASHBOARD_TABS: DashboardTab[] = [
     icon: Settings,
     minRole: "admin",
   },
+];
+
+export interface DashboardTabGroup {
+  id: string;
+  label: string;
+  tabIds: DashboardTabId[];
+}
+
+/** Gruppierte Dashboard-Navigation — weniger Tabs in einer Zeile */
+export const DASHBOARD_TAB_GROUPS: DashboardTabGroup[] = [
+  { id: "general", label: "Allgemein", tabIds: ["overview"] },
+  {
+    id: "members",
+    label: "Mitglieder",
+    tabIds: ["members", "requests", "access", "roles"],
+  },
+  {
+    id: "content",
+    label: "Inhalte",
+    tabIds: ["groups", "events", "badges"],
+  },
+  {
+    id: "safety",
+    label: "Sicherheit",
+    tabIds: ["moderation", "audit", "verification"],
+  },
+  { id: "business", label: "Finanzen", tabIds: ["monetization"] },
+  { id: "system", label: "System", tabIds: ["settings"] },
 ];
 
 export const ROLE_LABELS: Record<string, string> = {

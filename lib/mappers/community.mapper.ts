@@ -1,6 +1,6 @@
 import { mapAccessConfigFromRow } from "@/lib/mappers/access.mapper";
-import type { Community, CommunityGroup, DiscoverGroup } from "@/types/community";
-import type { CommunityVisibility } from "@/types/community";
+import { buildCommunityPriceSummary } from "@/lib/monetization/pricing-display";
+import type { Community, CommunityGroup, DiscoverGroup } from "@/types/community";import type { CommunityVisibility } from "@/types/community";
 import type { CommunityRole, CommunityWithCreator } from "@/types/database";
 
 export function mapCommunityRow(
@@ -33,9 +33,26 @@ export function mapCommunityRow(
     view_count_total?: number;
     view_count_weekly?: number;
     share_count?: number;
+    stripe_price_monthly_id?: string | null;
+    stripe_price_semiannual_id?: string | null;
+    stripe_price_yearly_id?: string | null;
+    price_monthly_cents?: number | null;
+    price_semiannual_cents?: number | null;
+    price_yearly_cents?: number | null;
   };
 
   const access = mapAccessConfigFromRow(rowExt);
+
+  const pricing = {
+    monthlyCents: rowExt.price_monthly_cents ?? null,
+    semiannualCents: rowExt.price_semiannual_cents ?? null,
+    yearlyCents: rowExt.price_yearly_cents ?? null,
+  };
+
+  const priceLabel = buildCommunityPriceSummary(
+    pricing,
+    rowExt.monetization_enabled ?? false,
+  );
 
   return {
     id: row.id,
@@ -69,6 +86,13 @@ export function mapCommunityRow(
     viewCount: rowExt.view_count_total ?? undefined,
     viewCountWeekly: rowExt.view_count_weekly ?? undefined,
     shareCount: rowExt.share_count ?? undefined,
+    priceLabel,
+    pricing,
+    subscriptionPlans: {
+      monthly: Boolean(rowExt.stripe_price_monthly_id) || Boolean(pricing.monthlyCents),
+      semiannual: Boolean(rowExt.stripe_price_semiannual_id) || Boolean(pricing.semiannualCents),
+      yearly: Boolean(rowExt.stripe_price_yearly_id) || Boolean(pricing.yearlyCents),
+    },
   };
 }
 

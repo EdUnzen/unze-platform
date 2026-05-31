@@ -21,7 +21,12 @@
     "setup:demo": "node scripts/setup-platform.mjs",
     "setup:full": "node scripts/run-full-setup.mjs",
     "test:e2e-urls": "node scripts/test-e2e-urls.mjs",
-    "check:migrations": "node scripts/check-migrations.mjs"
+    "check:migrations": "node scripts/check-migrations.mjs",
+    "db:migrate:pending": "node scripts/apply-pending-migrations.mjs",
+    "db:migrate:021-024": "node scripts/apply-migrations-021-024.mjs",
+    "check:stripe": "node scripts/check-stripe-config.mjs",
+    "test:monetization": "node scripts/test-monetization-e2e.mjs",
+    "test:stabilization": "node scripts/stabilization-audit.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

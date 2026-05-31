@@ -18,8 +18,10 @@ import {
 import {
   followCommunity,
   followGroup,
+  followEvent,
   unfollowCommunity,
   unfollowGroup,
+  unfollowEvent,
 } from "@/services/follow/follow.service";
 import type { CommunityFormInput } from "@/types/community";
 import { revalidatePath } from "next/cache";
@@ -128,7 +130,26 @@ export async function toggleFollowGroup(
   }
 
   revalidatePath(`/community/${communitySlug}/group/${groupSlug}`);
-  revalidatePath("/");
+  revalidatePath("/favorites");
+  return { success: true };
+}
+
+export async function toggleFollowEvent(
+  eventId: string,
+  communitySlug: string,
+  currentlyFollowing: boolean,
+) {
+  const result = currentlyFollowing
+    ? await unfollowEvent(eventId)
+    : await followEvent(eventId);
+
+  if (result.error) {
+    return { error: result.error.message };
+  }
+
+  revalidatePath(`/community/${communitySlug}`);
+  revalidatePath("/favorites");
+  revalidatePath("/discover");
   return { success: true };
 }
 

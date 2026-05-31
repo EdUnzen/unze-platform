@@ -30,9 +30,7 @@ export async function enrichCommunitiesWithEngagement(
 
   return communities.map((community) => ({
     ...community,
-    engagement: mergeCommunityEngagement(community.slug, {
-      weeklyViews: community.viewCountWeekly,
-      shareCount: community.shareCount,
+    engagement: mergeCommunityEngagement(community.slug, {}, {
       networkFollowCount: networkCounts[community.id],
       isTrending: community.isTrending,
     }),

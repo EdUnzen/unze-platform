@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS public.platform_feature_flags (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+DROP TRIGGER IF EXISTS platform_feature_flags_updated_at ON public.platform_feature_flags;
 CREATE TRIGGER platform_feature_flags_updated_at
   BEFORE UPDATE ON public.platform_feature_flags
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
@@ -76,16 +77,19 @@ CREATE POLICY "post_likes_insert_when_enabled"
 -- =============================================================================
 ALTER TABLE public.platform_feature_flags ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "feature_flags_select_authenticated" ON public.platform_feature_flags;
 CREATE POLICY "feature_flags_select_authenticated"
   ON public.platform_feature_flags FOR SELECT
   TO authenticated
   USING (TRUE);
 
+DROP POLICY IF EXISTS "feature_flags_select_anon" ON public.platform_feature_flags;
 CREATE POLICY "feature_flags_select_anon"
   ON public.platform_feature_flags FOR SELECT
   TO anon
   USING (TRUE);
 
+DROP POLICY IF EXISTS "feature_flags_manage_platform_admin" ON public.platform_feature_flags;
 CREATE POLICY "feature_flags_manage_platform_admin"
   ON public.platform_feature_flags FOR ALL
   TO authenticated

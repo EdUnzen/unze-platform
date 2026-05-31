@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Prüft ob Migrationen 021 und 022 in Supabase aktiv sind.
+ * Prüft Migrationen 021, 022 und 024 in Supabase.
  * Usage: npm run check:migrations
  */
 import { existsSync, readFileSync } from "fs";
@@ -31,21 +31,27 @@ async function checkTable(client, table, select = "id") {
 async function main() {
   const env = { ...loadEnvLocal(), ...process.env };
   const url = env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY;
 
-  if (!url || !key) {
-    console.error("✗ NEXT_PUBLIC_SUPABASE_URL / ANON_KEY fehlen in .env.local\n");
+  if (!url) {
+    console.error("✗ NEXT_PUBLIC_SUPABASE_URL fehlt in .env.local\n");
     process.exit(1);
   }
 
-  const client = createClient(url, key);
-  console.log("\n=== UNZE Migration Check (021 + 022) ===\n");
+  if (!serviceKey) {
+    console.error("✗ SUPABASE_SERVICE_ROLE_KEY fehlt in .env.local\n");
+    process.exit(1);
+  }
+
+  const admin = createClient(url, serviceKey);
+
+  console.log("\n=== UNZE Migration Check (021 + 022 + 024) ===\n");
   console.log(`Supabase: ${url}\n`);
 
-  const core = await checkTable(client, "communities");
+  const core = await checkTable(admin, "communities");
   console.log(core ? "✓ Kern-Schema (communities)" : "✗ Kern-Schema fehlt");
 
-  const flagsTable = await checkTable(client, "platform_feature_flags", "key");
+  const flagsTable = await checkTable(admin, "platform_feature_flags", "key");
   console.log(
     flagsTable
       ? "✓ 021 — platform_feature_flags"
@@ -54,7 +60,7 @@ async function main() {
 
   let feedFlag = false;
   if (flagsTable) {
-    const { data, error } = await client
+    const { data, error } = await admin
       .from("platform_feature_flags")
       .select("key, enabled")
       .eq("key", "feed_posts")
@@ -67,12 +73,12 @@ async function main() {
     );
   }
 
-  const events = await checkTable(client, "community_events");
+  const events = await checkTable(admin, "community_events");
   console.log(
     events ? "✓ 022 — community_events" : "✗ 022 — community_events fehlt",
   );
 
-  const { error: groupTypeError } = await client
+  const { error: groupTypeError } = await admin
     .from("community_groups")
     .select("group_type")
     .limit(1);
@@ -81,30 +87,81 @@ async function main() {
     groupType ? "✓ 022 — group_type Spalte" : "✗ 022 — group_type fehlt",
   );
 
-  const communityReviews = await checkTable(client, "community_reviews");
+  const communityReviews = await checkTable(admin, "community_reviews");
   console.log(
     communityReviews
       ? "✓ 022 — community_reviews"
       : "✗ 022 — community_reviews fehlt",
   );
 
-  const groupReviews = await checkTable(client, "group_reviews");
+  const groupReviews = await checkTable(admin, "group_reviews");
   console.log(
     groupReviews ? "✓ 022 — group_reviews" : "✗ 022 — group_reviews fehlt",
   );
 
+  const payments = await checkTable(admin, "community_payments");
+  console.log(
+    payments ? "✓ 024 — community_payments" : "✗ 024 — community_payments fehlt",
+  );
+
+  const webhookEvents = await checkTable(admin, "stripe_webhook_events", "event_id");
+  console.log(
+    webhookEvents
+      ? "✓ 024 — stripe_webhook_events"
+      : "✗ 024 — stripe_webhook_events fehlt",
+  );
+
+  const { error: priceColError } = await admin
+    .from("communities")
+    .select("stripe_price_monthly_id, price_monthly_cents")
+    .limit(1);
+  console.log(
+    !priceColError
+      ? "✓ 024 — Community Stripe-Preis-Spalten"
+      : "✗ 024 — stripe_price_* / price_* Spalten fehlen",
+  );
+
+  const { error: subColError } = await admin
+    .from("subscriptions")
+    .select("cancel_at_period_end, group_id")
+    .limit(1);
+  console.log(
+    !subColError
+      ? "✓ 024 — subscriptions (cancel_at_period_end, group_id)"
+      : "✗ 024 — subscriptions-Spalten fehlen",
+  );
+
+  const { error: eventFollowError } = await admin
+    .from("follows")
+    .select("target_event_id")
+    .limit(1);
+  console.log(
+    !eventFollowError
+      ? "✓ 024 — follows.target_event_id"
+      : "✗ 024 — Event-Favoriten-Spalte fehlt",
+  );
+
   const ok021 = flagsTable && feedFlag;
   const ok022 = events && groupType && communityReviews && groupReviews;
+  const ok024 =
+    payments &&
+    webhookEvents &&
+    !priceColError &&
+    !subColError &&
+    !eventFollowError;
 
   console.log("");
-  if (core && ok021 && ok022) {
-    console.log("✓ Alle Phase-1-Migrationen aktiv — Discover-Hinweis wird ausgeblendet.\n");
+  if (core && ok021 && ok022 && ok024) {
+    console.log("✓ Alle Migrationen aktiv (021, 022, 024).\n");
     process.exit(0);
   }
 
-  console.error("✗ Migrationen unvollständig. In Supabase SQL Editor ausführen:\n");
+  console.error("✗ Migrationen unvollständig.\n");
   if (!ok021) console.error("  → database/migrations/021_platform_feature_flags.sql\n");
   if (!ok022) console.error("  → database/migrations/022_platform_core_entities.sql\n");
+  if (!ok024) console.error("  → database/migrations/024_stripe_monetization_events.sql\n");
+  console.error("  Oder: npm run db:migrate:021-024 (mit SUPABASE_DB_PASSWORD)\n");
+  console.error("  Oder: database/migrations/BUNDLE_021_024.sql im SQL Editor\n");
   process.exit(1);
 }
 

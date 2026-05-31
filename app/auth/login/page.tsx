@@ -10,6 +10,7 @@ interface LoginPageProps {
     error?: string;
     message?: string;
     verified?: string;
+    mode?: string;
   }>;
 }
 
@@ -66,7 +67,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </Link>
         </div>
       ) : (
-        <AuthForm returnTo={returnTo} />
+        <AuthForm
+          returnTo={returnTo}
+          initialMode={params.mode === "signup" ? "signup" : "login"}
+        />
       )}
     </div>
   );

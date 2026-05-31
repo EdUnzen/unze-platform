@@ -6,10 +6,11 @@ import { useActionState, useState } from "react";
 
 interface AuthFormProps {
   returnTo?: string;
+  initialMode?: "login" | "signup";
 }
 
-export function AuthForm({ returnTo = "/" }: AuthFormProps) {
-  const [mode, setMode] = useState<"login" | "signup">("login");
+export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProps) {
+  const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [loginState, loginAction, loginPending] = useActionState(signInWithEmail, null);
   const [signupState, signupAction, signupPending] = useActionState(signUpWithEmail, null);
 

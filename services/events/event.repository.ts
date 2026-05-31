@@ -82,7 +82,7 @@ export async function fetchDiscoverEventsFromDb(limit = 24): Promise<CommunityEv
     .limit(limit * 2);
 
   if (error) {
-    if (error.code === "42P01") return [];
+    if (error.code === "42P01" || error.code === "PGRST205") return [];
     console.error("[event.repository] discover:", error.message);
     return [];
   }
@@ -161,4 +161,86 @@ export async function countEventsByCommunityIdsFromDb(
   }
 
   return result;
+}
+
+export async function createCommunityEventInDb(input: {
+  communityId: string;
+  slug: string;
+  title: string;
+  description: string;
+  startsAt: string;
+  endsAt?: string | null;
+  location?: string | null;
+  externalUrl?: string | null;
+  coverUrl?: string | null;
+  isPublic?: boolean;
+  createdBy?: string | null;
+  groupId?: string | null;
+}) {
+  const supabase = await createClient();
+  if (!supabase) return { event: null, error: "Supabase nicht konfiguriert" };
+
+  const { data, error } = await supabase
+    .from("community_events")
+    .insert({
+      community_id: input.communityId,
+      group_id: input.groupId ?? null,
+      slug: input.slug,
+      title: input.title,
+      description: input.description,
+      starts_at: input.startsAt,
+      ends_at: input.endsAt ?? null,
+      location: input.location ?? null,
+      external_url: input.externalUrl ?? null,
+      cover_url: input.coverUrl ?? null,
+      is_public: input.isPublic ?? true,
+      created_by: input.createdBy ?? null,
+    })
+    .select()
+    .single();
+
+  if (error || !data) {
+    return { event: null, error: error?.message ?? "Event konnte nicht erstellt werden" };
+  }
+
+  return { event: mapEventRow(data as Record<string, unknown>), error: null };
+}
+
+export async function fetchCommunityEventsAdminFromDb(communityId: string) {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("community_events")
+    .select("*")
+    .eq("community_id", communityId)
+    .order("starts_at", { ascending: true });
+
+  if (error) {
+    console.error("[event.repository] admin list:", error.message);
+    return [];
+  }
+
+  return (data ?? []).map((row) => mapEventRow(row as Record<string, unknown>));
+}
+
+export async function fetchEventsByIdsFromDb(eventIds: string[]) {
+  const unique = [...new Set(eventIds.filter(Boolean))];
+  if (unique.length === 0) return [];
+
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("community_events")
+    .select(EVENT_SELECT)
+    .in("id", unique)
+    .order("starts_at", { ascending: true });
+
+  if (error) {
+    if (error.code === "42P01") return [];
+    return [];
+  }
+
+  return (data ?? []).map((row) => mapEventRow(row as Record<string, unknown>));
 }

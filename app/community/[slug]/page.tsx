@@ -20,10 +20,11 @@ import { getCommunityGroups } from "@/services/community/group.service";
 import { fetchCommunityPlatformLinksFromDb } from "@/services/community/platform-links.repository";
 import { canEditCommunity } from "@/services/community/member.service";
 import { getCommunityEvents } from "@/services/events/event.service";
+import { getFollowedEventIds } from "@/services/follow/follow.service";
 import {
   getCommunityActivityStats,
 } from "@/services/platform/activity-stats.service";
-import { Pencil } from "lucide-react";
+import { Pencil, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -44,11 +45,12 @@ export default async function CommunityPage({
 
   const user = await getCurrentUser();
 
-  const [groups, events, platformLinks, activityStats] = await Promise.all([
+  const [groups, events, platformLinks, activityStats, followedEventIds] = await Promise.all([
     getCommunityGroups(community.id),
     getCommunityEvents(community.id, 8),
     fetchCommunityPlatformLinksFromDb(community.id),
     getCommunityActivityStats([community.id]),
+    user ? getFollowedEventIds() : Promise.resolve([]),
   ]);
 
   const stats = activityStats[community.id];
@@ -61,8 +63,12 @@ export default async function CommunityPage({
     <div className="page-padding">
       <CommunityViewRecorder communityId={community.id} />
       <div className="mb-4 flex items-center justify-between">
-        <Link href="/discover" className="text-sm font-medium text-unze-green">
-          ← Discover
+        <Link
+          href="/discover"
+          className="inline-flex items-center gap-1 text-sm font-medium text-unze-green"
+        >
+          <ChevronLeft className="h-4 w-4" aria-hidden />
+          Discover
         </Link>
         {canEdit && (
           <Link
@@ -109,7 +115,12 @@ export default async function CommunityPage({
               links={platformLinks}
             />
             <CommunityMetaGrid community={community} />
-            <CommunityEventsSection communitySlug={slug} events={events} />
+            <CommunityEventsSection
+              communitySlug={slug}
+              events={events}
+              followedEventIds={followedEventIds}
+              showFollowButtons={Boolean(user)}
+            />
             <EntityReviewsSection
               isLoggedIn={Boolean(user)}
               context={{

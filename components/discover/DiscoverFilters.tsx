@@ -1,6 +1,7 @@
 "use client";
 
 import { COMMUNITY_CATEGORIES } from "@/lib/constants/community";
+import { getDiscoverSearchPlaceholder } from "@/lib/discover/search";
 import { cn } from "@/lib/utils/cn";
 import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -12,6 +13,7 @@ export function DiscoverSearchBar() {
   const searchParams = useSearchParams();
   const [pending, startTransition] = useTransition();
   const query = searchParams.get("q") ?? "";
+  const tab = searchParams.get("tab") ?? "communities";
 
   const updateQuery = useCallback(
     (value: string) => {
@@ -37,8 +39,9 @@ export function DiscoverSearchBar() {
       <input
         type="search"
         defaultValue={query}
-        placeholder="Community suchen…"
-        aria-label="Community suchen"
+        key={`${tab}-${query}`}
+        placeholder={getDiscoverSearchPlaceholder(tab)}
+        aria-label="Inhalte suchen"
         disabled={pending}
         onChange={(e) => updateQuery(e.target.value)}
         className="w-full rounded-2xl border border-unze-border bg-white py-3 pl-10 pr-4 text-sm shadow-sm outline-none focus:ring-2 focus:ring-unze-green/30"

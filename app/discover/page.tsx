@@ -104,7 +104,12 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         <DiscoverTabs />
       </Suspense>
 
-      <DiscoverContent tab={tab} query={query} category={category} />
+      <DiscoverContent
+        tab={tab}
+        query={query}
+        category={category}
+        migrationDetails={migrationStatus.details}
+      />
     </div>
   );
 }

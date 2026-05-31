@@ -18,7 +18,11 @@ function getActiveNavId(pathname: string): NavItemId | null {
   return item?.id ?? null;
 }
 
-export function BottomNav() {
+interface BottomNavProps {
+  unreadNotifications?: number;
+}
+
+export function BottomNav({ unreadNotifications = 0 }: BottomNavProps) {
   const pathname = usePathname();
   const [plusOpen, setPlusOpen] = useState(false);
   const activeId = getActiveNavId(pathname);
@@ -33,12 +37,14 @@ export function BottomNav() {
           {NAV_ITEMS.slice(0, 2).map((item) => {
             const Icon = item.icon;
             const active = activeId === item.id;
+            const showNotifBadge = item.id === "home" && unreadNotifications > 0;
+
             return (
               <Link
                 key={item.id}
                 href={item.href}
                 className={cn(
-                  "touch-target flex flex-1 flex-col items-center justify-center gap-0.5 py-1",
+                  "relative touch-target flex flex-1 flex-col items-center justify-center gap-0.5 py-1",
                   active ? "text-unze-green" : "text-unze-ink-muted",
                 )}
                 aria-current={active ? "page" : undefined}
@@ -47,6 +53,14 @@ export function BottomNav() {
                   className={cn("h-6 w-6", active && "stroke-[2.5]")}
                   aria-hidden
                 />
+                {showNotifBadge && (
+                  <span
+                    className="absolute right-[calc(50%-18px)] top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white"
+                    aria-label={`${unreadNotifications} ungelesene Benachrichtigungen`}
+                  >
+                    {unreadNotifications > 99 ? "99+" : unreadNotifications}
+                  </span>
+                )}
                 <span className="text-[10px] font-medium">{item.label}</span>
               </Link>
             );
