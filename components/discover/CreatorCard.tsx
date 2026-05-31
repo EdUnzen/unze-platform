@@ -1,4 +1,5 @@
 import { formatMemberCount } from "@/services/community/community.service";
+import { getCreatorProfilePath } from "@/services/creator/creator.service";
 import type { PlatformCreator } from "@/types/creator";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { BadgeCheck, Users } from "lucide-react";
@@ -9,15 +10,10 @@ interface CreatorCardProps {
 }
 
 export function CreatorCard({ creator }: CreatorCardProps) {
-  const searchQuery = creator.username ?? creator.name;
+  const profilePath = getCreatorProfilePath(creator);
 
-  return (
-    <Link
-      href={`/discover?tab=communities&q=${encodeURIComponent(searchQuery)}`}
-      className="block touch-target active:scale-[0.98]"
-      data-testid={`creator-card-${creator.id}`}
-    >
-      <article className="flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card">
+  const card = (
+    <article className="flex items-center gap-3 rounded-3xl bg-white p-4 shadow-card">
         <UserAvatar
           name={creator.name}
           seed={creator.id}
@@ -54,6 +50,23 @@ export function CreatorCard({ creator }: CreatorCardProps) {
           </span>
         )}
       </article>
+  );
+
+  if (!profilePath) {
+    return (
+      <div className="block" data-testid={`creator-card-${creator.id}`}>
+        {card}
+      </div>
+    );
+  }
+
+  return (
+    <Link
+      href={profilePath}
+      className="block touch-target active:scale-[0.98]"
+      data-testid={`creator-card-${creator.id}`}
+    >
+      {card}
     </Link>
   );
 }

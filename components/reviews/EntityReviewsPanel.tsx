@@ -4,7 +4,9 @@ import {
   submitReviewAction,
   submitReviewCommentAction,
 } from "@/app/review/actions";
+import { RatingSummary } from "@/components/ui/RatingSummary";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { hasReviews } from "@/lib/utils/ratings";
 import type { EntityReviewContext, ReviewWithComments } from "@/types/review";
 import { Star } from "lucide-react";
 import { useActionState } from "react";
@@ -48,13 +50,13 @@ export function EntityReviewsPanel({
     <section className="rounded-3xl bg-white p-4 shadow-card">
       <header className="mb-4 flex items-center justify-between gap-2">
         <h2 className="text-sm font-semibold text-unze-ink">Bewertungen</h2>
-        <span className="inline-flex items-center gap-1 text-sm font-semibold text-unze-ink">
-          <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
-          {context.rating}
-          <span className="text-xs font-normal text-unze-ink-muted">
-            ({context.reviewCount})
-          </span>
-        </span>
+        {hasReviews(items.length) && (
+          <RatingSummary
+            rating={context.rating}
+            reviewCount={items.length}
+            className="text-sm font-semibold text-unze-ink"
+          />
+        )}
       </header>
 
       {isLoggedIn && context.canReview && (

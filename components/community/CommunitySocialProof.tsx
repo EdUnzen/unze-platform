@@ -1,3 +1,4 @@
+import { hasReviews } from "@/lib/utils/ratings";
 import { SocialProofBar } from "@/components/social/SocialProofBar";
 import { isFeedEnabled } from "@/lib/features/platform-features";
 import { formatMemberCount } from "@/services/community/community.service";
@@ -25,24 +26,30 @@ export function CommunitySocialProof({
     ? formatWeeklyActivityLabel(weeklyPostCount)
     : formatWeeklyEventLabel(weeklyEventCount);
 
+  const items = [
+    {
+      icon: Users,
+      label: `${formatMemberCount(community.memberCount)} Mitglieder`,
+    },
+    ...(hasReviews(community.reviewCount)
+      ? [
+          {
+            icon: Star,
+            label: `${community.rating} · ${community.reviewCount} Bewertungen`,
+          },
+        ]
+      : []),
+    ...(activityLabel
+      ? [{ icon: isFeedEnabled() ? FileText : Calendar, label: activityLabel, highlight: true }]
+      : []),
+    ...(isFeedEnabled() && totalPostCount && totalPostCount > 0
+      ? [{ icon: FileText, label: `${totalPostCount} Beiträge gesamt` }]
+      : []),
+  ];
+
   return (
     <SocialProofBar
-      items={[
-        {
-          icon: Users,
-          label: `${formatMemberCount(community.memberCount)} Mitglieder`,
-        },
-        {
-          icon: Star,
-          label: `${community.rating} · ${community.reviewCount} Bewertungen`,
-        },
-        ...(activityLabel
-          ? [{ icon: isFeedEnabled() ? FileText : Calendar, label: activityLabel, highlight: true }]
-          : []),
-        ...(isFeedEnabled() && totalPostCount && totalPostCount > 0
-          ? [{ icon: FileText, label: `${totalPostCount} Beiträge gesamt` }]
-          : []),
-      ]}
+      items={items}
     />
   );
 }

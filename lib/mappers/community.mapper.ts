@@ -145,9 +145,6 @@ export function mapDiscoverGroupRow(row: {
 
   const base = mapCommunityGroupRow(row);
 
-  const groupRating = Number((row as { rating_avg?: number | string }).rating_avg);
-  const groupReviewCount = (row as { review_count?: number }).review_count;
-
   return {
     ...base,
     communitySlug: community.slug,
@@ -158,8 +155,8 @@ export function mapDiscoverGroupRow(row: {
     isVerified: community.is_verified,
     isTrending: community.is_trending,
     category: community.category,
-    rating: groupRating > 0 ? groupRating : Number(community.rating_avg) || 0,
-    reviewCount: groupReviewCount && groupReviewCount > 0 ? groupReviewCount : community.review_count,
+    rating: base.rating ?? 0,
+    reviewCount: base.reviewCount ?? 0,
     isPremium: community.visibility === "premium",
     viewCountWeekly: row.view_count_weekly ?? undefined,
     shareCount: row.share_count ?? undefined,

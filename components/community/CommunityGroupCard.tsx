@@ -7,8 +7,10 @@ import { ShareMenu } from "@/components/share/ShareMenu";
 import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { DiscoverGroup } from "@/types/community";
+import { RatingSummary } from "@/components/ui/RatingSummary";
+import { hasReviews } from "@/lib/utils/ratings";
 import { cn } from "@/lib/utils/cn";
-import { BadgeCheck, Lock, Star, TrendingUp, Users } from "lucide-react";
+import { BadgeCheck, Lock, TrendingUp, Users } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
 import { PlatformBadge } from "./PlatformBadge";
@@ -91,13 +93,15 @@ function CommunityGroupCardInner({
               <h3 className="line-clamp-1 text-base font-semibold tracking-tight text-unze-ink">
                 {group.title}
               </h3>
-              <div className="flex shrink-0 items-center gap-0.5 text-unze-ink-secondary">
-                <Star
-                  className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
-                  aria-hidden
+              {hasReviews(group.reviewCount) && (
+                <RatingSummary
+                  rating={group.rating}
+                  reviewCount={group.reviewCount}
+                  showCount={false}
+                  starClassName="h-3.5 w-3.5"
+                  className="shrink-0 text-unze-ink-secondary"
                 />
-                <span className="text-xs font-medium">{group.rating}</span>
-              </div>
+              )}
             </div>
 
             <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-unze-ink-secondary">

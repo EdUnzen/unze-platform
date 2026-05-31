@@ -50,8 +50,8 @@ export async function CommunityGroupSection({
         isVerified: community.isVerified,
         isTrending: community.isTrending ?? false,
         category: community.category,
-        rating: community.rating,
-        reviewCount: community.reviewCount,
+        rating: group.rating ?? 0,
+        reviewCount: group.reviewCount ?? 0,
         isPremium: community.visibility === "premium",
         engagement,
       };

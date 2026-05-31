@@ -1,3 +1,4 @@
+import { RatingSummary } from "@/components/ui/RatingSummary";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { CommunityStatusBadges } from "@/components/community/CommunityStatusBadges";
 import { ShareMenu } from "@/components/share/ShareMenu";
@@ -6,7 +7,7 @@ import { formatMemberCount } from "@/services/community/community.service";
 import { formatWeeklyViewsLabel } from "@/lib/utils/format-metrics";
 import type { Community } from "@/types/community";
 import { getAppUrl } from "@/lib/env";
-import { Eye, Share2, Star, Users } from "lucide-react";
+import { Eye, Share2, Users } from "lucide-react";
 
 interface CommunityHeaderProps {
   community: Community;
@@ -60,10 +61,11 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
           </strong>
           Mitglieder
         </span>
-        <span className="flex items-center gap-1.5">
-          <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
-          {community.rating} ({community.reviewCount})
-        </span>
+        <RatingSummary
+          rating={community.rating}
+          reviewCount={community.reviewCount}
+          className="text-sm text-unze-ink-secondary"
+        />
         {weeklyViews !== undefined && weeklyViews > 0 && (
           <span className="flex items-center gap-1.5">
             <Eye className="h-4 w-4" aria-hidden />

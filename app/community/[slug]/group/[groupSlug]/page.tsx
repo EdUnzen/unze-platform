@@ -1,3 +1,4 @@
+import { RatingSummary } from "@/components/ui/RatingSummary";
 import { FollowGroupButton } from "@/components/community/FollowGroupButton";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { EntityReviewsSection } from "@/components/reviews/EntityReviewsSection";
@@ -9,7 +10,7 @@ import { getCurrentUser } from "@/services/auth/auth.service";
 import { getCommunityEvents } from "@/services/events/event.service";
 import { isFollowingGroup } from "@/services/follow/follow.service";
 import { CommunityEventsSection } from "@/components/events/CommunityEventsSection";
-import { BadgeCheck, Star, Users, Wrench } from "lucide-react";
+import { BadgeCheck, Users, Wrench } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -80,10 +81,11 @@ export default async function GroupPage({ params }: GroupPageProps) {
               <Users className="h-4 w-4 text-unze-green" aria-hidden />
               {formatMemberCount(group.memberCount ?? 0)}
             </span>
-            <span className="inline-flex items-center gap-1">
-              <Star className="h-4 w-4 fill-amber-400 text-amber-400" aria-hidden />
-              {group.rating} ({group.reviewCount})
-            </span>
+            <RatingSummary
+              rating={group.rating}
+              reviewCount={group.reviewCount}
+              className="text-sm text-unze-ink-secondary"
+            />
             {priceLabel && (
               <span className="font-semibold text-unze-ink">{priceLabel}</span>
             )}

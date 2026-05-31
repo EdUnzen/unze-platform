@@ -1,3 +1,5 @@
+import { RatingSummary } from "@/components/ui/RatingSummary";
+import { hasReviews } from "@/lib/utils/ratings";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { Community } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
@@ -9,7 +11,7 @@ import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
 import { CardMetricsRow } from "@/components/share/CardMetricsRow";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
-import { BadgeCheck, FolderOpen, Heart, Lock, Star, TrendingUp, UserCheck, Users } from "lucide-react";
+import { BadgeCheck, FolderOpen, Heart, Lock, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
@@ -101,18 +103,14 @@ function CommunityCardInner({
               <h3 className="line-clamp-1 text-base font-semibold tracking-tight text-unze-ink">
                 {community.title}
               </h3>
-              <div className="flex shrink-0 items-center gap-0.5 text-unze-ink-secondary">
-                <Star
-                  className="h-3.5 w-3.5 fill-amber-400 text-amber-400"
-                  aria-hidden
+              {hasReviews(community.reviewCount) && (
+                <RatingSummary
+                  rating={community.rating}
+                  reviewCount={community.reviewCount}
+                  starClassName="h-3.5 w-3.5"
+                  className="shrink-0 text-unze-ink-secondary text-xs font-medium"
                 />
-                <span className="text-xs font-medium">{community.rating}</span>
-                {community.reviewCount > 0 && (
-                  <span className="text-[10px] text-unze-ink-muted">
-                    ({community.reviewCount})
-                  </span>
-                )}
-              </div>
+              )}
             </div>
 
             <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-unze-ink-secondary">

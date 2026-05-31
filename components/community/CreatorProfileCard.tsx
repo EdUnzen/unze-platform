@@ -1,7 +1,7 @@
-import { getCreatorById } from "@/services/creator/creator.service";
+import { getCreatorById, getCreatorProfilePath } from "@/services/creator/creator.service";
 import type { Community } from "@/types/community";
 import { UserAvatar } from "@/components/ui/UserAvatar";
-import { BadgeCheck, Users } from "lucide-react";
+import { BadgeCheck, ChevronRight, Users } from "lucide-react";
 import Link from "next/link";
 
 interface CreatorProfileCardProps {
@@ -10,10 +10,14 @@ interface CreatorProfileCardProps {
 
 export async function CreatorProfileCard({ community }: CreatorProfileCardProps) {
   const creator = await getCreatorById(community.creatorId);
+  const profilePath =
+    getCreatorProfilePath({
+      username: community.creatorUsername ?? creator?.username ?? null,
+      id: community.creatorId,
+    }) ?? null;
 
-  return (
-    <section className="rounded-3xl bg-white p-4 shadow-card" data-testid="creator-profile">
-      <h2 className="mb-3 text-sm font-semibold text-unze-ink">Creator</h2>
+  const cardContent = (
+    <>
       <div className="flex items-start gap-3">
         <UserAvatar
           name={community.creatorName}
@@ -37,7 +41,9 @@ export async function CreatorProfileCard({ community }: CreatorProfileCardProps)
             </p>
           )}
           {creator?.bio && (
-            <p className="mt-1 text-sm text-unze-ink-secondary">{creator.bio}</p>
+            <p className="mt-1 line-clamp-2 text-sm text-unze-ink-secondary">
+              {creator.bio}
+            </p>
           )}
           {creator && (
             <p className="mt-2 flex items-center gap-1 text-xs text-unze-ink-muted">
@@ -47,12 +53,31 @@ export async function CreatorProfileCard({ community }: CreatorProfileCardProps)
             </p>
           )}
         </div>
+        {profilePath && (
+          <ChevronRight className="h-5 w-5 shrink-0 text-unze-ink-muted" aria-hidden />
+        )}
       </div>
+    </>
+  );
+
+  return (
+    <section className="rounded-3xl bg-white p-4 shadow-card" data-testid="creator-profile">
+      <h2 className="mb-3 text-sm font-semibold text-unze-ink">Creator</h2>
+      {profilePath ? (
+        <Link
+          href={profilePath}
+          className="block touch-target rounded-2xl transition-colors hover:bg-unze-surface-muted/40 active:scale-[0.99]"
+        >
+          {cardContent}
+        </Link>
+      ) : (
+        cardContent
+      )}
       <Link
-        href="/discover?tab=creators"
+        href="/discover"
         className="mt-3 inline-block text-xs font-semibold text-unze-green"
       >
-        Mehr Creator entdecken →
+        Mehr entdecken →
       </Link>
     </section>
   );
