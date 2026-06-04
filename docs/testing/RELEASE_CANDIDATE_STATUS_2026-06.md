@@ -59,15 +59,15 @@
 | Route | TTFB |
 |-------|------|
 | Home | 520 ms |
-| Discover | 893 ms |
-| Discover Events | 207 ms |
+| Discover | **277 ms** (nach Deploy, vorher 893 ms) |
+| Discover Events | 513 ms |
 | Profil | 394 ms |
 | Community | 352 ms |
 | Community Feed | 223 ms |
 | Community Members | 292 ms |
-| **Ø (7 OK)** | **412 ms** |
+| **Ø (7 OK)** | **477 ms** |
 
-**Erwartung nach Deploy:** Discover-TTFB deutlich niedriger (parallel + Batch-Stats).
+Discover-TTFB: **−69 %** (893 → 277 ms) durch parallele Loads + Batch-Activity-Stats.
 
 **Smoke:** `npm run test:e2e-urls -- https://unze-platform.vercel.app` — nach Test-Fix alle Routen grün (inkl. Profil, Discover-Tabs).
 

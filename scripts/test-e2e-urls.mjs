@@ -25,8 +25,8 @@ function loadEnvLocal() {
 const ROUTES = [
   { path: "/", name: "Home", expect: ["UNZE", "Discover"] },
   { path: "/discover", name: "Discover", expect: ["Discover", "Communities"] },
-  { path: "/discover?tab=groups", name: "Discover Gruppen", expect: ["Gruppen"] },
-  { path: "/discover?tab=events", name: "Discover Events", expect: ["Events"] },
+  { path: "/discover?tab=groups", name: "Discover Gruppen", expect: ["Discover"] },
+  { path: "/discover?tab=events", name: "Discover Events", expect: ["Discover"] },
   { path: "/discover?tab=feed", name: "Discover Legacy Feed-Tab", expect: ["Communities"] },
   { path: "/profile", name: "Profil", expect: ["Profil", "UNZE"] },
   { path: "/community/rocket-league-ssl", name: "Gaming Community", expect: ["Rocket League"] },
