@@ -1,4 +1,4 @@
-import { loadNotifications } from "@/app/notifications/actions";
+import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ProfileHub } from "@/components/profile/ProfileHub";
 import { UserAvatar } from "@/components/ui/UserAvatar";
@@ -11,13 +11,13 @@ export default async function ProfilePage() {
   const configured = isSupabaseConfigured();
   const user = configured ? await getCurrentUser() : null;
 
-  const [profile, notifData, managesCommunities] = user
+  const [profile, unreadCount, managesCommunities] = user
     ? await Promise.all([
         getCurrentProfile(),
-        loadNotifications(true),
+        getUnreadNotificationCount(user.id),
         hasManagedCommunities(user.id),
       ])
-    : [null, null, false];
+    : [null, 0, false];
 
   const showCreatorHub =
     Boolean(user) && (Boolean(profile?.is_creator) || managesCommunities);
@@ -66,7 +66,7 @@ export default async function ProfilePage() {
         userId={user.id}
         email={user.email}
         profile={profile}
-        unreadCount={notifData?.unreadCount ?? 0}
+        unreadCount={unreadCount}
         showCreatorHub={showCreatorHub}
       />
     </div>

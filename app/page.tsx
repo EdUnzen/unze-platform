@@ -2,7 +2,7 @@ import { HomeHub } from "@/components/home/HomeHub";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getFollowedCommunities } from "@/services/community/community.service";
-import { getManagedCommunities } from "@/services/dashboard/dashboard.service";
+import { hasManagedCommunities } from "@/services/dashboard/dashboard.service";
 import { getUpcomingEventsForCommunities } from "@/services/events/event.service";
 import { getFollowedGroups } from "@/services/follow/follow.service";
 import {
@@ -26,7 +26,7 @@ export default async function HomePage() {
     user ? getFollowedCommunities() : Promise.resolve([]),
     user ? getFollowedGroups() : Promise.resolve([]),
     user ? getMyPendingApplications(user.id) : Promise.resolve([]),
-    user ? getManagedCommunities(user.id) : Promise.resolve([]),
+    user ? hasManagedCommunities(user.id) : Promise.resolve(false),
     user ? getUnreadNotificationCount(user.id) : Promise.resolve(0),
   ]);
 
@@ -60,7 +60,7 @@ export default async function HomePage() {
         upcomingEvents={upcomingEvents}
         pendingApplications={pendingApplications}
         unreadNotifications={unreadCount}
-        managedCount={managed.length}
+        managedCount={managed ? 1 : 0}
       />
     </div>
   );

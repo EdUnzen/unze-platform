@@ -6,6 +6,7 @@ import {
   withdrawJoinApplicationAction,
 } from "@/app/community/access-actions";
 import { toggleFollowCommunity } from "@/app/community/actions";
+import { CommunityActivityToggle } from "@/components/community/CommunityActivityToggle";
 import { SubscribeCommunityPanel } from "@/components/billing/SubscribeCommunityPanel";
 import { ApplicationStatusBadge, MemberRestrictionBadge } from "@/components/dashboard/StatusBadge";
 import { PLATFORM_IDENTITY_OPTIONS } from "@/lib/constants/access";
@@ -34,6 +35,7 @@ interface CommunityJoinPanelProps {
   isLoggedIn: boolean;
   questions?: JoinQuestion[];
   inviteCode?: string;
+  activityFeedEnabled?: boolean;
 }
 
 export function CommunityJoinPanel({
@@ -42,6 +44,7 @@ export function CommunityJoinPanel({
   isLoggedIn,
   questions = [],
   inviteCode,
+  activityFeedEnabled = true,
 }: CommunityJoinPanelProps) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -498,6 +501,13 @@ export function CommunityJoinPanel({
             </button>
           </div>
         </form>
+      )}
+
+      {(isMember || following) && (
+        <CommunityActivityToggle
+          communityId={community.id}
+          initialEnabled={activityFeedEnabled}
+        />
       )}
 
       {error && (

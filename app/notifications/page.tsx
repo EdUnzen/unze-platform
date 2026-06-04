@@ -1,15 +1,23 @@
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { loadNotifications } from "@/app/notifications/actions";
 import { getCurrentUser } from "@/services/auth/auth.service";
+import {
+  getNotifications,
+  markAllNotificationsRead,
+} from "@/services/notifications/notification-center.service";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 export default async function NotificationsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/login?next=/notifications");
 
-  const { notifications, unreadCount } = await loadNotifications();
+  await markAllNotificationsRead(user.id);
+  revalidatePath("/", "layout");
+
+  const notifications = await getNotifications(user.id, { limit: 50 });
+  const unreadCount = 0;
 
   return (
     <div className="page-padding">
@@ -20,8 +28,8 @@ export default async function NotificationsPage() {
       </div>
 
       <PageHeader
-        title="Benachrichtigungen"
-        subtitle="Bewerbungen, Moderation, Einladungen & Community-Events"
+        title="Benachrichtigungen & Aktivität"
+        subtitle="Community-Updates, Einladungen, Rollen und wichtige Ereignisse"
       />
 
       <NotificationCenter

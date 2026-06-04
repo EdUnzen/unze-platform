@@ -50,6 +50,22 @@ export async function savePremiumTransitionPlanAction(
     return { error: "Planung konnte nicht gespeichert werden." };
   }
 
+  if (scheduledAt && notifyMembers) {
+    const { publishPlatformEvent } = await import(
+      "@/services/platform/event-bus.service"
+    );
+    await publishPlatformEvent({
+      eventType: "community.premium_scheduled",
+      actorId: user.id,
+      communityId: community.id,
+      payload: {
+        communityTitle: community.title,
+        communitySlug: slug,
+        effectiveDate: new Date(scheduledAt).toLocaleDateString("de-DE"),
+      },
+    });
+  }
+
   revalidatePath(`/dashboard/community/${slug}/monetization`);
   return {
     success: true,

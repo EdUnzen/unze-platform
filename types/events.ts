@@ -26,7 +26,12 @@ export type PlatformEventType =
   | "billing.payment_succeeded"
   | "billing.payment_failed"
   | "badge.granted"
-  | "trust.score_changed";
+  | "trust.score_changed"
+  | "community.event_published"
+  | "community.group_created"
+  | "community.service_created"
+  | "community.update_published"
+  | "community.premium_scheduled";
 
 export type PlatformEventDomain =
   | "community"

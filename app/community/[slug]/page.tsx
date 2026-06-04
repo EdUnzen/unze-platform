@@ -129,6 +129,15 @@ export default async function CommunityPage({
 
   const user = await getCurrentUser();
 
+  let activityFeedEnabled = true;
+  if (user) {
+    const { getCommunityActivityPrefs } = await import(
+      "@/services/notifications/community-activity.service"
+    );
+    const prefs = await getCommunityActivityPrefs(user.id);
+    activityFeedEnabled = prefs[community.id] !== false;
+  }
+
   const needsGroupList = tab === "groups" || tab === "services";
 
   const needsEventsList = tab === "events";
@@ -367,6 +376,7 @@ export default async function CommunityPage({
                 slug={slug}
                 isLoggedIn={Boolean(user)}
                 questions={questions}
+                activityFeedEnabled={activityFeedEnabled}
                 inviteCode={
                   invite ?? community.joinAccess?.validInviteCode ?? undefined
                 }

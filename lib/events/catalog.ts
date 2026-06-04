@@ -253,6 +253,36 @@ export const PLATFORM_EVENT_CATALOG: Record<PlatformEventType, EventDefinition> 
     audit: { category: "settings", actionTemplate: "Trust-Score geändert" },
     discoverRelevant: true,
   },
+  "community.event_published": {
+    eventType: "community.event_published",
+    domain: "community",
+    label: "Event veröffentlicht",
+    audit: { category: "community_lifecycle", actionTemplate: "Neues Event" },
+  },
+  "community.group_created": {
+    eventType: "community.group_created",
+    domain: "community",
+    label: "Gruppe erstellt",
+    audit: { category: "community_lifecycle", actionTemplate: "Neue Gruppe" },
+  },
+  "community.service_created": {
+    eventType: "community.service_created",
+    domain: "community",
+    label: "Service erstellt",
+    audit: { category: "community_lifecycle", actionTemplate: "Neuer Service" },
+  },
+  "community.update_published": {
+    eventType: "community.update_published",
+    domain: "community",
+    label: "Community-Ankündigung",
+    audit: { category: "community_lifecycle", actionTemplate: "Ankündigung" },
+  },
+  "community.premium_scheduled": {
+    eventType: "community.premium_scheduled",
+    domain: "community",
+    label: "Premium geplant",
+    audit: { category: "community_lifecycle", actionTemplate: "Premium-Umstellung geplant" },
+  },
 };
 
 export function getEventDefinition(

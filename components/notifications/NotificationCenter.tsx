@@ -1,15 +1,12 @@
 "use client";
 
-import {
-  markAllReadAction,
-  markReadAction,
-} from "@/app/notifications/actions";
+import { markReadAction } from "@/app/notifications/actions";
 import {
   getNotificationActionLabel,
   resolveNotificationHref,
 } from "@/lib/notifications/resolve-link";
 import type { NotificationItem } from "@/types/governance";
-import { Bell, CheckCheck, ChevronRight } from "lucide-react";
+import { Bell, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
@@ -34,18 +31,11 @@ export function NotificationCenter({
   compact = false,
 }: NotificationCenterProps) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   function markRead(id: string) {
     startTransition(async () => {
       await markReadAction(id);
-      router.refresh();
-    });
-  }
-
-  function markAllRead() {
-    startTransition(async () => {
-      await markAllReadAction();
       router.refresh();
     });
   }
@@ -76,22 +66,10 @@ export function NotificationCenter({
 
   return (
     <div className="space-y-4" data-testid="notification-center">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-unze-ink-secondary">
-          {unreadCount > 0 ? `${unreadCount} ungelesen` : "Alle gelesen"}
-        </p>
-        {unreadCount > 0 && (
-          <button
-            type="button"
-            disabled={pending}
-            onClick={markAllRead}
-            className="inline-flex items-center gap-1 text-xs font-medium text-unze-green"
-          >
-            <CheckCheck className="h-3.5 w-3.5" aria-hidden />
-            Alle gelesen
-          </button>
-        )}
-      </div>
+      <p className="rounded-xl bg-unze-green-muted/40 px-3 py-2 text-xs text-unze-green-dark">
+        Beim Öffnen dieser Seite werden alle Einträge als gelesen markiert — der rote
+        Hinweis verschwindet automatisch.
+      </p>
 
       {notifications.length === 0 ? (
         <div className="rounded-2xl border border-unze-border bg-white p-8 text-center">

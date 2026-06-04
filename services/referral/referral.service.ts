@@ -151,13 +151,17 @@ export async function searchCreatorsForReferral(
   if (!supabase || term.length < 2) return [];
 
   const pattern = `%${term}%`;
+
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const client = createAdminClient() ?? supabase;
+
   const [byName, byUsername] = await Promise.all([
-    supabase
+    client
       .from("profiles")
       .select("id, display_name, username, is_creator, platform_role")
       .ilike("display_name", pattern)
       .limit(limit),
-    supabase
+    client
       .from("profiles")
       .select("id, display_name, username, is_creator, platform_role")
       .ilike("username", pattern)

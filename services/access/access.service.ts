@@ -512,6 +512,11 @@ export async function directJoinCommunity(
     autoMessagesEnabled: autoMessages,
   });
 
+  const { setCommunityActivityPref } = await import(
+    "@/services/notifications/community-activity.service"
+  );
+  await setCommunityActivityPref(userId, communityId, true);
+
   return { error: null };
 }
 

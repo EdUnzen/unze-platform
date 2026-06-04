@@ -65,6 +65,26 @@ export async function createEventAction(
 
   if (error) return { error };
 
+  const { fetchCommunityTitleById } = await import(
+    "@/services/community/community.repository"
+  );
+  const communityTitle = await fetchCommunityTitleById(communityId);
+
+  const { publishPlatformEvent } = await import(
+    "@/services/platform/event-bus.service"
+  );
+  await publishPlatformEvent({
+    eventType: "community.event_published",
+    actorId: user.id,
+    communityId,
+    subjectType: "event",
+    payload: {
+      eventTitle: title,
+      communityTitle: communityTitle ?? slug,
+      communitySlug: slug,
+    },
+  });
+
   revalidatePath(`/community/${slug}`);
   revalidatePath(`/dashboard/community/${slug}/events`);
   revalidatePath("/discover");

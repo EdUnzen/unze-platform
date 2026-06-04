@@ -111,7 +111,29 @@ export async function createCommunityGroup(input: {
       ).imageUrl;
   }
 
-  return createGroupInDb({ ...input, coverUrl });
+  const group = await createGroupInDb({ ...input, coverUrl });
+  if (group) {
+    const { fetchCommunityTitleById } = await import("./community.repository");
+    const communityTitle = await fetchCommunityTitleById(input.communityId);
+    const { publishPlatformEvent } = await import(
+      "@/services/platform/event-bus.service"
+    );
+    const eventType =
+      (input.groupType ?? "group") === "service"
+        ? "community.service_created"
+        : "community.group_created";
+    await publishPlatformEvent({
+      eventType,
+      communityId: input.communityId,
+      subjectType: "group",
+      subjectId: group.id,
+      payload: {
+        groupTitle: input.title,
+        communityTitle: communityTitle ?? "",
+      },
+    });
+  }
+  return group;
 }
 
 export async function updateCommunityGroup(

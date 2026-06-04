@@ -1,10 +1,7 @@
 "use server";
 
 import { getCurrentUser } from "@/services/auth/auth.service";
-import {
-  getNotificationPreferences,
-  upsertNotificationPreferences,
-} from "@/services/notifications/notification-center.service";
+import { upsertNotificationPreferences } from "@/services/notifications/notification-center.service";
 import { updateProfile } from "@/services/user/profile.service";
 import { revalidatePath } from "next/cache";
 

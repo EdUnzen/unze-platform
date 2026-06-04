@@ -203,6 +203,16 @@ export async function createCommunityInDb(input: {
   discoverEnabled?: boolean;
   creatorId: string;
 }): Promise<{ community: Community | null; error: string | null }> {
+  const { ensureProfileExists } = await import("@/services/user/profile.service");
+  const profileResult = await ensureProfileExists(input.creatorId);
+  if (profileResult.error) {
+    console.error("[community.repository] ensureProfileExists:", profileResult.error.message);
+    return {
+      community: null,
+      error: "Profil konnte nicht angelegt werden. Bitte erneut anmelden.",
+    };
+  }
+
   const supabase = await createClient();
   if (!supabase) {
     return { community: null, error: "Supabase nicht konfiguriert" };
@@ -383,4 +393,19 @@ export async function fetchCommunitySlugById(
 
   if (error || !data) return null;
   return data.slug;
+}
+
+export async function fetchCommunityTitleById(
+  communityId: string,
+): Promise<string | null> {
+  const supabase = await createClient();
+  if (!supabase) return null;
+
+  const { data } = await supabase
+    .from("communities")
+    .select("title")
+    .eq("id", communityId)
+    .maybeSingle();
+
+  return (data?.title as string) ?? null;
 }

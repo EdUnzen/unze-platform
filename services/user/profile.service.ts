@@ -16,6 +16,41 @@ function buildProfileRow(user: User) {
   };
 }
 
+/** Profil-Zeile per User-ID (Community-Create, auch ohne Session-User-Objekt). */
+export async function ensureProfileExists(userId: string): Promise<{ error: Error | null }> {
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const admin = createAdminClient();
+
+  if (admin) {
+    const { data: authData, error: authErr } = await admin.auth.admin.getUserById(userId);
+    if (!authErr && authData?.user) {
+      return ensureUserProfile(authData.user);
+    }
+    const { error } = await admin.from("profiles").upsert(
+      { id: userId, display_name: "UNZE Mitglied" },
+      { onConflict: "id" },
+    );
+    return { error: error ? new Error(error.message) : null };
+  }
+
+  const supabase = await createClient();
+  if (!supabase) return { error: new Error("Supabase nicht konfiguriert") };
+
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .maybeSingle();
+
+  if (existing) return { error: null };
+
+  const { error: insertErr } = await supabase.from("profiles").insert({
+    id: userId,
+    display_name: "UNZE Mitglied",
+  });
+  return { error: insertErr ?? null };
+}
+
 /** Stellt sicher, dass profiles-Zeile existiert (behebt creator_id FK bei Community-Create). */
 export async function ensureUserProfile(user: User): Promise<{ error: Error | null }> {
   const row = buildProfileRow(user);

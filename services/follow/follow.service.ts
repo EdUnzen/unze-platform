@@ -40,6 +40,14 @@ export async function followCommunity(targetCommunityId: string) {
     target_group_id: null,
     target_event_id: null,
   });
+
+  if (!error) {
+    const { setCommunityActivityPref } = await import(
+      "@/services/notifications/community-activity.service"
+    );
+    await setCommunityActivityPref(user.id, targetCommunityId, true);
+  }
+
   return { error };
 }
 
