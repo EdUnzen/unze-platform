@@ -213,6 +213,29 @@ export async function createCommunityInDb(input: {
     return null;
   }
 
+  const communityId = (data as { id: string }).id;
+  const { insertCreatorMembershipInDb } = await import("./member.repository");
+  const memberResult = await insertCreatorMembershipInDb(communityId, input.creatorId);
+
+  if (memberResult.error) {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const admin = createAdminClient();
+    if (admin) {
+      const { error: adminMemberErr } = await admin.from("community_members").insert({
+        community_id: communityId,
+        user_id: input.creatorId,
+        role: "creator",
+      });
+      if (adminMemberErr && !adminMemberErr.message.includes("duplicate")) {
+        console.error("[community.repository] creator member:", adminMemberErr.message);
+        return null;
+      }
+    } else {
+      console.error("[community.repository] creator member:", memberResult.error);
+      return null;
+    }
+  }
+
   return mapCommunityRow(data as CommunityWithCreator, {
     membership: { isMember: true, role: "creator" },
   });

@@ -144,7 +144,11 @@ export async function getDashboardCommunityAccess(
     .eq("user_id", userId)
     .maybeSingle();
 
-  const role = (membership?.role as CommunityRole) ?? null;
+  let role = (membership?.role as CommunityRole) ?? null;
+  if (!role && communityRow.creator_id === userId) {
+    role = "creator";
+  }
+
   const canAccess =
     Boolean(role) &&
     (hasCommunityPermission(role, "moderate") ||

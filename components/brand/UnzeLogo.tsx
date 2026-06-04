@@ -38,7 +38,7 @@ export function UnzeLogo({
         alt="UNZE"
         width={width}
         height={height}
-        className="block object-contain"
+        className="block object-contain mix-blend-multiply dark:mix-blend-normal"
         style={{
           height,
           width: "auto",

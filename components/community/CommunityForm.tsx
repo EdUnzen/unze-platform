@@ -7,13 +7,14 @@ import {
   VISIBILITY_OPTIONS,
 } from "@/lib/constants/community";
 import { getFocusOptionsForCategory } from "@/lib/constants/community-focus";
+import { CommaSeparatedInput } from "@/components/ui/CommaSeparatedInput";
 import { slugifyTitle } from "@/lib/utils/slug";
 import type { Community, CommunityFormInput } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
 import { useEffect, useState } from "react";
 
 const inputClass =
-  "w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-sm outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20";
+  "w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-base outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20 sm:text-sm";
 
 interface CommunityFormProps {
   mode: "create" | "edit";
@@ -59,8 +60,13 @@ export function CommunityForm({
     }
   }, [values.title, slugTouched]);
 
+  const focusDefault = (initial?.focusTags ?? values.focusTags).join(", ");
+  const tagsDefault = (initial?.tags ?? values.tags).join(", ");
+
   return (
-    <form action={action} className="space-y-5">
+    <form action={action} className="space-y-6">
+      <section className="space-y-4 rounded-3xl border border-unze-border/60 bg-white p-4 shadow-card sm:p-5">
+        <h2 className="text-sm font-bold text-unze-ink">1. Community-Design</h2>
       {/* Banner-Vorschau */}
       <div
         className={cn(
@@ -105,6 +111,10 @@ export function CommunityForm({
           ))}
         </div>
       </div>
+      </section>
+
+      <section className="space-y-4 rounded-3xl border border-unze-border/60 bg-white p-4 shadow-card sm:p-5">
+        <h2 className="text-sm font-bold text-unze-ink">2. Basis-Informationen</h2>
 
       <div>
         <label htmlFor="title" className="mb-1 block text-sm font-medium text-unze-ink">
@@ -169,33 +179,16 @@ export function CommunityForm({
         nicht manuell festlegen.
       </p>
 
-      <div>
-        <label htmlFor="focusTags" className="mb-1 block text-sm font-medium text-unze-ink">
-          Community-Fokus
-        </label>
-        <input
-          id="focusTags"
-          name="focusTags"
-          value={values.focusTags.join(", ")}
-          onChange={(e) =>
-            setValues((v) => ({
-              ...v,
-              focusTags: e.target.value
-                .split(",")
-                .map((t) => t.trim())
-                .filter(Boolean)
-                .slice(0, 6),
-            }))
-          }
-          className={inputClass}
-          placeholder={getFocusOptionsForCategory(values.category).join(", ")}
-        />
-        <p className="mt-1 text-xs text-unze-ink-muted">
-          Bis zu 6 Schwerpunkte, kommagetrennt — nur Orientierung
-        </p>
-      </div>
+      <CommaSeparatedInput
+        name="focusTags"
+        label="Community-Fokus"
+        defaultValue={focusDefault}
+        placeholder={getFocusOptionsForCategory(values.category).join(", ")}
+        hint="Schwerpunkte deiner Community — z. B. Coaching, Events"
+        maxTags={6}
+      />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <div>
           <label htmlFor="category" className="mb-1 block text-sm font-medium text-unze-ink">
             Kategorie
@@ -239,25 +232,17 @@ export function CommunityForm({
         </div>
       </div>
 
-      <div>
-        <label htmlFor="tags" className="mb-1 block text-sm font-medium text-unze-ink">
-          Tags
-        </label>
-        <input
-          id="tags"
-          name="tags"
-          value={values.tags.join(", ")}
-          onChange={(e) =>
-            setValues((v) => ({
-              ...v,
-              tags: e.target.value.split(",").map((t) => t.trim()).filter(Boolean),
-            }))
-          }
-          className={inputClass}
-          placeholder="Creator, Fitness, Networking"
-        />
-        <p className="mt-1 text-xs text-unze-ink-muted">Kommagetrennt, max. 8</p>
-      </div>
+      <CommaSeparatedInput
+        name="tags"
+        label="Tags"
+        defaultValue={tagsDefault}
+        placeholder="Creator, Fitness, Networking"
+        maxTags={8}
+      />
+      </section>
+
+      <section className="space-y-4 rounded-3xl border border-unze-border/60 bg-white p-4 shadow-card sm:p-5">
+        <h2 className="text-sm font-bold text-unze-ink">3. Einstellungen</h2>
 
       <div>
         <label htmlFor="externalUrl" className="mb-1 block text-sm font-medium text-unze-ink">
@@ -327,6 +312,7 @@ export function CommunityForm({
           </span>
         </span>
       </label>
+      </section>
 
       {error && (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">

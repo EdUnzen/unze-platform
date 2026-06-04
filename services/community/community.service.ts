@@ -125,7 +125,11 @@ export async function createCommunity(
   });
 
   if (!community) {
-    return { community: null, error: "Community konnte nicht erstellt werden." };
+    return {
+      community: null,
+      error:
+        "Community konnte nicht erstellt werden. Bitte Migration 026 ausführen oder erneut versuchen.",
+    };
   }
 
   const { publishPlatformEvent } = await import(

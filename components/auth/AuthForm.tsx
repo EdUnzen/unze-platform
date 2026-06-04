@@ -28,8 +28,10 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
           type="button"
           onClick={() => setMode("login")}
           className={cn(
-            "flex-1 rounded-xl py-2.5 text-sm font-medium transition-all",
-            isLogin ? "bg-white text-unze-ink shadow-sm" : "text-unze-ink-muted",
+            "flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all",
+            isLogin
+              ? "bg-unze-green text-white shadow-sm"
+              : "text-unze-ink-muted hover:text-unze-ink",
           )}
         >
           Anmelden
@@ -38,8 +40,10 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
           type="button"
           onClick={() => setMode("signup")}
           className={cn(
-            "flex-1 rounded-xl py-2.5 text-sm font-medium transition-all",
-            !isLogin ? "bg-white text-unze-ink shadow-sm" : "text-unze-ink-muted",
+            "flex-1 rounded-xl py-2.5 text-sm font-semibold transition-all",
+            !isLogin
+              ? "bg-unze-green text-white shadow-sm"
+              : "text-unze-ink-muted hover:text-unze-ink",
           )}
         >
           Registrieren
@@ -58,7 +62,7 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
               name="displayName"
               type="text"
               autoComplete="name"
-              className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-sm outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20"
+              className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-base outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20 sm:text-sm"
               placeholder="Dein Name"
             />
           </div>
@@ -74,7 +78,7 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
             type="email"
             required
             autoComplete="email"
-            className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-sm outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20"
+            className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-base outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20 sm:text-sm"
             placeholder="du@beispiel.de"
           />
         </div>
@@ -90,7 +94,7 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
             required
             minLength={8}
             autoComplete={isLogin ? "current-password" : "new-password"}
-            className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-sm outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20"
+            className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-base outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20 sm:text-sm"
             placeholder="••••••••"
           />
         </div>
@@ -117,7 +121,7 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
       </form>
 
       <div className="mt-6">
-        <OAuthProviderButtons returnTo={returnTo} />
+        <OAuthProviderButtons returnTo={returnTo} mode={mode} />
       </div>
     </div>
   );

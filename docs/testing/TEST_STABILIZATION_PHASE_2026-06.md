@@ -15,13 +15,13 @@
 
 | Kategorie | Anzahl | Blockiert Release? |
 |-----------|--------|-------------------|
-| **KRITISCH** | 2 | Ja (DB-Schema 025; OAuth-Setup) |
+| **KRITISCH** | 1 | Ja (OAuth-Setup in Supabase) |
 | **MITTEL** | 14 | Teilweise (UX/Design-Lücken) |
 | **NIEDRIG** | 11 | Nein (Feinschliff/Performance) |
 
 **Routen (Smoke):** 9/9 HTTP 200 lokal (`test:e2e-urls`).  
 **Build:** `npm run build` erfolgreich.  
-**Migrationen 021–024:** aktiv. **Migration 025:** fehlt in Supabase.
+**Migrationen 021–025:** aktiv. **Migration 026** (Creator-Mitgliedschaft RLS): `npm run db:migrate:026`.
 
 ---
 
@@ -60,28 +60,20 @@ Legende: ✓ erfüllt · ◐ teilweise / Setup nötig · ✗ fehlt/fehlerhaft
 
 Funktionen, die ohne Fix blockieren oder nur über Mocks laufen.
 
-### K1 — Migration `025_community_level_focus.sql` nicht in Supabase
+### K1 — ~~Migration 025~~ ✓ erledigt (2026-06-04)
 
-**Nachweis:**
+Spalten `focus_tags`, `community_level`, `level_score`, `show_member_area`, `role_title` in Supabase aktiv. `npm run migrate:demo` erfolgreich.
 
-```bash
-npm run migrate:demo   # → ✗ Migration 025 fehlt
-```
+### K1b — Community erstellen: Creator-Mitgliedschaft (Migration 026)
 
-Fehlende Spalten: `communities.focus_tags`, `community_level`, `level_score`, `show_member_area`, `community_members.role_title`.
+**Ursache:** Nach `communities`-Insert fehlte `community_members` mit Rolle `creator`; RLS erlaubte nur `member`/`verified_member` → Redirect auf Dashboard-Access scheiterte.
 
-**Auswirkung:**
+**Fix (App + DB):**
 
-- Level/Fokus/Rollen-Titel werden **nicht in der DB** gespeichert (nur Mock/Demo-Fallback in der App).
-- `npm run migrate:demo` schlägt fehl; Seed-Metadaten für Demo-Communities nicht persistiert.
-- Produktion/Vercel: Community-Features wirken inkonsistent, sobald keine Mocks greifen.
-
-**Fix (keine Daten löschen):**
-
-1. Supabase SQL Editor → `database/migrations/025_community_level_focus.sql` **einmal** ausführen.
-2. `npm run migrate:demo` → `npm run verify:demo`.
-
-**Datei:** `database/migrations/025_community_level_focus.sql` (nicht in `BUNDLE_021_024.sql` enthalten).
+- `insertCreatorMembershipInDb` + Admin-Fallback in `community.repository.ts`
+- RLS-Policy `community_members_insert_creator` → `npm run db:migrate:026`
+- Dashboard-Fallback: `creator_id === userId` ohne Member-Zeile
+- Mobil: `CommaSeparatedInput` für Fokus/Tags (kein Komma-Stripping beim Tippen)
 
 ---
 

@@ -28,6 +28,7 @@
     "db:migrate:pending": "node scripts/apply-pending-migrations.mjs",
     "db:migrate:021-024": "node scripts/apply-migrations-021-024.mjs",
     "db:migrate:025": "node scripts/apply-migration-025.mjs",
+    "db:migrate:026": "node scripts/apply-migration-026.mjs",
     "check:migration:025": "node scripts/check-migration-025.mjs",
     "check:stripe": "node scripts/check-stripe-config.mjs",
     "test:monetization": "node scripts/test-monetization-e2e.mjs",

@@ -29,9 +29,7 @@ export default async function CreateCommunityPage() {
         title="Community erstellen"
         subtitle="Als Creator startest du deine eigene Community auf UNZE"
       />
-      <div className="rounded-3xl bg-white p-4 shadow-card sm:p-6">
-        <CreateCommunityClient />
-      </div>
+      <CreateCommunityClient />
       <p className="mt-4 text-center text-xs text-unze-ink-muted">
         Mit dem Erstellen wirst du{" "}
         <Link href="/dashboard" className="font-medium text-unze-green">

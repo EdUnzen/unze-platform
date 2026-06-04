@@ -122,6 +122,26 @@ export async function removeMemberInDb(
   return { error: null };
 }
 
+export async function insertCreatorMembershipInDb(
+  communityId: string,
+  userId: string,
+): Promise<{ error: string | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase nicht konfiguriert" };
+
+  const { error } = await supabase.from("community_members").insert({
+    community_id: communityId,
+    user_id: userId,
+    role: "creator",
+  });
+
+  if (error?.message?.includes("duplicate")) {
+    return { error: null };
+  }
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
 export async function joinCommunityInDb(
   communityId: string,
   userId: string,

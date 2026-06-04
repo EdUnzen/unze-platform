@@ -30,7 +30,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const verified = params.verified === "1";
 
   return (
-    <div className="page-padding">
+    <div className="page-padding flex min-h-[calc(100dvh-4.5rem)] flex-col justify-center pb-28">
       <div className="mb-8 flex flex-col items-center text-center">
         <UnzeLogo href="/" size="lg" showTagline />
         <p className="mt-4 max-w-sm text-sm leading-relaxed text-unze-ink-secondary">
