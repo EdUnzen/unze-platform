@@ -1,6 +1,7 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { AttentionBadge } from "@/components/dashboard/StatusBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
 import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
@@ -25,6 +26,7 @@ export function DashboardCommunityCard({
     )?.label ?? "Offen";
   const pending = community.pendingApplicationCount ?? 0;
   const banner = resolveCommunityBannerDisplay(community);
+  const categoryFallback = getDefaultBannerPresetForCategory(community.category);
 
   return (
     <Link
@@ -38,7 +40,8 @@ export function DashboardCommunityCard({
           <CommunityCoverVisual
             seed={community.slug}
             bannerGradient={banner.gradient}
-            imageUrl={banner.imageUrl}
+            imageUrl={community.bannerUrl ?? banner.imageUrl}
+            fallbackImageUrl={categoryFallback.imageUrl}
             className="h-full"
             overlay="card"
           />

@@ -7,6 +7,7 @@ import type { CommunityLevel } from "@/lib/constants/community-level";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
 import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { Community } from "@/types/community";
@@ -22,13 +23,15 @@ interface CommunityHeaderProps {
 export function CommunityHeader({ community, displayLevel }: CommunityHeaderProps) {
   const level = displayLevel ?? community.communityLevel;
   const banner = resolveCommunityBannerDisplay(community);
+  const categoryFallback = getDefaultBannerPresetForCategory(community.category);
   return (
     <header className="overflow-hidden rounded-3xl bg-white shadow-card">
       <div className="relative h-44 sm:h-52">
         <CommunityCoverVisual
           seed={community.slug}
           bannerGradient={banner.gradient}
-          imageUrl={banner.imageUrl}
+          imageUrl={community.bannerUrl ?? banner.imageUrl}
+          fallbackImageUrl={categoryFallback.imageUrl}
           className="h-full"
           overlay="hero"
         />

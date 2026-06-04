@@ -11,6 +11,8 @@ import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
+import { getFocusTagStyle } from "@/lib/constants/focus-tag-styles";
 import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import { BadgeCheck, FolderOpen, Heart, Lock, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
@@ -38,6 +40,7 @@ function CommunityCardInner({
   const applicationStatus = community.joinAccess?.existingApplication?.status;
   const shareUrl = `${getAppUrl()}/community/${community.slug}`;
   const banner = resolveCommunityBannerDisplay(community);
+  const categoryFallback = getDefaultBannerPresetForCategory(community.category);
 
   return (
     <article
@@ -57,8 +60,9 @@ function CommunityCardInner({
             <CommunityCoverVisual
               seed={community.slug}
               bannerGradient={banner.gradient}
-              imageUrl={banner.imageUrl}
-              className="h-28"
+              imageUrl={community.bannerUrl ?? banner.imageUrl}
+              fallbackImageUrl={categoryFallback.imageUrl}
+              className="h-[10.5rem] sm:h-44"
               overlay="card"
             />
             <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 pr-12">
@@ -131,7 +135,10 @@ function CommunityCardInner({
               {community.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-unze-surface-muted px-2 py-0.5 text-[11px] font-medium text-unze-ink-secondary"
+                  className={cn(
+                    "rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                    getFocusTagStyle(tag),
+                  )}
                 >
                   {tag}
                 </span>

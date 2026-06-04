@@ -34,13 +34,14 @@ export function PlatformIcon({
       height={px}
       viewBox="0 0 24 24"
       className={cn(
-        "shrink-0 transition-opacity",
-        !active && "opacity-35 grayscale",
+        "shrink-0 transition-all",
+        active && "drop-shadow-sm",
+        !active && "opacity-55",
         className,
       )}
       aria-hidden
       fill="currentColor"
-      style={{ color: active ? color : "#94a3b8" }}
+      style={{ color: active ? color : "#9ca3af" }}
     >
       {ICON_PATHS[platform]}
     </svg>

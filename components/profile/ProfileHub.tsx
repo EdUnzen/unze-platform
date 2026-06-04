@@ -72,7 +72,7 @@ export function ProfileHub({
   return (
     <div className="space-y-5 pb-8">
       <section className="overflow-hidden rounded-3xl bg-white shadow-card">
-        <div className="relative h-28 bg-gradient-to-br from-unze-green-light via-unze-green to-unze-green-dark sm:h-32">
+        <div className="relative h-32 bg-gradient-to-br from-unze-green-light via-unze-green to-unze-green-dark sm:h-40">
           <div
             className="absolute inset-0 opacity-40"
             style={{
@@ -83,14 +83,14 @@ export function ProfileHub({
         </div>
 
         <div className="relative px-5 pb-6 pt-0">
-          <div className="-mt-[4.25rem] mb-3 flex justify-center sm:-mt-[4.75rem] sm:mb-4">
+          <div className="-mt-[5.25rem] mb-3 flex justify-center sm:-mt-[5.75rem] sm:mb-4">
             <UserAvatar
               name={displayName}
               seed={userId}
               avatarUrl={profile?.avatar_url}
               size="2xl"
               verifiedRing={profile?.is_verified}
-              className="h-[5.75rem] w-[5.75rem] border-[4px] border-white shadow-xl ring-2 ring-unze-green/15 sm:h-[6.25rem] sm:w-[6.25rem] sm:border-[5px]"
+              className="h-[5.75rem] w-[5.75rem] border-[5px] border-white shadow-[0_8px_24px_rgba(0,0,0,0.18)] ring-2 ring-unze-green/25 sm:h-[6.5rem] sm:w-[6.5rem]"
             />
           </div>
 

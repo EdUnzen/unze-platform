@@ -17,13 +17,14 @@ import {
 
 export async function enrichCommunitiesWithEngagement(
   communities: Community[],
+  viewerId?: string | null,
 ): Promise<Community[]> {
   if (communities.length === 0) return communities;
 
-  const user = await getCurrentUser();
-  const networkCounts = user
+  const userId = viewerId ?? (await getCurrentUser())?.id ?? null;
+  const networkCounts = userId
     ? await fetchNetworkFollowCounts(
-        user.id,
+        userId,
         communities.map((c) => c.id),
       )
     : {};

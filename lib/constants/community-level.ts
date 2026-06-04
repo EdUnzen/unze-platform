@@ -28,7 +28,12 @@ export const COMMUNITY_LEVEL_THRESHOLDS: Record<CommunityLevel, number> = {
   elite: 85,
 };
 
-/** Nur Diamant & Elite zeigen Diamant-Symbol */
+/** Anzeige: „Bronze-Level“ (kein „Bronze Community“) */
+export function getCommunityLevelDisplayLabel(level: CommunityLevel): string {
+  return `${COMMUNITY_LEVEL_LABELS[level]}-Level`;
+}
+
+/** @deprecated — Nutze getCommunityLevelDisplayLabel */
 export function levelUsesDiamondIcon(level: CommunityLevel): boolean {
   return level === "diamond" || level === "elite";
 }

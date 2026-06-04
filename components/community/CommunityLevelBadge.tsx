@@ -1,5 +1,5 @@
 import {
-  COMMUNITY_LEVEL_LABELS,
+  getCommunityLevelDisplayLabel,
   type CommunityLevel,
 } from "@/lib/constants/community-level";
 import {
@@ -35,7 +35,7 @@ export function CommunityLevelBadge({
         className={cn("h-3.5 w-3.5 shrink-0", variant === "dark" ? styles.iconClass : "opacity-90")}
         aria-hidden
       />
-      {COMMUNITY_LEVEL_LABELS[level]} Community
+      {getCommunityLevelDisplayLabel(level)}
     </span>
   );
 }

@@ -1,3 +1,4 @@
+import { getFocusTagStyle } from "@/lib/constants/focus-tag-styles";
 import { cn } from "@/lib/utils/cn";
 
 interface CommunityFocusChipsProps {
@@ -13,7 +14,10 @@ export function CommunityFocusChips({ focusTags, className }: CommunityFocusChip
       {focusTags.map((tag) => (
         <span
           key={tag}
-          className="rounded-full border border-unze-green/25 bg-unze-green-muted/50 px-2.5 py-1 text-xs font-medium text-unze-green-dark"
+          className={cn(
+            "rounded-full border px-2.5 py-1 text-xs font-semibold",
+            getFocusTagStyle(tag),
+          )}
         >
           {tag}
         </span>

@@ -1,14 +1,15 @@
 import type { CommunityLevel } from "@/lib/constants/community-level";
 import type { LucideIcon } from "lucide-react";
-import { Award, Crown, Gem, Medal, Shield, Sparkles } from "lucide-react";
+import { Award, Crown, Gem, Shield, Sparkles, Star } from "lucide-react";
 
+/** Bronze-Schild, Silber-Stern, Gold-Abzeichen, Platin-Kristall, Diamant, Elite-Krone */
 export const COMMUNITY_LEVEL_ICONS: Record<CommunityLevel, LucideIcon> = {
-  bronze: Medal,
-  silver: Award,
-  gold: Crown,
-  platinum: Shield,
+  bronze: Shield,
+  silver: Star,
+  gold: Award,
+  platinum: Sparkles,
   diamond: Gem,
-  elite: Sparkles,
+  elite: Crown,
 };
 
 export const COMMUNITY_LEVEL_BADGE_STYLES: Record<
@@ -18,12 +19,12 @@ export const COMMUNITY_LEVEL_BADGE_STYLES: Record<
   bronze: {
     pillLight: "bg-amber-100 text-amber-950 ring-1 ring-amber-300/60",
     pillDark: "bg-amber-500/25 text-amber-50 ring-1 ring-amber-200/40 backdrop-blur-md",
-    iconClass: "text-amber-600",
+    iconClass: "text-amber-300",
   },
   silver: {
     pillLight: "bg-slate-200 text-slate-900 ring-1 ring-slate-400/50",
-    pillDark: "bg-white/20 text-white ring-1 ring-white/30 backdrop-blur-md",
-    iconClass: "text-slate-300",
+    pillDark: "bg-white/25 text-white ring-1 ring-white/35 backdrop-blur-md",
+    iconClass: "text-slate-200",
   },
   gold: {
     pillLight: "bg-yellow-100 text-yellow-950 ring-1 ring-yellow-400/60",

@@ -36,7 +36,7 @@ export function OfficialPlatformsGrid({
   communityVerified = false,
 }: OfficialPlatformsGridProps) {
   return (
-    <div className="grid grid-cols-4 gap-2 sm:grid-cols-4">
+    <div className="grid grid-cols-4 gap-2.5 sm:grid-cols-4">
       {OFFICIAL_EXTERNAL_PLATFORMS.map((platform) => {
         const entry = findLink(links, platform, primaryPlatform, primaryUrl);
         const connected = Boolean(entry?.url);
@@ -45,15 +45,25 @@ export function OfficialPlatformsGrid({
           <>
             <span
               className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-2xl border transition-colors",
+                "flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors sm:h-11 sm:w-11",
                 connected
-                  ? "border-unze-green/40 bg-white shadow-sm"
-                  : "border-unze-border/80 bg-unze-surface-muted/30",
+                  ? "border-unze-green/50 bg-white shadow-md"
+                  : "border-unze-border bg-unze-surface-muted/50",
               )}
             >
-              <PlatformIcon platform={platform} size="md" active={connected} />
+              <PlatformIcon
+                platform={platform}
+                size="md"
+                active={connected}
+                className={connected ? "scale-110" : undefined}
+              />
             </span>
-            <span className="mt-1.5 block truncate text-center text-[10px] font-medium text-unze-ink">
+            <span
+              className={cn(
+                "mt-1.5 block truncate text-center text-[10px] font-medium",
+                connected ? "text-unze-ink" : "text-unze-ink-muted",
+              )}
+            >
               {PLATFORM_LABELS[platform]}
             </span>
             {connected && communityVerified && (

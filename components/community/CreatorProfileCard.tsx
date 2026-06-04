@@ -23,6 +23,8 @@ export async function CreatorProfileCard({ community }: CreatorProfileCardProps)
           seed={community.creatorId}
           avatarUrl={community.creatorAvatarUrl}
           size="lg"
+          verifiedRing={community.creatorIsVerified ?? creator?.isVerified}
+          className="ring-2 ring-unze-border/60 shadow-md"
         />
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">

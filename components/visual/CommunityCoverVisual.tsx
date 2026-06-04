@@ -9,7 +9,10 @@ import { useState } from "react";
 interface CommunityCoverVisualProps {
   seed: string;
   bannerGradient: string;
+  /** Primäres Banner (Upload oder Kategorie) */
   imageUrl?: string | null;
+  /** Fallback wenn primäres Bild fehlschlägt — immer Kategorie-Standard */
+  fallbackImageUrl: string;
   className?: string;
   overlay?: "card" | "hero" | "subtle";
 }
@@ -27,12 +30,18 @@ export function CommunityCoverVisual({
   seed,
   bannerGradient,
   imageUrl,
+  fallbackImageUrl,
   className,
   overlay = "card",
 }: CommunityCoverVisualProps) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(imageUrl) && !imageFailed;
-  const useNextImage = showImage && isNextImageUrl(imageUrl!);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+
+  const primary = imageUrl?.trim() || null;
+  const useFallback = !primary || failedUrl === primary;
+  const activeUrl = useFallback ? fallbackImageUrl : primary!;
+  const showImage = Boolean(activeUrl) && failedUrl !== activeUrl;
+
+  const useNextImage = showImage && isNextImageUrl(activeUrl);
   const variant = patternVariantForSeed(seed);
   const isHero = overlay === "hero";
 
@@ -41,55 +50,56 @@ export function CommunityCoverVisual({
       ? "from-black/55 via-black/15 to-transparent"
       : overlay === "subtle"
         ? "from-black/25 to-transparent"
-        : "from-black/35 via-black/5 to-transparent";
+        : "from-black/40 via-black/10 to-transparent";
 
   const imageSizes = isHero
     ? "100vw"
-    : "(max-width: 512px) 100vw, 384px";
+    : "(max-width: 512px) 100vw, 480px";
+
+  const handleError = (url: string) => {
+    setFailedUrl(url);
+  };
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
       <div
-        className={cn("absolute inset-0 bg-gradient-to-br", bannerGradient)}
+        className={cn(
+          "absolute inset-0 bg-gradient-to-br transition-opacity",
+          bannerGradient,
+          showImage ? "opacity-30" : "opacity-100",
+        )}
         aria-hidden
       />
 
       {showImage && useNextImage ? (
         <Image
-          src={imageUrl!}
+          src={activeUrl}
           alt=""
           fill
           sizes={imageSizes}
           className="object-cover"
           priority={isHero}
           loading={isHero ? "eager" : "lazy"}
-          onError={() => setImageFailed(true)}
+          onError={() => handleError(activeUrl)}
         />
       ) : null}
 
       {showImage && !useNextImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={imageUrl!}
+          src={activeUrl}
           alt=""
           loading={isHero ? "eager" : "lazy"}
           decoding="async"
           fetchPriority={isHero ? "high" : "auto"}
           className="absolute inset-0 h-full w-full object-cover"
-          onError={() => setImageFailed(true)}
+          onError={() => handleError(activeUrl)}
         />
       ) : null}
 
-      <AbstractNetworkPattern variant={variant} opacity={showImage ? 0.2 : 0.42} />
-
-      <div
-        className="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl"
-        aria-hidden
-      />
-      <div
-        className="absolute -bottom-6 left-1/4 h-24 w-24 rounded-full bg-white/8 blur-xl"
-        aria-hidden
-      />
+      {!showImage && (
+        <AbstractNetworkPattern variant={variant} opacity={0.35} />
+      )}
 
       <div
         className={cn(

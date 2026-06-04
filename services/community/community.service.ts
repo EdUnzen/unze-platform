@@ -32,7 +32,7 @@ async function withViewerContext(communities: Community[]): Promise<Community[]>
       user
         ? enrichCommunitiesForViewer(communities, user.id)
         : Promise.resolve(communities),
-      enrichCommunitiesWithEngagement(communities),
+      enrichCommunitiesWithEngagement(communities, user?.id ?? null),
     ]);
     if (!user) return withEngagement;
     const engagementById = new Map(withEngagement.map((c) => [c.id, c.engagement]));

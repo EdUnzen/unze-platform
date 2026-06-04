@@ -1,6 +1,7 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { FollowEventButton } from "@/components/events/FollowEventButton";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import type { Community } from "@/types/community";
 import type { CommunityEvent } from "@/types/event";
 import type { PlatformType } from "@/types/database";
@@ -61,6 +62,7 @@ export function EventDetailView({
           seed={`event-${event.id}`}
           bannerGradient={community.bannerGradient}
           imageUrl={event.coverUrl}
+          fallbackImageUrl={resolveCommunityBannerDisplay(community).imageUrl}
           className="h-44"
           overlay="hero"
         />

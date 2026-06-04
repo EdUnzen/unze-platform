@@ -50,6 +50,7 @@ export function BannerPresetPicker({
         seed={`preview-${category}`}
         bannerGradient={bannerGradient}
         imageUrl={previewImageUrl}
+        fallbackImageUrl={activePreset.imageUrl}
         className="h-36 rounded-2xl"
         overlay="card"
       />
@@ -82,6 +83,7 @@ export function BannerPresetPicker({
                   seed={preset.id}
                   bannerGradient={preset.gradient}
                   imageUrl={preset.imageUrl}
+                  fallbackImageUrl={preset.imageUrl}
                   className="h-16"
                   overlay="subtle"
                 />

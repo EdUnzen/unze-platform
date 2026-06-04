@@ -1,4 +1,5 @@
 import { ProfileSettingsForm } from "@/components/profile/ProfileSettingsForm";
+import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentProfile, getCurrentUser } from "@/services/auth/auth.service";
@@ -28,6 +29,7 @@ export default async function ProfileSettingsPage() {
         <CommunityCoverVisual
           seed={user.id}
           bannerGradient="from-unze-green-light via-unze-green to-unze-green-dark"
+          fallbackImageUrl={getDefaultBannerPresetForCategory("Allgemein").imageUrl}
           className="h-20"
           overlay="subtle"
         />

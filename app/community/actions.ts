@@ -60,6 +60,11 @@ export async function createCommunityAction(
   _prev: { error?: string } | null,
   formData: FormData,
 ): Promise<{ error?: string }> {
+  const user = await getCurrentUser();
+  if (!user) {
+    return { error: "Bitte melde dich an, um eine Community zu erstellen." };
+  }
+
   const input = parseCommunityForm(formData);
 
   if (!input.title.trim()) {
