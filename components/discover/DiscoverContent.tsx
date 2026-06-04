@@ -121,12 +121,14 @@ export async function DiscoverContent({
     );
   }
 
-  const communities = await getDiscoverCommunities();
+  const [communities, featuredGroups, featuredEvents] = await Promise.all([
+    getDiscoverCommunities(),
+    groupTypesAvailable
+      ? getDiscoverGroups(6, { groupType: "group" })
+      : getDiscoverGroups(6),
+    eventsAvailable ? getDiscoverEvents(4) : Promise.resolve([]),
+  ]);
   const filtered = filterDiscoverCommunities(communities, query, category);
-  const featuredGroups = groupTypesAvailable
-    ? await getDiscoverGroups(6, { groupType: "group" })
-    : await getDiscoverGroups(6);
-  const featuredEvents = eventsAvailable ? await getDiscoverEvents(4) : [];
 
   return (
     <div className="space-y-8">

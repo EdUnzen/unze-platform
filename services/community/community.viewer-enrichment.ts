@@ -18,27 +18,30 @@ export async function enrichCommunitiesForViewer(
 
   const ids = communities.map((c) => c.id);
 
-  const [{ data: memberships }, { data: follows }, { data: applications }] =
-    await Promise.all([
-      supabase
-        .from("community_members")
-        .select("community_id, role")
-        .eq("user_id", viewerId)
-        .in("community_id", ids)
-        .is("deleted_at", null),
-      supabase
-        .from("follows")
-        .select("target_community_id")
-        .eq("follower_id", viewerId)
-        .eq("target_type", "community")
-        .in("target_community_id", ids),
-      supabase
-        .from("community_join_applications")
-        .select("*")
-        .eq("user_id", viewerId)
-        .in("community_id", ids)
-        .order("created_at", { ascending: false }),
-    ]);
+  const [membershipsRes, followsRes, applicationsRes] = await Promise.all([
+    supabase
+      .from("community_members")
+      .select("community_id, role")
+      .eq("user_id", viewerId)
+      .in("community_id", ids)
+      .is("deleted_at", null),
+    supabase
+      .from("follows")
+      .select("target_community_id")
+      .eq("follower_id", viewerId)
+      .eq("target_type", "community")
+      .in("target_community_id", ids),
+    supabase
+      .from("community_join_applications")
+      .select("*")
+      .eq("user_id", viewerId)
+      .in("community_id", ids)
+      .order("created_at", { ascending: false }),
+  ]);
+
+  const memberships = membershipsRes.error ? [] : membershipsRes.data;
+  const follows = followsRes.error ? [] : followsRes.data;
+  const applications = applicationsRes.error ? [] : applicationsRes.data;
 
   const membershipByCommunity = new Map<string, CommunityRole>();
   for (const row of memberships ?? []) {

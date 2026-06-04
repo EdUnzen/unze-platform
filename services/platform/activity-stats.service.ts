@@ -8,31 +8,42 @@ export type CommunityActivityStats = {
   weeklyEventCount?: number;
 };
 
-async function countPostsForCommunity(
-  communityId: string,
+const POST_BATCH_LIMIT = 5000;
+
+async function countPostsByCommunityBatch(
+  communityIds: string[],
   sinceIso?: string,
-): Promise<number> {
+): Promise<Record<string, number>> {
+  const counts: Record<string, number> = {};
+  for (const id of communityIds) counts[id] = 0;
+
   const supabase = await createClient();
-  if (!supabase) return 0;
+  if (!supabase) return counts;
 
   let query = supabase
     .from("posts")
-    .select("*", { count: "exact", head: true })
-    .eq("community_id", communityId);
+    .select("community_id")
+    .in("community_id", communityIds);
 
   if (sinceIso) {
     query = query.gte("created_at", sinceIso);
   }
 
-  const { count, error } = await query;
+  const { data, error } = await query.limit(POST_BATCH_LIMIT);
   if (error) {
-    console.error("[activity-stats] count:", error.message);
-    return 0;
+    console.error("[activity-stats] batch:", error.message);
+    return counts;
   }
-  return count ?? 0;
+
+  for (const row of data ?? []) {
+    const id = row.community_id as string;
+    if (counts[id] !== undefined) counts[id] += 1;
+  }
+
+  return counts;
 }
 
-/** Aktivitäts-Metriken — Head-Counts statt alle Post-Zeilen laden */
+/** Aktivitäts-Metriken — Batch statt N× Head-Count (Discover-Performance). */
 export async function getCommunityActivityStats(
   communityIds: string[],
 ): Promise<Record<string, CommunityActivityStats>> {
@@ -56,15 +67,18 @@ export async function getCommunityActivityStats(
   since.setDate(since.getDate() - 7);
   const sinceIso = since.toISOString();
 
-  await Promise.all(
-    unique.map(async (id) => {
-      const [totalPostCount, weeklyPostCount] = await Promise.all([
-        countPostsForCommunity(id),
-        countPostsForCommunity(id, sinceIso),
-      ]);
-      result[id] = { ...result[id], totalPostCount, weeklyPostCount };
-    }),
-  );
+  const [totalByCommunity, weeklyByCommunity] = await Promise.all([
+    countPostsByCommunityBatch(unique),
+    countPostsByCommunityBatch(unique, sinceIso),
+  ]);
+
+  for (const id of unique) {
+    result[id] = {
+      ...result[id],
+      totalPostCount: totalByCommunity[id] ?? 0,
+      weeklyPostCount: weeklyByCommunity[id] ?? 0,
+    };
+  }
 
   return result;
 }

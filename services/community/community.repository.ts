@@ -55,7 +55,25 @@ export async function fetchCommunitiesFromDb(options?: {
     query = query.limit(options.limit);
   }
 
-  const { data, error } = await query;
+  let { data, error } = await query;
+
+  const missingDiscoverScore =
+    error &&
+    (error.code === "42703" ||
+      error.message?.includes("discover_score") ||
+      error.message?.includes("does not exist"));
+
+  if (missingDiscoverScore && options?.discover) {
+    let fallback = supabase
+      .from("communities")
+      .select(COMMUNITY_SELECT)
+      .in("visibility", ["public", "premium"])
+      .eq("discover_enabled", true);
+    if (options.trending) fallback = fallback.eq("is_trending", true);
+    fallback = fallback.order("member_count", { ascending: false });
+    if (options.limit) fallback = fallback.limit(options.limit);
+    ({ data, error } = await fallback);
+  }
 
   if (error) {
     console.error("[community.repository] fetchCommunities:", error.message);
