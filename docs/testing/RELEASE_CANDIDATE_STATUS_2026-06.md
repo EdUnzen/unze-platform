@@ -75,6 +75,8 @@ Discover-TTFB: **−69 %** (893 → 277 ms) durch parallele Loads + Batch-Activi
 
 ## Manuelle Checkliste (Mobile + Vercel)
 
+**Ausführlicher Testplan:** [`OAUTH_AND_E2E_CHECKLIST_2026-06.md`](./OAUTH_AND_E2E_CHECKLIST_2026-06.md) (OAuth Vercel/Supabase + Login → Community erstellen).
+
 - [ ] Discover: Tabs Communities / Gruppen / Events / Dienstleistungen
 - [ ] Community erstellen → Access-Dashboard `?welcome=1`
 - [ ] Home, Profil (Gast + eingeloggt), Demo-Community öffnen
