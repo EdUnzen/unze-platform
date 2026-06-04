@@ -24,10 +24,14 @@ export default async function DashboardMonetizationPage({
 
   const supabase = await createClient();
   let pricing = { monthly: "", semiannual: "", yearly: "" };
+  let premiumScheduledAt: string | null = null;
+  let premiumNotifyMembers = true;
   if (supabase) {
     const { data } = await supabase
       .from("communities")
-      .select("price_monthly_cents, price_semiannual_cents, price_yearly_cents")
+      .select(
+        "price_monthly_cents, price_semiannual_cents, price_yearly_cents, premium_transition_scheduled_at, premium_transition_notify_members",
+      )
       .eq("id", community.id)
       .maybeSingle();
     if (data) {
@@ -36,6 +40,12 @@ export default async function DashboardMonetizationPage({
         semiannual: data.price_semiannual_cents ? String(data.price_semiannual_cents / 100) : "",
         yearly: data.price_yearly_cents ? String(data.price_yearly_cents / 100) : "",
       };
+      premiumScheduledAt =
+        (data as { premium_transition_scheduled_at?: string | null })
+          .premium_transition_scheduled_at ?? null;
+      premiumNotifyMembers =
+        (data as { premium_transition_notify_members?: boolean })
+          .premium_transition_notify_members ?? true;
     }
   }
 
@@ -51,6 +61,8 @@ export default async function DashboardMonetizationPage({
         monetizationEnabled={community.monetizationEnabled ?? false}
         isCreator={community.viewerRole === "creator"}
         pricing={pricing}
+        premiumScheduledAt={premiumScheduledAt}
+        premiumNotifyMembers={premiumNotifyMembers}
       />
     </section>
   );

@@ -25,6 +25,7 @@ import {
 } from "@/services/follow/follow.service";
 import type { CommunityFormInput } from "@/types/community";
 import { resolveBannerFromPresetOrUrl } from "@/lib/constants/category-banners";
+import { discoverEnabledForVisibility } from "@/lib/community/visibility-rules";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { uploadCommunityBanner } from "@/services/user/banner.service";
@@ -53,14 +54,17 @@ function parseCommunityForm(formData: FormData): CommunityFormInput {
     bannerPresetId: banner.presetId,
     bannerUrl: banner.imageUrl,
     externalUrl: String(formData.get("externalUrl") ?? "").trim() || undefined,
-    discoverEnabled: formData.get("discoverEnabled") === "on",
+    discoverEnabled: discoverEnabledForVisibility(
+      String(formData.get("visibility") ?? "public") as CommunityFormInput["visibility"],
+      formData.get("discoverEnabled") === "on",
+    ),
   };
 }
 
 export async function createCommunityAction(
-  _prev: { error?: string } | null,
+  _prev: { error?: string; redirectTo?: string } | null,
   formData: FormData,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; redirectTo?: string }> {
   const user = await getCurrentUser();
   if (!user) {
     return { error: "Bitte melde dich an, um eine Community zu erstellen." };
@@ -99,7 +103,12 @@ export async function createCommunityAction(
   revalidatePath("/discover");
   revalidatePath("/");
   revalidatePath("/dashboard");
-  redirect(`/dashboard/community/${community.slug}/access?welcome=1`);
+  revalidatePath(`/community/${community.slug}`);
+  revalidatePath(`/dashboard/community/${community.slug}/access`);
+
+  return {
+    redirectTo: `/dashboard/community/${community.slug}/access?welcome=1`,
+  };
 }
 
 export async function updateCommunityAction(

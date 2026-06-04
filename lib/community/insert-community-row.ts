@@ -21,6 +21,9 @@ function isMissingColumnError(error: { code?: string; message?: string } | null)
     error.code === "PGRST204" ||
     msg.includes("focus_tags") ||
     msg.includes("banner_url") ||
+    msg.includes("access_status") ||
+    msg.includes("monetization_enabled") ||
+    msg.includes("discover_enabled") ||
     msg.includes("does not exist")
   );
 }
@@ -37,14 +40,40 @@ export function isAuthOrRlsError(error: { message?: string } | null): boolean {
   );
 }
 
-/** Varianten ohne fehlende Spalten (focus_tags, banner_url). */
+function stripOptionalColumns(
+  payload: CommunityInsertPayload,
+  keys: string[],
+): CommunityInsertPayload {
+  const next = { ...payload };
+  for (const key of keys) delete next[key];
+  return next;
+}
+
+/** Varianten ohne fehlende Spalten (focus_tags, banner_url, access_status, …). */
 export function buildCommunityInsertVariants(
   base: CommunityInsertPayload,
   withFocus: CommunityInsertPayload,
 ): CommunityInsertPayload[] {
   const seen = new Set<string>();
   const variants: CommunityInsertPayload[] = [];
-  for (const p of [withFocus, base, { ...base, banner_url: undefined }, { ...withFocus, focus_tags: undefined }]) {
+  const optionalKeys = [
+    "access_status",
+    "monetization_enabled",
+    "discover_enabled",
+  ] as const;
+  const candidates = [
+    withFocus,
+    base,
+    { ...base, banner_url: undefined },
+    { ...withFocus, focus_tags: undefined },
+    stripOptionalColumns(base, [...optionalKeys]),
+    stripOptionalColumns(withFocus, [...optionalKeys]),
+    stripOptionalColumns(
+      { ...base, banner_url: undefined },
+      [...optionalKeys],
+    ),
+  ];
+  for (const p of candidates) {
     const key = JSON.stringify(p);
     if (seen.has(key)) continue;
     seen.add(key);

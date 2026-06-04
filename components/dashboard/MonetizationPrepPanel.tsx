@@ -2,6 +2,7 @@
 
 import { saveCommunityPricingAction } from "@/app/billing/actions";
 import { toggleMonetizationPrepAction } from "@/app/dashboard/actions";
+import { PremiumTransitionPanel } from "@/components/dashboard/PremiumTransitionPanel";
 import { CommercialInfoDialog } from "@/components/referral/CommercialInfoDialog";
 import {
   PLATFORM_FEE_LABEL,
@@ -20,6 +21,8 @@ interface MonetizationPrepPanelProps {
   monetizationEnabled: boolean;
   isCreator: boolean;
   pricing?: { monthly: string; semiannual: string; yearly: string };
+  premiumScheduledAt?: string | null;
+  premiumNotifyMembers?: boolean;
 }
 
 export function MonetizationPrepPanel({
@@ -27,6 +30,8 @@ export function MonetizationPrepPanel({
   monetizationEnabled: initialEnabled,
   isCreator,
   pricing = { monthly: "", semiannual: "", yearly: "" },
+  premiumScheduledAt,
+  premiumNotifyMembers = true,
 }: MonetizationPrepPanelProps) {
   const [enabled, setEnabled] = useState(initialEnabled);
   const [pending, startTransition] = useTransition();
@@ -70,6 +75,13 @@ export function MonetizationPrepPanel({
           <CommercialInfoDialog triggerClassName="inline-flex items-center gap-1 rounded-xl bg-white/60 px-3 py-1.5 text-xs font-medium text-unze-ink-muted" />
         </div>
       </div>
+
+      <PremiumTransitionPanel
+        slug={slug}
+        isCreator={isCreator}
+        scheduledAt={premiumScheduledAt}
+        notifyMembers={premiumNotifyMembers}
+      />
 
       <div className="rounded-3xl bg-white p-4 shadow-card">
         <div className="flex items-center justify-between gap-4">

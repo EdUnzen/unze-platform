@@ -47,21 +47,26 @@ export const VISIBILITY_OPTIONS: {
   value: CommunityVisibility;
   label: string;
   description: string;
+  hint: string;
 }[] = [
   {
     value: "public",
     label: "Öffentlich",
-    description: "Jeder kann die Community finden und beitreten.",
+    description: "Jeder kann die Community finden und kostenlos beitreten.",
+    hint: "Ideal zum Start — keine Zahlung nötig.",
   },
   {
     value: "private",
     label: "Privat",
-    description: "Nur Mitglieder sehen Inhalte. Beitritt auf Einladung.",
+    description: "Nicht öffentlich sichtbar. Beitritt nur auf Einladung oder nach Freigabe.",
+    hint: "Erscheint nicht in Discover.",
   },
   {
     value: "premium",
-    label: "Premium",
-    description: "Sichtbar in Discover, Zugang später kostenpflichtig.",
+    label: "Premium (vorbereitet)",
+    description:
+      "Community startet kostenlos. Du kannst später im Dashboard auf kostenpflichtigen Zugang umstellen.",
+    hint: "Mitglieder werden vorher informiert — keine automatische Abbuchung.",
   },
 ];
 

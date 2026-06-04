@@ -10,6 +10,7 @@ import {
 import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
 import { getFocusOptionsForCategory } from "@/lib/constants/community-focus";
 import { CommaSeparatedInput } from "@/components/ui/CommaSeparatedInput";
+import { discoverEnabledForVisibility } from "@/lib/community/visibility-rules";
 import { slugifyTitle } from "@/lib/utils/slug";
 import type { Community, CommunityFormInput } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
@@ -290,7 +291,16 @@ export function CommunityForm({
                 name="visibility"
                 value={opt.value}
                 checked={values.visibility === opt.value}
-                onChange={() => setValues((v) => ({ ...v, visibility: opt.value }))}
+                onChange={() =>
+                  setValues((v) => ({
+                    ...v,
+                    visibility: opt.value,
+                    discoverEnabled: discoverEnabledForVisibility(
+                      opt.value,
+                      v.discoverEnabled,
+                    ),
+                  }))
+                }
                 className="mt-1"
               />
               <span>
@@ -300,31 +310,46 @@ export function CommunityForm({
                 <span className="block text-xs text-unze-ink-secondary">
                   {opt.description}
                 </span>
+                <span className="mt-1 block text-[11px] text-unze-green-dark">
+                  {opt.hint}
+                </span>
               </span>
             </label>
           ))}
         </div>
       </fieldset>
 
-      <label className="flex items-center gap-3 rounded-2xl border border-unze-border p-3">
-        <input
-          type="checkbox"
-          name="discoverEnabled"
-          checked={values.discoverEnabled}
-          onChange={(e) =>
-            setValues((v) => ({ ...v, discoverEnabled: e.target.checked }))
-          }
-          className="h-4 w-4 rounded border-unze-border text-unze-green"
-        />
-        <span>
-          <span className="block text-sm font-medium text-unze-ink">
-            In Discover anzeigen
+      {values.visibility !== "private" && (
+        <label className="flex items-center gap-3 rounded-2xl border border-unze-border p-3">
+          <input
+            type="checkbox"
+            name="discoverEnabled"
+            checked={values.discoverEnabled}
+            onChange={(e) =>
+              setValues((v) => ({ ...v, discoverEnabled: e.target.checked }))
+            }
+            className="h-4 w-4 rounded border-unze-border text-unze-green"
+          />
+          <span>
+            <span className="block text-sm font-medium text-unze-ink">
+              In Discover anzeigen
+            </span>
+            <span className="block text-xs text-unze-ink-secondary">
+              Community für Entdeckung und Vorschläge freigeben
+            </span>
           </span>
-          <span className="block text-xs text-unze-ink-secondary">
-            Community für Entdeckung und Vorschläge freigeben
-          </span>
-        </span>
-      </label>
+        </label>
+      )}
+
+      {values.visibility === "private" && (
+        <input type="hidden" name="discoverEnabled" value="off" />
+      )}
+
+      <p className="rounded-xl border border-unze-border/80 bg-unze-surface-muted/50 px-3 py-2.5 text-xs text-unze-ink-secondary">
+        Alle Communities starten <strong className="text-unze-ink">kostenlos</strong>.
+        Kostenpflichtigen Zugang kannst du später im Creator-Dashboard aktivieren —
+        Mitglieder werden vorher informiert und entscheiden selbst.
+      </p>
       </section>
 
       {error && (

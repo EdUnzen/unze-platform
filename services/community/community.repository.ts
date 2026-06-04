@@ -208,6 +208,9 @@ export async function createCommunityInDb(input: {
     return { community: null, error: "Supabase nicht konfiguriert" };
   }
 
+  const { discoverEnabledForVisibility, accessStatusForNewCommunity, monetizationEnabledOnCreate } =
+    await import("@/lib/community/visibility-rules");
+
   const basePayload = {
     slug: input.slug,
     title: input.title,
@@ -221,7 +224,12 @@ export async function createCommunityInDb(input: {
       "from-emerald-500/90 via-teal-600/80 to-cyan-700/70",
     banner_url: input.bannerUrl ?? null,
     external_url: input.externalUrl || null,
-    discover_enabled: input.discoverEnabled ?? true,
+    discover_enabled: discoverEnabledForVisibility(
+      input.visibility,
+      input.discoverEnabled,
+    ),
+    access_status: accessStatusForNewCommunity(input.visibility),
+    monetization_enabled: monetizationEnabledOnCreate(),
     creator_id: input.creatorId,
   };
 
@@ -238,21 +246,29 @@ export async function createCommunityInDb(input: {
 
   const variants = buildCommunityInsertVariants(basePayload, withFocus);
 
-  let { data, error: insertError } = await insertCommunityRow(supabase, variants);
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const admin = createAdminClient();
+
+  let data: Record<string, unknown> | null = null;
+  let insertError: { message: string; code?: string } | null = null;
+
+  if (admin) {
+    const adminResult = await insertCommunityRow(admin, variants);
+    data = adminResult.data;
+    insertError = adminResult.error;
+  }
 
   if (!data) {
-    const { createAdminClient } = await import("@/lib/supabase/admin");
-    const admin = createAdminClient();
-    if (admin) {
-      const adminResult = await insertCommunityRow(admin, variants);
-      data = adminResult.data;
-      insertError = adminResult.error;
-    } else if (insertError && isAuthOrRlsError(insertError)) {
-      insertError = {
-        ...insertError,
-        message: `${insertError.message} (SUPABASE_SERVICE_ROLE_KEY fehlt auf dem Server)`,
-      };
-    }
+    const userResult = await insertCommunityRow(supabase, variants);
+    data = userResult.data;
+    insertError = userResult.error;
+  }
+
+  if (!data && !admin && insertError && isAuthOrRlsError(insertError)) {
+    insertError = {
+      ...insertError,
+      message: `${insertError.message} (SUPABASE_SERVICE_ROLE_KEY fehlt auf dem Server)`,
+    };
   }
 
   if (!data && insertError) {
