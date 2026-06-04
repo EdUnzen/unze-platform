@@ -25,12 +25,17 @@ export function formatMemberCount(count: number): string {
 }
 
 async function withViewerContext(communities: Community[]): Promise<Community[]> {
-  const user = await getCurrentUser();
-  let result = communities;
-  if (user && communities.length > 0) {
-    result = await enrichCommunitiesForViewer(communities, user.id);
+  try {
+    const user = await getCurrentUser();
+    let result = communities;
+    if (user && communities.length > 0) {
+      result = await enrichCommunitiesForViewer(communities, user.id);
+    }
+    return await enrichCommunitiesWithEngagement(result);
+  } catch (error) {
+    console.error("[community.service] discover viewer context:", error);
+    return communities;
   }
-  return enrichCommunitiesWithEngagement(result);
 }
 
 function withDemoFallback(communities: Community[] | null): Community[] {

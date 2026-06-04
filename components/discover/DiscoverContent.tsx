@@ -25,7 +25,28 @@ interface DiscoverContentProps {
 
 const LEGACY_TABS = new Set(["feed", "trends", "new", "creators"]);
 
-export async function DiscoverContent({
+function DiscoverLoadError({ message }: { message?: string }) {
+  return (
+    <section
+      className="rounded-3xl border border-red-200 bg-red-50 p-6 text-center shadow-card"
+      role="alert"
+    >
+      <p className="text-sm font-semibold text-red-900">Discover konnte nicht geladen werden</p>
+      <p className="mt-2 text-sm text-red-800">
+        {message ??
+          "Ein temporärer Serverfehler ist aufgetreten. Bitte die Seite neu laden."}
+      </p>
+      <Link
+        href="/discover"
+        className="mt-4 inline-block rounded-xl bg-unze-green px-4 py-2.5 text-sm font-semibold text-white"
+      >
+        Erneut versuchen
+      </Link>
+    </section>
+  );
+}
+
+async function DiscoverContentInner({
   tab,
   query,
   category,
@@ -177,4 +198,14 @@ export async function DiscoverContent({
       )}
     </div>
   );
+}
+
+export async function DiscoverContent(props: DiscoverContentProps) {
+  try {
+    return await DiscoverContentInner(props);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("[DiscoverContent]", message, error);
+    return <DiscoverLoadError />;
+  }
 }

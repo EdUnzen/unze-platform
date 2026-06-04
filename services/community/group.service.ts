@@ -34,7 +34,12 @@ export async function getDiscoverGroups(
   if (groups.length === 0) return groups;
 
   const communityIds = [...new Set(groups.map((g) => g.communityId))];
-  const stats = await getCommunityActivityStats(communityIds);
+  let stats: Awaited<ReturnType<typeof getCommunityActivityStats>> = {};
+  try {
+    stats = await getCommunityActivityStats(communityIds);
+  } catch (error) {
+    console.error("[group.service] discover activity stats:", error);
+  }
 
   return groups.map((group) => {
     const visual = getGroupVisual(group.communitySlug, group.slug);

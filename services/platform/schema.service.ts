@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createPublicSupabaseClient } from "@/lib/supabase/public-client";
 import { unstable_cache } from "next/cache";
 
 export type PlatformMigrationDetails = {
@@ -19,6 +19,22 @@ export type PlatformMigrationStatus = {
   details: PlatformMigrationDetails;
 };
 
+const EMPTY_DETAILS: PlatformMigrationDetails = {
+  featureFlagsTable: false,
+  feedPostsFlag: false,
+  communityEventsTable: false,
+  groupTypeColumn: false,
+  communityReviewsTable: false,
+  groupReviewsTable: false,
+};
+
+export const EMPTY_MIGRATION_STATUS: PlatformMigrationStatus = {
+  coreSchema: false,
+  migration021: false,
+  migration022: false,
+  details: EMPTY_DETAILS,
+};
+
 function all021(details: PlatformMigrationDetails): boolean {
   return details.featureFlagsTable && details.feedPostsFlag;
 }
@@ -32,30 +48,17 @@ function all022(details: PlatformMigrationDetails): boolean {
   );
 }
 
+/** Kein createClient()/cookies() — darf in unstable_cache laufen. */
 async function probePlatformMigrationStatus(): Promise<PlatformMigrationStatus> {
-  const supabase = await createClient();
-  const emptyDetails: PlatformMigrationDetails = {
-    featureFlagsTable: false,
-    feedPostsFlag: false,
-    communityEventsTable: false,
-    groupTypeColumn: false,
-    communityReviewsTable: false,
-    groupReviewsTable: false,
-  };
-  const empty: PlatformMigrationStatus = {
-    coreSchema: false,
-    migration021: false,
-    migration022: false,
-    details: emptyDetails,
-  };
-  if (!supabase) return empty;
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) return EMPTY_MIGRATION_STATUS;
 
   const { error: coreError } = await supabase
     .from("communities")
     .select("id")
     .limit(1);
 
-  if (coreError) return empty;
+  if (coreError) return EMPTY_MIGRATION_STATUS;
 
   const [flagsTable, feedFlag, eventsTable, groupsType, communityReviews, groupReviews] =
     await Promise.all([
@@ -96,7 +99,12 @@ const getCachedPlatformMigrationStatus = unstable_cache(
 
 /** Prüft ob Kern- und Phase-1-Migrationen (021/022) aktiv sind — 60s Cache */
 export async function getPlatformMigrationStatus(): Promise<PlatformMigrationStatus> {
-  return getCachedPlatformMigrationStatus();
+  try {
+    return await getCachedPlatformMigrationStatus();
+  } catch (error) {
+    console.error("[schema.service] migration status:", error);
+    return EMPTY_MIGRATION_STATUS;
+  }
 }
 
 export function isPhase1MigrationsComplete(
