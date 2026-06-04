@@ -32,7 +32,8 @@
     "check:stripe": "node scripts/check-stripe-config.mjs",
     "test:monetization": "node scripts/test-monetization-e2e.mjs",
     "test:stabilization": "node scripts/stabilization-audit.mjs",
-    "brand:assets": "node scripts/generate-brand-assets.mjs"
+    "brand:assets": "node scripts/generate-brand-assets.mjs",
+    "measure:perf": "node scripts/measure-performance.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

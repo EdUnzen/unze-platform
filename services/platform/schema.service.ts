@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { unstable_cache } from "next/cache";
 
 export type PlatformMigrationDetails = {
   featureFlagsTable: boolean;
@@ -31,8 +32,7 @@ function all022(details: PlatformMigrationDetails): boolean {
   );
 }
 
-/** Prüft ob Kern- und Phase-1-Migrationen (021/022) aktiv sind */
-export async function getPlatformMigrationStatus(): Promise<PlatformMigrationStatus> {
+async function probePlatformMigrationStatus(): Promise<PlatformMigrationStatus> {
   const supabase = await createClient();
   const emptyDetails: PlatformMigrationDetails = {
     featureFlagsTable: false,
@@ -86,6 +86,17 @@ export async function getPlatformMigrationStatus(): Promise<PlatformMigrationSta
     migration022: all022(details),
     details,
   };
+}
+
+const getCachedPlatformMigrationStatus = unstable_cache(
+  probePlatformMigrationStatus,
+  ["unze-platform-migration-status"],
+  { revalidate: 60 },
+);
+
+/** Prüft ob Kern- und Phase-1-Migrationen (021/022) aktiv sind — 60s Cache */
+export async function getPlatformMigrationStatus(): Promise<PlatformMigrationStatus> {
+  return getCachedPlatformMigrationStatus();
 }
 
 export function isPhase1MigrationsComplete(

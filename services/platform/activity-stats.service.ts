@@ -8,7 +8,31 @@ export type CommunityActivityStats = {
   weeklyEventCount?: number;
 };
 
-/** Aktivitäts-Metriken — ohne Feed wenn deaktiviert */
+async function countPostsForCommunity(
+  communityId: string,
+  sinceIso?: string,
+): Promise<number> {
+  const supabase = await createClient();
+  if (!supabase) return 0;
+
+  let query = supabase
+    .from("posts")
+    .select("*", { count: "exact", head: true })
+    .eq("community_id", communityId);
+
+  if (sinceIso) {
+    query = query.gte("created_at", sinceIso);
+  }
+
+  const { count, error } = await query;
+  if (error) {
+    console.error("[activity-stats] count:", error.message);
+    return 0;
+  }
+  return count ?? 0;
+}
+
+/** Aktivitäts-Metriken — Head-Counts statt alle Post-Zeilen laden */
 export async function getCommunityActivityStats(
   communityIds: string[],
 ): Promise<Record<string, CommunityActivityStats>> {
@@ -28,36 +52,19 @@ export async function getCommunityActivityStats(
     return result;
   }
 
-  const supabase = await createClient();
-  if (!supabase) return result;
-
   const since = new Date();
   since.setDate(since.getDate() - 7);
   const sinceIso = since.toISOString();
 
-  const [totalRes, weeklyRes] = await Promise.all([
-    supabase.from("posts").select("community_id").in("community_id", unique),
-    supabase
-      .from("posts")
-      .select("community_id")
-      .in("community_id", unique)
-      .gte("created_at", sinceIso),
-  ]);
-
-  if (totalRes.error) {
-    console.error("[activity-stats] posts:", totalRes.error.message);
-    return result;
-  }
-
-  for (const row of totalRes.data ?? []) {
-    const id = row.community_id as string;
-    if (result[id]) result[id].totalPostCount += 1;
-  }
-
-  for (const row of weeklyRes.data ?? []) {
-    const id = row.community_id as string;
-    if (result[id]) result[id].weeklyPostCount += 1;
-  }
+  await Promise.all(
+    unique.map(async (id) => {
+      const [totalPostCount, weeklyPostCount] = await Promise.all([
+        countPostsForCommunity(id),
+        countPostsForCommunity(id, sinceIso),
+      ]);
+      result[id] = { ...result[id], totalPostCount, weeklyPostCount };
+    }),
+  );
 
   return result;
 }

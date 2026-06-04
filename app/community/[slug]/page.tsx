@@ -32,7 +32,20 @@ import { CreatorProfileCard } from "@/components/community/CreatorProfileCard";
 
 import { CommunityEventsSection } from "@/components/events/CommunityEventsSection";
 
-import { FeedPostList } from "@/components/feed/FeedPostList";
+import dynamic from "next/dynamic";
+
+const FeedPostList = dynamic(
+  () =>
+    import("@/components/feed/FeedPostList").then((mod) => mod.FeedPostList),
+  {
+    loading: () => (
+      <div className="space-y-3">
+        <div className="h-24 animate-pulse rounded-2xl bg-unze-surface-muted" />
+        <div className="h-24 animate-pulse rounded-2xl bg-unze-surface-muted" />
+      </div>
+    ),
+  },
+);
 
 import { ReportDialog } from "@/components/governance/ReportDialog";
 
@@ -121,6 +134,7 @@ export default async function CommunityPage({
   const needsEventsList = tab === "events";
 
   const needsFeed = tab === "feed" || tab === "overview";
+  const feedLimit = tab === "overview" ? 5 : 20;
 
   const needsOverviewExtras = tab === "overview";
 
@@ -159,13 +173,15 @@ export default async function CommunityPage({
       ? fetchCommunityPlatformLinksFromDb(community.id)
       : Promise.resolve([]),
 
-    getCommunityActivityStats([community.id]),
+    tab === "members"
+      ? Promise.resolve({ [community.id]: { weeklyPostCount: 0, totalPostCount: 0 } })
+      : getCommunityActivityStats([community.id]),
 
     needsMembers && community.showMemberArea
       ? fetchMembersForShowcase(community.id, slug)
       : Promise.resolve([]),
 
-    needsFeed ? getCommunityPosts(community.id, 20) : Promise.resolve([]),
+    needsFeed ? getCommunityPosts(community.id, feedLimit) : Promise.resolve([]),
   ]);
 
   const eventCountForLevel = needsEventsList

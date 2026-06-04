@@ -203,3 +203,49 @@ Ordner: `docs/testing/screenshots/`
 | `07-discover-events.png` | `/discover?tab=events` |
 
 Erzeugen: Dev-Server starten, dann `npm run screenshots:demo`.
+
+---
+
+## 10. Performance-Sprint (Juni 2026 — Runde 2)
+
+### Engpässe (vor Umsetzung)
+
+| Bereich | Engpass | Auswirkung |
+|---------|---------|------------|
+| Discover | `getPlatformMigrationStatus` bei jedem Request (6 Probes) | +6 DB-Roundtrips / Discover-Load |
+| Community | `getCommunityActivityStats` lud **alle** Post-Zeilen | Hohe Payload + CPU bei vielen Posts |
+| Community Overview | Feed-Limit 20, Anzeige nur 3 | 17 unnötige Post-Rows |
+| Community Members | Activity-Stats trotz Tab ohne Nutzung | 2+ Count-Queries |
+| Bilder | Cover nur `<img>`, kein `next/image` | Kein WebP/Resize für Supabase-URLs |
+| UX wahrgenommen | Keine `loading.tsx` auf Discover/Community/Profil | Leerer Screen bis RSC fertig |
+
+### Umgesetzte Optimierungen
+
+| # | Maßnahme | Geschätzter Nutzen |
+|---|----------|-------------------|
+| 1 | Migration-Status `unstable_cache` (60s) | Discover −6 Queries/Minute pro User |
+| 2 | Activity-Stats: `count` + `head: true` statt Full-Scan | Community −90 %+ Post-Payload |
+| 3 | Overview-Feed: Limit 5 statt 20 | −75 % Post-Query auf Overview |
+| 4 | Members-Tab: keine Activity-Stats | −2 Count-Queries |
+| 5 | `next/image` für Supabase/Unsplash-Cover | Kleinere Bild-Bytes, bessere LCP |
+| 6 | `loading.tsx` Discover / Community / Profil | Bessere wahrgenommene Ladezeit |
+| 7 | `FeedPostList` dynamic import (Code-Split) | Kleineres initiales JS auf Feed-Tab |
+| 8 | `npm run measure:perf` | Reproduzierbare TTFB-Messung |
+
+### Messung
+
+```bash
+npm run measure:perf
+npm run measure:perf https://unze-platform.vercel.app
+npm run test:e2e-urls
+```
+
+### Noch offen (ohne neue Features)
+
+| Punkt | Priorität |
+|-------|-----------|
+| Feed-Virtualisierung > 50 Posts | Niedrig |
+| Level-Berechnung als Cron statt On-Demand | Mittel |
+| Upload-Resize Banner max. 1200px | Mittel |
+| Lighthouse CI im Release | Niedrig |
+| Horizontales Swipe Discover-Cards | UX/Mittel |

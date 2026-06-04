@@ -3,6 +3,7 @@
 import { AbstractNetworkPattern } from "@/components/visual/AbstractNetworkPattern";
 import { patternVariantForSeed } from "@/lib/visual/seed-from-string";
 import { cn } from "@/lib/utils/cn";
+import Image from "next/image";
 import { useState } from "react";
 
 interface CommunityCoverVisualProps {
@@ -11,6 +12,15 @@ interface CommunityCoverVisualProps {
   imageUrl?: string | null;
   className?: string;
   overlay?: "card" | "hero" | "subtle";
+}
+
+function isNextImageUrl(url: string): boolean {
+  try {
+    const host = new URL(url).hostname;
+    return host.endsWith(".supabase.co") || host === "images.unsplash.com";
+  } catch {
+    return false;
+  }
 }
 
 export function CommunityCoverVisual({
@@ -22,7 +32,9 @@ export function CommunityCoverVisual({
 }: CommunityCoverVisualProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(imageUrl) && !imageFailed;
+  const useNextImage = showImage && isNextImageUrl(imageUrl!);
   const variant = patternVariantForSeed(seed);
+  const isHero = overlay === "hero";
 
   const overlayClass =
     overlay === "hero"
@@ -31,6 +43,10 @@ export function CommunityCoverVisual({
         ? "from-black/25 to-transparent"
         : "from-black/35 via-black/5 to-transparent";
 
+  const imageSizes = isHero
+    ? "100vw"
+    : "(max-width: 512px) 100vw, 384px";
+
   return (
     <div className={cn("relative overflow-hidden", className)}>
       <div
@@ -38,18 +54,31 @@ export function CommunityCoverVisual({
         aria-hidden
       />
 
-      {showImage && (
+      {showImage && useNextImage ? (
+        <Image
+          src={imageUrl!}
+          alt=""
+          fill
+          sizes={imageSizes}
+          className="object-cover"
+          priority={isHero}
+          loading={isHero ? "eager" : "lazy"}
+          onError={() => setImageFailed(true)}
+        />
+      ) : null}
+
+      {showImage && !useNextImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={imageUrl!}
           alt=""
-          loading={overlay === "hero" ? "eager" : "lazy"}
+          loading={isHero ? "eager" : "lazy"}
           decoding="async"
-          fetchPriority={overlay === "hero" ? "high" : "auto"}
+          fetchPriority={isHero ? "high" : "auto"}
           className="absolute inset-0 h-full w-full object-cover"
           onError={() => setImageFailed(true)}
         />
-      )}
+      ) : null}
 
       <AbstractNetworkPattern variant={variant} opacity={showImage ? 0.2 : 0.42} />
 
