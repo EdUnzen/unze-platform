@@ -16,16 +16,25 @@ const DEMO_META = {
     focus_tags: ["Coaching", "Analyse", "Turniere", "Community"],
     community_level: "diamond",
     level_score: 72,
+    category: "Gaming",
+    banner_url:
+      "https://images.unsplash.com/photo-1542751110-368ab147d270?auto=format&fit=crop&w=1200&q=80",
   },
   "business-circle-dach": {
     focus_tags: ["Netzwerk", "Marketing", "Investments", "Events"],
     community_level: "platinum",
     level_score: 58,
+    category: "Business",
+    banner_url:
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
   },
   "creator-lounge": {
     focus_tags: ["Community", "Collabs", "Events", "Netzwerk"],
     community_level: "gold",
     level_score: 46,
+    category: "Kreativität",
+    banner_url:
+      "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=1200&q=80",
   },
 };
 
@@ -72,6 +81,8 @@ async function main() {
         community_level: meta.community_level,
         level_score: meta.level_score,
         show_member_area: true,
+        banner_url: meta.banner_url,
+        category: meta.category,
       })
       .eq("slug", slug);
 

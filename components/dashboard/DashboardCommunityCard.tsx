@@ -1,6 +1,7 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { AttentionBadge } from "@/components/dashboard/StatusBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import { formatMemberCount } from "@/services/community/community.service";
@@ -23,6 +24,7 @@ export function DashboardCommunityCard({
       (o) => o.value === community.access?.accessStatus,
     )?.label ?? "Offen";
   const pending = community.pendingApplicationCount ?? 0;
+  const banner = resolveCommunityBannerDisplay(community);
 
   return (
     <Link
@@ -35,7 +37,8 @@ export function DashboardCommunityCard({
         <div className="relative h-24 overflow-hidden">
           <CommunityCoverVisual
             seed={community.slug}
-            bannerGradient={community.bannerGradient}
+            bannerGradient={banner.gradient}
+            imageUrl={banner.imageUrl}
             className="h-full"
             overlay="card"
           />

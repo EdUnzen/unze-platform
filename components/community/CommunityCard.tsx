@@ -11,6 +11,7 @@ import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import { BadgeCheck, FolderOpen, Heart, Lock, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
@@ -36,6 +37,7 @@ function CommunityCardInner({
     : null;
   const applicationStatus = community.joinAccess?.existingApplication?.status;
   const shareUrl = `${getAppUrl()}/community/${community.slug}`;
+  const banner = resolveCommunityBannerDisplay(community);
 
   return (
     <article
@@ -54,8 +56,8 @@ function CommunityCardInner({
           <div className="relative">
             <CommunityCoverVisual
               seed={community.slug}
-              bannerGradient={community.bannerGradient}
-              imageUrl={community.bannerUrl}
+              bannerGradient={banner.gradient}
+              imageUrl={banner.imageUrl}
               className="h-28"
               overlay="card"
             />

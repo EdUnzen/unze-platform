@@ -114,7 +114,17 @@ export async function createCommunity(
 
   await enableCreatorProfile(user.id);
 
-  const community = await createCommunityInDb({
+  const { resolveBannerFromPresetOrUrl } = await import(
+    "@/lib/constants/category-banners"
+  );
+  const banner = resolveBannerFromPresetOrUrl({
+    bannerUrl: input.bannerUrl,
+    bannerPresetId: input.bannerPresetId,
+    bannerGradient: input.bannerGradient,
+    category: input.category,
+  });
+
+  const { community, error: createError } = await createCommunityInDb({
     slug,
     title: input.title.trim(),
     description: input.description.trim(),
@@ -123,17 +133,25 @@ export async function createCommunity(
     tags: input.tags,
     focusTags: input.focusTags,
     visibility: input.visibility,
-    bannerGradient: input.bannerGradient,
+    bannerGradient: banner.gradient,
+    bannerUrl: banner.imageUrl,
     externalUrl: input.externalUrl,
     discoverEnabled: input.discoverEnabled ?? true,
     creatorId: user.id,
   });
 
   if (!community) {
+    const hint = createError?.includes("focus_tags")
+      ? " Datenbank-Migration 025 fehlt."
+      : createError?.includes("row-level security") ||
+          createError?.includes("creator")
+        ? " Bitte SUPABASE_SERVICE_ROLE_KEY auf Vercel setzen oder Migration 026 ausführen."
+        : "";
     return {
       community: null,
       error:
-        "Community konnte nicht erstellt werden. Bitte Migration 026 ausführen oder erneut versuchen.",
+        createError ??
+        `Community konnte nicht erstellt werden.${hint}`,
     };
   }
 
@@ -161,6 +179,18 @@ export async function updateCommunity(
   communityId: string,
   input: Partial<CommunityFormInput>,
 ): Promise<{ community: Community | null; error: string | null }> {
+  const banner =
+    input.bannerUrl || input.bannerPresetId || input.bannerGradient
+      ? (
+          await import("@/lib/constants/category-banners")
+        ).resolveBannerFromPresetOrUrl({
+          bannerUrl: input.bannerUrl,
+          bannerPresetId: input.bannerPresetId,
+          bannerGradient: input.bannerGradient,
+          category: input.category ?? "Allgemein",
+        })
+      : null;
+
   const community = await updateCommunityInDb(communityId, {
     title: input.title?.trim(),
     description: input.description?.trim(),
@@ -169,7 +199,8 @@ export async function updateCommunity(
     tags: input.tags,
     focusTags: input.focusTags,
     visibility: input.visibility,
-    bannerGradient: input.bannerGradient,
+    bannerGradient: banner?.gradient ?? input.bannerGradient,
+    bannerUrl: banner?.imageUrl ?? input.bannerUrl,
     externalUrl: input.externalUrl ?? null,
     discoverEnabled: input.discoverEnabled,
   });

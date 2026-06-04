@@ -24,23 +24,33 @@ import {
   unfollowEvent,
 } from "@/services/follow/follow.service";
 import type { CommunityFormInput } from "@/types/community";
+import { resolveBannerFromPresetOrUrl } from "@/lib/constants/category-banners";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 function parseCommunityForm(formData: FormData): CommunityFormInput {
+  const category = String(formData.get("category") ?? "Allgemein");
+  const customBannerUrl = String(formData.get("bannerUrl") ?? "").trim();
+  const bannerPresetId = String(formData.get("bannerPresetId") ?? "").trim() || undefined;
+  const banner = resolveBannerFromPresetOrUrl({
+    category,
+    bannerUrl: customBannerUrl || undefined,
+    bannerPresetId,
+    bannerGradient: String(formData.get("bannerGradient") ?? ""),
+  });
+
   return {
     title: String(formData.get("title") ?? ""),
     slug: String(formData.get("slug") ?? "").toLowerCase(),
     description: String(formData.get("description") ?? ""),
     platformType: String(formData.get("platformType") ?? "unze") as CommunityFormInput["platformType"],
-    category: String(formData.get("category") ?? "Allgemein"),
+    category,
     focusTags: parseTagsInput(String(formData.get("focusTags") ?? "")).slice(0, 6),
     tags: parseTagsInput(String(formData.get("tags") ?? "")).slice(0, 8),
     visibility: String(formData.get("visibility") ?? "public") as CommunityFormInput["visibility"],
-    bannerGradient: String(
-      formData.get("bannerGradient") ??
-        "from-emerald-500/90 via-teal-600/80 to-cyan-700/70",
-    ),
+    bannerGradient: banner.gradient,
+    bannerPresetId: banner.presetId,
+    bannerUrl: banner.imageUrl,
     externalUrl: String(formData.get("externalUrl") ?? "").trim() || undefined,
     discoverEnabled: formData.get("discoverEnabled") === "on",
   };

@@ -89,8 +89,29 @@ export async function createCommunityGroup(input: {
   isPublic?: boolean;
   groupType?: "group" | "service";
   priceCents?: number | null;
+  coverUrl?: string | null;
 }) {
-  return createGroupInDb(input);
+  const { createClient } = await import("@/lib/supabase/server");
+  const { getDefaultBannerPresetForCategory } = await import(
+    "@/lib/constants/category-banners"
+  );
+  const supabase = await createClient();
+  let coverUrl = input.coverUrl ?? null;
+
+  if (!coverUrl && supabase) {
+    const { data: community } = await supabase
+      .from("communities")
+      .select("category, banner_url")
+      .eq("id", input.communityId)
+      .maybeSingle();
+    coverUrl =
+      (community?.banner_url as string | null) ??
+      getDefaultBannerPresetForCategory(
+        (community?.category as string) ?? "Allgemein",
+      ).imageUrl;
+  }
+
+  return createGroupInDb({ ...input, coverUrl });
 }
 
 export async function updateCommunityGroup(

@@ -30,6 +30,7 @@
     "db:migrate:025": "node scripts/apply-migration-025.mjs",
     "db:migrate:026": "node scripts/apply-migration-026.mjs",
     "db:migrate:027": "node scripts/apply-migration-027.mjs",
+    "verify:community-create": "node scripts/verify-community-create.mjs",
     "check:migration:025": "node scripts/check-migration-025.mjs",
     "check:stripe": "node scripts/check-stripe-config.mjs",
     "test:monetization": "node scripts/test-monetization-e2e.mjs",

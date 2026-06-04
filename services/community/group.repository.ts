@@ -95,6 +95,7 @@ export async function createGroupInDb(input: {
   sortOrder?: number;
   groupType?: "group" | "service";
   priceCents?: number | null;
+  coverUrl?: string | null;
 }): Promise<CommunityGroup | null> {
   const supabase = await createClient();
   if (!supabase) return null;
@@ -110,6 +111,7 @@ export async function createGroupInDb(input: {
       sort_order: input.sortOrder ?? 0,
       group_type: input.groupType ?? "group",
       price_cents: input.priceCents ?? null,
+      cover_url: input.coverUrl ?? null,
     })
     .select()
     .single();

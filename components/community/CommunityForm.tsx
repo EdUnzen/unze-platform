@@ -1,17 +1,18 @@
 "use client";
 
+import { BannerPresetPicker } from "@/components/community/BannerPresetPicker";
 import {
-  BANNER_GRADIENTS,
   COMMUNITY_CATEGORIES,
   PLATFORM_OPTIONS,
   VISIBILITY_OPTIONS,
 } from "@/lib/constants/community";
+import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
 import { getFocusOptionsForCategory } from "@/lib/constants/community-focus";
 import { CommaSeparatedInput } from "@/components/ui/CommaSeparatedInput";
 import { slugifyTitle } from "@/lib/utils/slug";
 import type { Community, CommunityFormInput } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const inputClass =
   "w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-base outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20 sm:text-sm";
@@ -25,18 +26,20 @@ interface CommunityFormProps {
 }
 
 function toInitialValues(community?: Community): CommunityFormInput {
+  const category = community?.category ?? "Allgemein";
+  const defaultPreset = getDefaultBannerPresetForCategory(category);
   return {
     title: community?.title ?? "",
     slug: community?.slug ?? "",
     description: community?.description ?? "",
     platformType: community?.platformType ?? "unze",
-    category: community?.category ?? "Allgemein",
+    category,
     focusTags: community?.focusTags ?? [],
     tags: community?.tags ?? [],
     visibility: community?.visibility ?? "public",
-    bannerGradient:
-      community?.bannerGradient ??
-      "from-emerald-500/90 via-teal-600/80 to-cyan-700/70",
+    bannerPresetId: defaultPreset.id,
+    bannerUrl: community?.bannerUrl ?? "",
+    bannerGradient: community?.bannerGradient ?? defaultPreset.gradient,
     externalUrl: community?.externalUrl ?? "",
     discoverEnabled: community?.discoverEnabled ?? true,
   };
@@ -53,12 +56,25 @@ export function CommunityForm({
     toInitialValues(initial),
   );
   const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
+  const prevCategoryRef = useRef(values.category);
 
   useEffect(() => {
     if (!slugTouched && values.title) {
       setValues((v) => ({ ...v, slug: slugifyTitle(v.title) }));
     }
   }, [values.title, slugTouched]);
+
+  useEffect(() => {
+    if (prevCategoryRef.current === values.category) return;
+    prevCategoryRef.current = values.category;
+    const preset = getDefaultBannerPresetForCategory(values.category);
+    setValues((v) => ({
+      ...v,
+      bannerPresetId: preset.id,
+      bannerGradient: preset.gradient,
+      ...(mode === "create" ? { bannerUrl: "" } : {}),
+    }));
+  }, [values.category, mode]);
 
   const focusDefault = (initial?.focusTags ?? values.focusTags).join(", ");
   const tagsDefault = (initial?.tags ?? values.tags).join(", ");
@@ -67,50 +83,19 @@ export function CommunityForm({
     <form action={action} className="space-y-6">
       <section className="space-y-4 rounded-3xl border border-unze-border/60 bg-white p-4 shadow-card sm:p-5">
         <h2 className="text-sm font-bold text-unze-ink">1. Community-Design</h2>
-      {/* Banner-Vorschau */}
-      <div
-        className={cn(
-          "relative h-32 overflow-hidden rounded-2xl bg-gradient-to-br",
-          values.bannerGradient,
-        )}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-        <p className="absolute bottom-3 left-3 text-sm font-medium text-white">
-          Vorschau
-        </p>
-      </div>
-
-      <div>
-        <label className="mb-1 block text-sm font-medium text-unze-ink">
-          Banner-Farbe
-        </label>
-        <div className="flex flex-wrap gap-2">
-          {BANNER_GRADIENTS.map((g) => (
-            <label key={g.id} className="cursor-pointer">
-              <input
-                type="radio"
-                name="bannerGradient"
-                value={g.value}
-                checked={values.bannerGradient === g.value}
-                onChange={() =>
-                  setValues((v) => ({ ...v, bannerGradient: g.value }))
-                }
-                className="sr-only"
-              />
-              <span
-                className={cn(
-                  "block h-10 w-10 rounded-full bg-gradient-to-br ring-2 ring-offset-2",
-                  g.value,
-                  values.bannerGradient === g.value
-                    ? "ring-unze-green"
-                    : "ring-transparent",
-                )}
-                title={g.label}
-              />
-            </label>
-          ))}
-        </div>
-      </div>
+        <BannerPresetPicker
+          category={values.category}
+          selectedPresetId={values.bannerPresetId ?? "general-1"}
+          bannerGradient={values.bannerGradient}
+          customBannerUrl={values.bannerUrl}
+          onSelect={(preset) =>
+            setValues((v) => ({
+              ...v,
+              bannerPresetId: preset.id,
+              bannerGradient: preset.gradient,
+            }))
+          }
+        />
       </section>
 
       <section className="space-y-4 rounded-3xl border border-unze-border/60 bg-white p-4 shadow-card sm:p-5">

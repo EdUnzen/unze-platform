@@ -5,6 +5,7 @@ import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { GroupPriceBadge } from "@/components/ui/PriceBadge";
 import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
+import { resolveGroupCoverDisplay } from "@/lib/visual/resolve-banner";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { DiscoverGroup } from "@/types/community";
 import { RatingSummary } from "@/components/ui/RatingSummary";
@@ -30,6 +31,11 @@ function CommunityGroupCardInner({
   const shareUrl = `${getAppUrl()}${href}`;
   const visual = getGroupVisual(group.communitySlug, group.slug);
   const visualSeed = getGroupVisualSeed(group.communitySlug, group.slug);
+  const cover = resolveGroupCoverDisplay({
+    coverUrl: group.coverUrl,
+    bannerGradient: group.bannerGradient,
+    category: group.category,
+  });
 
   return (
     <article
@@ -48,7 +54,8 @@ function CommunityGroupCardInner({
           <div className="relative">
             <GroupCoverVisual
               seed={visualSeed}
-              bannerGradient={group.bannerGradient}
+              bannerGradient={cover.gradient}
+              imageUrl={cover.imageUrl}
               className={compact ? "h-24" : "h-28"}
               compact={compact}
             />

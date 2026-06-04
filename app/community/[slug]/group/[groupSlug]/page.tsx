@@ -4,6 +4,7 @@ import { FollowGroupButton } from "@/components/community/FollowGroupButton";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { EntityReviewsSection } from "@/components/reviews/EntityReviewsSection";
 import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
+import { resolveGroupCoverDisplay } from "@/lib/visual/resolve-banner";
 import { getGroupVisualSeed } from "@/lib/demo/group-visuals";
 import { formatMemberCount } from "@/services/community/community.service";
 import { getGroupBySlugs } from "@/services/community/group.service";
@@ -46,6 +47,11 @@ export default async function GroupPage({ params }: GroupPageProps) {
   const returnPath = `/community/${slug}/group/${groupSlug}`;
   const isService = group.groupType === "service";
   const priceLabel = formatPrice(group.priceCents, group.currency);
+  const cover = resolveGroupCoverDisplay({
+    coverUrl: group.coverUrl,
+    bannerGradient: group.bannerGradient,
+    category: group.category,
+  });
 
   return (
     <div className="page-padding">
@@ -61,7 +67,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
       <header className="mb-4 overflow-hidden rounded-3xl bg-white shadow-card">
         <GroupCoverVisual
           seed={getGroupVisualSeed(slug, groupSlug)}
-          bannerGradient={group.bannerGradient}
+          bannerGradient={cover.gradient}
+          imageUrl={cover.imageUrl}
           className="h-40"
         />
         <div className="p-4">

@@ -142,6 +142,29 @@ export async function insertCreatorMembershipInDb(
   return { error: null };
 }
 
+/** Admin zuerst (Vercel), sonst RLS-Policy 026 — Creator-Zeile muss existieren. */
+export async function ensureCreatorMembershipInDb(
+  communityId: string,
+  userId: string,
+): Promise<{ error: string | null }> {
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const admin = createAdminClient();
+
+  if (admin) {
+    const { error: adminErr } = await admin.from("community_members").insert({
+      community_id: communityId,
+      user_id: userId,
+      role: "creator",
+    });
+    if (!adminErr || adminErr.message.includes("duplicate")) {
+      return { error: null };
+    }
+    console.error("[member.repository] admin creator:", adminErr.message);
+  }
+
+  return insertCreatorMembershipInDb(communityId, userId);
+}
+
 export async function joinCommunityInDb(
   communityId: string,
   userId: string,

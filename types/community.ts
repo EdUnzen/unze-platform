@@ -130,6 +130,8 @@ export interface CommunityFormInput {
   tags: string[];
   visibility: CommunityVisibility;
   bannerGradient: string;
+  bannerPresetId?: string;
+  bannerUrl?: string;
   externalUrl?: string;
   discoverEnabled?: boolean;
 }

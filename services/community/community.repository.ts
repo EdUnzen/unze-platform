@@ -198,65 +198,77 @@ export async function createCommunityInDb(input: {
   focusTags?: string[];
   visibility: CommunityVisibility;
   bannerGradient?: string;
+  bannerUrl?: string | null;
   externalUrl?: string;
   discoverEnabled?: boolean;
   creatorId: string;
-}): Promise<Community | null> {
+}): Promise<{ community: Community | null; error: string | null }> {
   const supabase = await createClient();
-  if (!supabase) return null;
+  if (!supabase) {
+    return { community: null, error: "Supabase nicht konfiguriert" };
+  }
 
-  const { data, error } = await supabase
+  const basePayload = {
+    slug: input.slug,
+    title: input.title,
+    description: input.description,
+    platform_type: input.platformType,
+    category: input.category,
+    tags: input.tags,
+    visibility: input.visibility,
+    banner_gradient:
+      input.bannerGradient ??
+      "from-emerald-500/90 via-teal-600/80 to-cyan-700/70",
+    banner_url: input.bannerUrl ?? null,
+    external_url: input.externalUrl || null,
+    discover_enabled: input.discoverEnabled ?? true,
+    creator_id: input.creatorId,
+  };
+
+  const withFocus = {
+    ...basePayload,
+    focus_tags: input.focusTags?.length ? input.focusTags : [],
+  };
+
+  let { data, error } = await supabase
     .from("communities")
-    .insert({
-      slug: input.slug,
-      title: input.title,
-      description: input.description,
-      platform_type: input.platformType,
-      category: input.category,
-      tags: input.tags,
-      focus_tags: input.focusTags?.length ? input.focusTags : [],
-      visibility: input.visibility,
-      banner_gradient:
-        input.bannerGradient ??
-        "from-emerald-500/90 via-teal-600/80 to-cyan-700/70",
-      external_url: input.externalUrl || null,
-      discover_enabled: input.discoverEnabled ?? true,
-      creator_id: input.creatorId,
-    })
+    .insert(withFocus)
     .select(COMMUNITY_SELECT)
     .single();
 
+  const missingFocusColumn =
+    error &&
+    (error.code === "42703" ||
+      error.code === "PGRST204" ||
+      error.message?.includes("focus_tags"));
+
+  if (missingFocusColumn) {
+    ({ data, error } = await supabase
+      .from("communities")
+      .insert(basePayload)
+      .select(COMMUNITY_SELECT)
+      .single());
+  }
+
   if (error || !data) {
-    console.error("[community.repository] create:", error?.message);
-    return null;
+    const msg = error?.message ?? "Unbekannter Datenbankfehler";
+    console.error("[community.repository] create:", msg);
+    return { community: null, error: msg };
   }
 
   const communityId = (data as { id: string }).id;
-  const { insertCreatorMembershipInDb } = await import("./member.repository");
-  const memberResult = await insertCreatorMembershipInDb(communityId, input.creatorId);
+  const { ensureCreatorMembershipInDb } = await import("./member.repository");
+  const memberResult = await ensureCreatorMembershipInDb(communityId, input.creatorId);
 
   if (memberResult.error) {
-    const { createAdminClient } = await import("@/lib/supabase/admin");
-    const admin = createAdminClient();
-    if (admin) {
-      const { error: adminMemberErr } = await admin.from("community_members").insert({
-        community_id: communityId,
-        user_id: input.creatorId,
-        role: "creator",
-      });
-      if (adminMemberErr && !adminMemberErr.message.includes("duplicate")) {
-        console.error("[community.repository] creator member:", adminMemberErr.message);
-        return null;
-      }
-    } else {
-      console.error("[community.repository] creator member:", memberResult.error);
-      return null;
-    }
+    console.error("[community.repository] creator member:", memberResult.error);
   }
 
-  return mapCommunityRow(data as CommunityWithCreator, {
+  const community = mapCommunityRow(data as CommunityWithCreator, {
     membership: { isMember: true, role: "creator" },
   });
+
+  return { community, error: null };
 }
 
 export async function updateCommunityInDb(
@@ -270,6 +282,7 @@ export async function updateCommunityInDb(
     focusTags: string[];
     visibility: CommunityVisibility;
     bannerGradient: string;
+    bannerUrl?: string | null;
     externalUrl: string | null;
     discoverEnabled: boolean;
     isTrending: boolean;
@@ -288,6 +301,7 @@ export async function updateCommunityInDb(
   if (input.focusTags !== undefined) payload.focus_tags = input.focusTags;
   if (input.visibility !== undefined) payload.visibility = input.visibility;
   if (input.bannerGradient !== undefined) payload.banner_gradient = input.bannerGradient;
+  if (input.bannerUrl !== undefined) payload.banner_url = input.bannerUrl;
   if (input.externalUrl !== undefined) payload.external_url = input.externalUrl;
   if (input.discoverEnabled !== undefined) payload.discover_enabled = input.discoverEnabled;
   if (input.isTrending !== undefined) payload.is_trending = input.isTrending;
