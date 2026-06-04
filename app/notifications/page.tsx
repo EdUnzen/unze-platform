@@ -13,10 +13,19 @@ export default async function NotificationsPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/auth/login?next=/notifications");
 
-  await markAllNotificationsRead(user.id);
-  revalidatePath("/", "layout");
+  try {
+    await markAllNotificationsRead(user.id);
+    revalidatePath("/", "layout");
+  } catch (error) {
+    console.error("[notifications] markAllRead:", error);
+  }
 
-  const notifications = await getNotifications(user.id, { limit: 50 });
+  let notifications: Awaited<ReturnType<typeof getNotifications>> = [];
+  try {
+    notifications = await getNotifications(user.id, { limit: 50 });
+  } catch (error) {
+    console.error("[notifications] load:", error);
+  }
   const unreadCount = 0;
 
   return (

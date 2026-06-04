@@ -32,8 +32,8 @@ TopBar-Dashboard-Link und +-Menü „Dashboard“ nur wenn `showDashboard === tr
 | Daten | Mechanismus | TTL |
 |-------|-------------|-----|
 | Discover-Liste | `unstable_cache` | 60s |
-| Community by slug | `unstable_cache` pro slug/user | 30s |
-| Dashboard Pending | `unstable_cache` pro community | 30s |
+| Community by slug | Kein `unstable_cache` (cookies/Viewer) — direkter DB-Fetch | — |
+| Dashboard Pending | Direkt (auth) | — |
 | Profil | React `cache()` pro Request | Request |
 | Unread count | React `cache()` pro Request | Request |
 

@@ -16,18 +16,27 @@ export async function fetchCommunityEntityCounts(
   }
 
   const now = new Date().toISOString();
-  const [groupsRes, eventsRes] = await Promise.all([
-    supabase
-      .from("community_groups")
-      .select("group_type")
-      .eq("community_id", communityId)
-      .eq("is_public", true),
-    supabase
-      .from("community_events")
-      .select("id", { count: "exact", head: true })
-      .eq("community_id", communityId)
-      .gte("starts_at", now),
-  ]);
+  const groupsRes = await supabase
+    .from("community_groups")
+    .select("group_type")
+    .eq("community_id", communityId)
+    .eq("is_public", true);
+
+  let upcomingEventCount = 0;
+  const eventsRes = await supabase
+    .from("community_events")
+    .select("id", { count: "exact", head: true })
+    .eq("community_id", communityId)
+    .gte("starts_at", now);
+
+  if (!eventsRes.error) {
+    upcomingEventCount = eventsRes.count ?? 0;
+  } else {
+    console.warn(
+      "[community-counts] events:",
+      eventsRes.error.message,
+    );
+  }
 
   let regularGroupCount = 0;
   let serviceGroupCount = 0;
@@ -39,6 +48,6 @@ export async function fetchCommunityEntityCounts(
   return {
     regularGroupCount,
     serviceGroupCount,
-    upcomingEventCount: eventsRes.count ?? 0,
+    upcomingEventCount,
   };
 }

@@ -1,43 +1,69 @@
+import { mapCommunityRow } from "@/lib/mappers/community.mapper";
+import { createPublicSupabaseClient } from "@/lib/supabase/public-client";
+import type { Community } from "@/types/community";
+import type { CommunityWithCreator } from "@/types/database";
 import { unstable_cache } from "next/cache";
-import {
-  fetchCommunitiesFromDb,
-  fetchCommunityBySlugFromDb,
-} from "@/services/community/community.repository";
-import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
-import { countPendingReportsFromDb } from "@/services/governance/report.repository";
 
 const DISCOVER_LIST_KEY = "discover-list-v1";
 
-/** Öffentliche Discover-Liste (ohne Viewer-Kontext). */
+const COMMUNITY_SELECT = `
+  *,
+  creator:profiles!communities_creator_id_fkey (
+    id,
+    display_name,
+    username,
+    avatar_url,
+    is_verified
+  )
+`;
+
+/**
+ * Discover-Liste ohne cookies() — darf in unstable_cache laufen.
+ * Viewer-Kontext (Follow/Member) wird danach in community.service ergänzt.
+ */
+async function fetchDiscoverListForCache(): Promise<Community[] | null> {
+  const supabase = createPublicSupabaseClient();
+  if (!supabase) return null;
+
+  const query = supabase
+    .from("communities")
+    .select(COMMUNITY_SELECT)
+    .in("visibility", ["public", "premium"])
+    .eq("discover_enabled", true)
+    .order("member_count", { ascending: false })
+    .limit(50);
+
+  let { data, error } = await query;
+
+  const missingDiscoverScore =
+    error &&
+    (error.code === "42703" ||
+      error.message?.includes("discover_score") ||
+      error.message?.includes("does not exist"));
+
+  if (missingDiscoverScore) {
+    ({ data, error } = await supabase
+      .from("communities")
+      .select(COMMUNITY_SELECT)
+      .in("visibility", ["public", "premium"])
+      .eq("discover_enabled", true)
+      .order("member_count", { ascending: false })
+      .limit(50));
+  }
+
+  if (error) {
+    console.error("[data-cache] discover list:", error.message);
+    return null;
+  }
+
+  return (data ?? []).map((row) =>
+    mapCommunityRow(row as CommunityWithCreator),
+  );
+}
+
+/** Öffentliche Discover-Liste (ohne cookies). */
 export const getCachedDiscoverList = unstable_cache(
-  async () => fetchCommunitiesFromDb({ discover: true, limit: 50 }),
+  fetchDiscoverListForCache,
   [DISCOVER_LIST_KEY],
   { revalidate: 60, tags: ["discover"] },
 );
-
-export function getCachedCommunityBySlug(
-  slug: string,
-  userId: string | null,
-  inviteCode?: string | null,
-) {
-  const inviteKey = inviteCode?.trim() || "_";
-  return unstable_cache(
-    async () => fetchCommunityBySlugFromDb(slug, userId, inviteCode),
-    ["community-by-slug", slug, userId ?? "anon", inviteKey],
-    { revalidate: 30, tags: [`community:${slug}`] },
-  )();
-}
-
-export function getCachedDashboardPendingCounts(communityId: string) {
-  return unstable_cache(
-    async () => {
-      const [applications, reports] = await Promise.all([
-        countPendingApplicationsFromDb(communityId),
-        countPendingReportsFromDb(communityId),
-      ]);
-      return { applications, reports };
-    },
-    ["dashboard-pending", communityId],
-    { revalidate: 30, tags: [`dashboard-pending:${communityId}`] },
-  )();
-}

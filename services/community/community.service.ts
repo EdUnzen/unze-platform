@@ -13,10 +13,7 @@ import { isValidCommunitySlug, slugifyTitle } from "@/lib/utils/slug";
 import { ensureUserProfile } from "@/services/user/profile.service";
 import { enrichCommunitiesWithEngagement } from "@/services/engagement/engagement.service";
 import { enrichCommunitiesForViewer } from "./community.viewer-enrichment";
-import {
-  getCachedDiscoverList,
-  getCachedCommunityBySlug,
-} from "@/lib/cache/data-cache";
+import { getCachedDiscoverList } from "@/lib/cache/data-cache";
 import {
   createCommunityInDb,
   fetchCommunitiesByCreatorId,
@@ -80,7 +77,7 @@ export async function getCommunityBySlug(
   inviteCode?: string | null,
 ): Promise<Community | null> {
   const user = await getCurrentUser();
-  let community = await getCachedCommunityBySlug(
+  let community = await fetchCommunityBySlugFromDb(
     slug,
     user?.id ?? null,
     inviteCode,

@@ -137,12 +137,16 @@ export async function fetchCommunityBySlugFromDb(
 
   let joinAccess;
   if (viewerId) {
-    joinAccess = await getJoinAccessState(
-      communityId,
-      viewerId,
-      membership?.isMember ?? false,
-      inviteCode,
-    );
+    try {
+      joinAccess = await getJoinAccessState(
+        communityId,
+        viewerId,
+        membership?.isMember ?? false,
+        inviteCode,
+      );
+    } catch (error) {
+      console.error("[community.repository] joinAccess:", error);
+    }
   }
 
   const community = mapCommunityRow(data as CommunityWithCreator, {

@@ -71,6 +71,7 @@ import {
   resolveCommunityLevelFromMetrics,
 } from "@/services/community/community-level.service";
 
+import { settle } from "@/lib/utils/safe-promise";
 import { getCommunityBySlug } from "@/services/community/community.service";
 
 import { getCommunityGroups } from "@/services/community/group.service";
@@ -124,7 +125,13 @@ export default async function CommunityPage({
 
   const tab = parseTab(tabParam);
 
-  const community = await getCommunityBySlug(slug, invite ?? null);
+  let community;
+  try {
+    community = await getCommunityBySlug(slug, invite ?? null);
+  } catch (error) {
+    console.error("[community.page] load:", slug, error);
+    throw error;
+  }
 
   if (!community) notFound();
 
@@ -132,11 +139,15 @@ export default async function CommunityPage({
 
   let activityFeedEnabled = true;
   if (user) {
-    const { getCommunityActivityPrefs } = await import(
-      "@/services/notifications/community-activity.service"
-    );
-    const prefs = await getCommunityActivityPrefs(user.id);
-    activityFeedEnabled = prefs[community.id] !== false;
+    try {
+      const { getCommunityActivityPrefs } = await import(
+        "@/services/notifications/community-activity.service"
+      );
+      const prefs = await getCommunityActivityPrefs(user.id);
+      activityFeedEnabled = prefs[community.id] !== false;
+    } catch (error) {
+      console.error("[community.page] activity prefs:", error);
+    }
   }
 
   const needsGroupList = tab === "groups" || tab === "services";
@@ -152,46 +163,64 @@ export default async function CommunityPage({
 
   const needsCountsOnly = !needsGroupList;
 
+  const emptyStats = {
+    [community.id]: { weeklyPostCount: 0, totalPostCount: 0 },
+  };
+
   const [
     groups,
-
     events,
-
     entityCounts,
-
     platformLinks,
-
     activityStats,
-
     showcaseMembers,
-
     feedPosts,
   ] = await Promise.all([
     needsGroupList
-      ? getCommunityGroups(community.id, slug)
+      ? settle("groups", getCommunityGroups(community.id, slug), [])
       : Promise.resolve([]),
-
     needsEventsList
-      ? getCommunityEventsListed(community.id, slug, 12)
+      ? settle(
+          "events",
+          getCommunityEventsListed(community.id, slug, 12),
+          [],
+        )
       : Promise.resolve([]),
-
     needsCountsOnly
-      ? fetchCommunityEntityCounts(community.id)
+      ? settle(
+          "entityCounts",
+          fetchCommunityEntityCounts(community.id),
+          {
+            regularGroupCount: 0,
+            serviceGroupCount: 0,
+            upcomingEventCount: 0,
+          },
+        )
       : Promise.resolve(null),
-
     needsOverviewExtras
-      ? fetchCommunityPlatformLinksFromDb(community.id)
+      ? settle(
+          "platformLinks",
+          fetchCommunityPlatformLinksFromDb(community.id),
+          [],
+        )
       : Promise.resolve([]),
-
     tab === "members"
-      ? Promise.resolve({ [community.id]: { weeklyPostCount: 0, totalPostCount: 0 } })
-      : getCommunityActivityStats([community.id]),
-
+      ? Promise.resolve(emptyStats)
+      : settle(
+          "activityStats",
+          getCommunityActivityStats([community.id]),
+          emptyStats,
+        ),
     needsMembers && community.showMemberArea
-      ? fetchMembersForShowcase(community.id, slug)
+      ? settle(
+          "showcaseMembers",
+          fetchMembersForShowcase(community.id, slug),
+          [],
+        )
       : Promise.resolve([]),
-
-    needsFeed ? getCommunityPosts(community.id, feedLimit) : Promise.resolve([]),
+    needsFeed
+      ? settle("feedPosts", getCommunityPosts(community.id, feedLimit), [])
+      : Promise.resolve([]),
   ]);
 
   const eventCountForLevel = needsEventsList
@@ -247,7 +276,11 @@ export default async function CommunityPage({
 
   const followedEventIds =
     needsEventsList && user && events.length > 0
-      ? await getFollowedEventIdsAmong(events.map((e) => e.id))
+      ? await settle(
+          "followedEvents",
+          getFollowedEventIdsAmong(events.map((e) => e.id)),
+          [],
+        )
       : [];
 
   const communityWithLevel = {
@@ -271,7 +304,7 @@ export default async function CommunityPage({
   );
 
   const rawQuestions = needsOverviewExtras
-    ? await getJoinQuestions(community.id, true)
+    ? await settle("joinQuestions", getJoinQuestions(community.id, true), [])
     : [];
 
   const questions = getEffectiveJoinQuestions(rawQuestions, community.access);
