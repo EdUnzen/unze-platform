@@ -57,7 +57,7 @@ export async function recordPostPageView(postId: string) {
   await incrementPostViewCount(postId);
 }
 
-export async function buildGroupCardEngagement(input: {
+export function buildGroupCardEngagement(input: {
   communitySlug: string;
   groupSlug: string;
   isTrending?: boolean;
@@ -65,7 +65,7 @@ export async function buildGroupCardEngagement(input: {
   shareCount?: number;
   weeklyPostCount?: number;
   activityLabel?: string;
-}): Promise<CardEngagementMetrics> {
+}): CardEngagementMetrics {
   return mergeGroupEngagement(
     input.communitySlug,
     input.groupSlug,

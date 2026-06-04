@@ -5,6 +5,7 @@
  */
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
+import { validateAnonKey } from "./lib/supabase-anon-key.mjs";
 
 const root = process.cwd();
 
@@ -34,24 +35,6 @@ function check(name, ok, detail = "") {
   const icon = ok ? "✓" : "✗";
   console.log(`${icon} ${name}${detail ? `: ${detail}` : ""}`);
   return ok;
-}
-
-function validateAnonKey(key) {
-  if (!key) return { ok: false, detail: "fehlt" };
-  if (/\.{2,}/.test(key) || key.includes("your-anon-key")) {
-    return {
-      ok: false,
-      detail: "unvollständig/Platzhalter — vollständigen Publishable Key kopieren",
-    };
-  }
-  const parts = key.split(".");
-  if (parts.length !== 3 || !key.startsWith("eyJ")) {
-    return { ok: false, detail: "kein gültiger JWT (eyJ... mit 3 Segmenten)" };
-  }
-  if (key.length < 150) {
-    return { ok: false, detail: "zu kurz — Key ist abgeschnitten" };
-  }
-  return { ok: true, detail: "Format OK" };
 }
 
 const REQUIRED_TABLES = [

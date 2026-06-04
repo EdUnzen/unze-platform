@@ -23,6 +23,8 @@ export interface CommunityMemberView {
   id: string;
   userId: string;
   role: CommunityRole;
+  /** Individuelle Anzeige (z. B. SSL Coach) — technisch Moderator */
+  roleTitle: string | null;
   joinedAt: string;
   displayName: string | null;
   username: string | null;

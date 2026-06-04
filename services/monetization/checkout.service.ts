@@ -141,6 +141,8 @@ export async function createGroupOneTimeCheckout(input: {
   groupTitle: string;
   priceCents: number;
   stripePriceId?: string | null;
+  bookingSlotId?: string;
+  bookingSlotLabel?: string;
 }): Promise<{ url: string | null; error: string | null }> {
   if (!isStripeConfigured()) {
     return { url: null, error: "Stripe nicht konfiguriert" };
@@ -179,6 +181,12 @@ export async function createGroupOneTimeCheckout(input: {
       unze_community_id: input.communityId,
       unze_group_id: input.groupId,
       unze_checkout_type: "group_one_time",
+      ...(input.bookingSlotId
+        ? { unze_booking_slot_id: input.bookingSlotId }
+        : {}),
+      ...(input.bookingSlotLabel
+        ? { unze_booking_slot_label: input.bookingSlotLabel }
+        : {}),
     },
   });
 

@@ -22,7 +22,7 @@ export function PriceBadge({
         variant === "prominent" &&
           "rounded-xl bg-unze-green-muted px-3 py-1.5 text-sm text-unze-green-dark",
         variant === "default" &&
-          "rounded-full bg-violet-100 px-2.5 py-1 text-[11px] text-violet-900",
+          "rounded-full bg-unze-green-muted px-2.5 py-1 text-[11px] text-unze-green-dark",
         variant === "inline" && "text-sm text-unze-ink",
         className,
       )}

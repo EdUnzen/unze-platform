@@ -1,56 +1,54 @@
 import type { PostType } from "@/types/database";
 
+/**
+ * Organisations-Feed — keine Social-Media-Typen (kein Clip, Umfrage, Suche, …).
+ * Services werden als Community News / Ankündigung mit Link veröffentlicht.
+ */
+export const FEED_POST_TYPES: PostType[] = [
+  "text",
+  "community_update",
+  "event",
+  "image",
+];
+
+export function isFeedPostType(type: PostType): boolean {
+  return FEED_POST_TYPES.includes(type);
+}
+
 export const POST_TYPE_LABELS: Record<PostType, string> = {
-  text: "Text",
-  image: "Bild",
+  text: "Ankündigung",
+  image: "Ankündigung mit Bild",
   gallery: "Bilderserie",
   video: "Video",
   clip: "Clip",
   poll: "Umfrage",
   event: "Event",
-  community_update: "Community-News",
+  community_update: "Community News",
   highlight: "Highlight",
   question: "Frage",
   request: "Suche / Anfrage",
 };
 
 export const POST_TYPE_DESCRIPTIONS: Partial<Record<PostType, string>> = {
-  text: "Update, Gedanken oder Ankündigung",
-  image: "Einzelnes Bild mit Text",
-  gallery: "Mehrere Bilder — swipebar",
-  video: "Video-Beitrag",
-  clip: "Kurzer Clip oder Highlight",
-  event: "Turnier, Meetup, Live-Session",
-  community_update: "Offizielle Community-News",
-  highlight: "Best-of, Montage, Wochenhighlight",
-  question: "Frage an die Community",
-  request: "z. B. Mate gesucht, Collab-Anfrage",
+  text: "Offizielle Ankündigung oder Update",
+  image: "Ankündigung mit einem Bild",
+  event: "Termin, Turnier oder Live-Session",
+  community_update: "Community News oder Serviceangebot",
 };
 
-/** Composer — häufigste Community-Content-Typen */
-export const COMPOSER_POST_TYPES: PostType[] = [
-  "text",
-  "community_update",
-  "event",
-  "request",
-  "highlight",
-  "clip",
-  "gallery",
-  "image",
-  "video",
-  "question",
-];
+/** Composer — nur Feed-konforme Typen */
+export const COMPOSER_POST_TYPES: PostType[] = [...FEED_POST_TYPES];
 
 export const POST_TYPE_STYLES: Record<PostType, string> = {
   text: "bg-unze-surface-muted text-unze-ink-secondary",
   image: "bg-sky-100 text-sky-800",
   gallery: "bg-sky-100 text-sky-800",
-  video: "bg-violet-100 text-violet-800",
-  clip: "bg-violet-100 text-violet-800",
+  video: "bg-unze-surface-muted text-unze-ink-muted",
+  clip: "bg-unze-surface-muted text-unze-ink-muted",
   poll: "bg-amber-100 text-amber-800",
   event: "bg-orange-100 text-orange-800",
   community_update: "bg-unze-green-muted text-unze-green-dark",
-  highlight: "bg-fuchsia-100 text-fuchsia-800",
-  question: "bg-indigo-100 text-indigo-800",
+  highlight: "bg-unze-surface-muted text-unze-ink-muted",
+  question: "bg-unze-surface-muted text-unze-ink-muted",
   request: "bg-emerald-100 text-emerald-800",
 };

@@ -49,6 +49,12 @@ export const NAV_ITEMS: NavItem[] = [
 
 export const PLUS_MENU_ITEMS = [
   {
+    id: "post",
+    label: "Ankündigung erstellen",
+    description: "News, Event oder Service für eine Community",
+    href: "/create/post",
+  },
+  {
     id: "community",
     label: "Community erstellen",
     description: "Starte deine eigene Community",

@@ -43,6 +43,9 @@ export function CommunityCoverVisual({
         <img
           src={imageUrl!}
           alt=""
+          loading={overlay === "hero" ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={overlay === "hero" ? "high" : "auto"}
           className="absolute inset-0 h-full w-full object-cover"
           onError={() => setImageFailed(true)}
         />

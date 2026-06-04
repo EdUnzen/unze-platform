@@ -6,6 +6,7 @@ import {
   PLATFORM_OPTIONS,
   VISIBILITY_OPTIONS,
 } from "@/lib/constants/community";
+import { getFocusOptionsForCategory } from "@/lib/constants/community-focus";
 import { slugifyTitle } from "@/lib/utils/slug";
 import type { Community, CommunityFormInput } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
@@ -29,6 +30,7 @@ function toInitialValues(community?: Community): CommunityFormInput {
     description: community?.description ?? "",
     platformType: community?.platformType ?? "unze",
     category: community?.category ?? "Allgemein",
+    focusTags: community?.focusTags ?? [],
     tags: community?.tags ?? [],
     visibility: community?.visibility ?? "public",
     bannerGradient:
@@ -160,6 +162,37 @@ export function CommunityForm({
           className={cn(inputClass, "resize-none")}
           placeholder="Worum geht es in deiner Community?"
         />
+      </div>
+
+      <p className="rounded-2xl border border-unze-green/20 bg-unze-green-muted/40 px-3 py-2.5 text-xs text-unze-ink-secondary">
+        Das Community-Level (Bronze bis Elite) wird automatisch berechnet — du kannst es
+        nicht manuell festlegen.
+      </p>
+
+      <div>
+        <label htmlFor="focusTags" className="mb-1 block text-sm font-medium text-unze-ink">
+          Community-Fokus
+        </label>
+        <input
+          id="focusTags"
+          name="focusTags"
+          value={values.focusTags.join(", ")}
+          onChange={(e) =>
+            setValues((v) => ({
+              ...v,
+              focusTags: e.target.value
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean)
+                .slice(0, 6),
+            }))
+          }
+          className={inputClass}
+          placeholder={getFocusOptionsForCategory(values.category).join(", ")}
+        />
+        <p className="mt-1 text-xs text-unze-ink-muted">
+          Bis zu 6 Schwerpunkte, kommagetrennt — nur Orientierung
+        </p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

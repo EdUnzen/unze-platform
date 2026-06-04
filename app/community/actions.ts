@@ -34,6 +34,7 @@ function parseCommunityForm(formData: FormData): CommunityFormInput {
     description: String(formData.get("description") ?? ""),
     platformType: String(formData.get("platformType") ?? "unze") as CommunityFormInput["platformType"],
     category: String(formData.get("category") ?? "Allgemein"),
+    focusTags: parseTagsInput(String(formData.get("focusTags") ?? "")),
     tags: parseTagsInput(String(formData.get("tags") ?? "")),
     visibility: String(formData.get("visibility") ?? "public") as CommunityFormInput["visibility"],
     bannerGradient: String(

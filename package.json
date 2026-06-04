@@ -12,21 +12,27 @@
     "validate:quick": "npm run typecheck && npm run lint",
     "check:supabase": "node scripts/check-supabase.mjs",
     "seed:demo": "node scripts/seed-demo-platform.mjs",
+    "migrate:demo": "node scripts/migrate-demo-fields.mjs",
     "db:grants": "node scripts/apply-api-grants.mjs",
     "verify:demo": "node scripts/verify-demo-data.mjs",
     "diagnose:schema": "node scripts/diagnose-schema-readiness.mjs",
+    "diagnose:anon-key": "node scripts/diagnose-anon-key.mjs",
     "sync:vercel-env": "node scripts/sync-vercel-env.mjs",
     "db:bundle": "node scripts/bundle-migrations.mjs",
     "db:migrate": "node scripts/apply-migrations.mjs",
     "setup:demo": "node scripts/setup-platform.mjs",
     "setup:full": "node scripts/run-full-setup.mjs",
     "test:e2e-urls": "node scripts/test-e2e-urls.mjs",
+    "screenshots:demo": "node scripts/capture-demo-screenshots.mjs",
     "check:migrations": "node scripts/check-migrations.mjs",
     "db:migrate:pending": "node scripts/apply-pending-migrations.mjs",
     "db:migrate:021-024": "node scripts/apply-migrations-021-024.mjs",
+    "db:migrate:025": "node scripts/apply-migration-025.mjs",
+    "check:migration:025": "node scripts/check-migration-025.mjs",
     "check:stripe": "node scripts/check-stripe-config.mjs",
     "test:monetization": "node scripts/test-monetization-e2e.mjs",
-    "test:stabilization": "node scripts/stabilization-audit.mjs"
+    "test:stabilization": "node scripts/stabilization-audit.mjs",
+    "brand:assets": "node scripts/generate-brand-assets.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
@@ -47,7 +53,9 @@
     "eslint": "^9.27.0",
     "eslint-config-next": "^15.3.3",
     "pg": "^8.21.0",
+    "playwright": "^1.49.1",
     "postcss": "^8.5.3",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3"
   }

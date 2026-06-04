@@ -45,7 +45,7 @@ async function main() {
 
   const admin = createClient(url, serviceKey);
 
-  console.log("\n=== UNZE Migration Check (021 + 022 + 024) ===\n");
+  console.log("\n=== UNZE Migration Check (021 + 022 + 024 + 025) ===\n");
   console.log(`Supabase: ${url}\n`);
 
   const core = await checkTable(admin, "communities");
@@ -141,6 +141,33 @@ async function main() {
       : "✗ 024 — Event-Favoriten-Spalte fehlt",
   );
 
+  const levelCols = [
+    "focus_tags",
+    "community_level",
+    "level_score",
+    "show_member_area",
+  ];
+  let ok025 = true;
+  for (const col of levelCols) {
+    const { error } = await admin.from("communities").select(col).limit(1);
+    const present = !error;
+    if (!present) ok025 = false;
+    console.log(
+      present ? `✓ 025 — communities.${col}` : `✗ 025 — communities.${col} fehlt`,
+    );
+  }
+  const { error: roleTitleError } = await admin
+    .from("community_members")
+    .select("role_title")
+    .limit(1);
+  const roleTitleOk = !roleTitleError;
+  if (!roleTitleOk) ok025 = false;
+  console.log(
+    roleTitleOk
+      ? "✓ 025 — community_members.role_title"
+      : "✗ 025 — community_members.role_title fehlt",
+  );
+
   const ok021 = flagsTable && feedFlag;
   const ok022 = events && groupType && communityReviews && groupReviews;
   const ok024 =
@@ -151,8 +178,8 @@ async function main() {
     !eventFollowError;
 
   console.log("");
-  if (core && ok021 && ok022 && ok024) {
-    console.log("✓ Alle Migrationen aktiv (021, 022, 024).\n");
+  if (core && ok021 && ok022 && ok024 && ok025) {
+    console.log("✓ Alle Migrationen aktiv (021, 022, 024, 025).\n");
     process.exit(0);
   }
 
@@ -160,6 +187,10 @@ async function main() {
   if (!ok021) console.error("  → database/migrations/021_platform_feature_flags.sql\n");
   if (!ok022) console.error("  → database/migrations/022_platform_core_entities.sql\n");
   if (!ok024) console.error("  → database/migrations/024_stripe_monetization_events.sql\n");
+  if (!ok025) {
+    console.error("  → database/migrations/025_community_level_focus.sql\n");
+    console.error("  → npm run db:migrate:025  (nach SUPABASE_DB_PASSWORD in .env.local)\n");
+  }
   console.error("  Oder: npm run db:migrate:021-024 (mit SUPABASE_DB_PASSWORD)\n");
   console.error("  Oder: database/migrations/BUNDLE_021_024.sql im SQL Editor\n");
   process.exit(1);

@@ -1,5 +1,5 @@
 import { AuthForm } from "@/components/auth/AuthForm";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { UnzeLogo } from "@/components/brand/UnzeLogo";
 import { isSupabaseConfigured } from "@/lib/env";
 import Link from "next/link";
 
@@ -31,10 +31,13 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <div className="page-padding">
-      <PageHeader
-        title="Willkommen"
-        subtitle="Melde dich an oder erstelle dein UNZE-Konto"
-      />
+      <div className="mb-8 flex flex-col items-center text-center">
+        <UnzeLogo href="/" size="lg" showTagline />
+        <p className="mt-4 max-w-sm text-sm leading-relaxed text-unze-ink-secondary">
+          Die Plattform für Communities, Gruppen &amp; Services — organisieren,
+          verifizieren und monetarisieren.
+        </p>
+      </div>
 
       {verified && (
         <div

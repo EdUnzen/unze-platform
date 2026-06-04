@@ -9,6 +9,7 @@ import {
   leaveCommunityInDb,
   removeMemberInDb,
   updateMemberRoleInDb,
+  updateMemberRoleTitleInDb,
 } from "./member.repository";
 
 export async function getMembership(communityId: string, userId: string) {
@@ -21,6 +22,17 @@ export async function getMembership(communityId: string, userId: string) {
 
 export async function getCommunityMembers(communityId: string) {
   return fetchMembersWithProfiles(communityId);
+}
+
+export async function updateMemberRoleTitle(
+  memberId: string,
+  roleTitle: string | null,
+  actorRole: CommunityRole,
+): Promise<{ error: string | null }> {
+  if (!hasCommunityPermission(actorRole, "manage_roles")) {
+    return { error: "Keine Berechtigung" };
+  }
+  return updateMemberRoleTitleInDb(memberId, roleTitle);
 }
 
 export async function updateMemberRole(

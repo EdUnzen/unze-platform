@@ -82,7 +82,7 @@ export function PostContextHeader({ post, compact = false }: PostContextHeaderPr
             </span>
           )}
           {post.feedSource === "explore" && (
-            <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-800">
+            <span className="rounded-full bg-unze-green-muted px-2 py-0.5 text-[10px] font-semibold text-unze-green-dark">
               Entdecken
             </span>
           )}

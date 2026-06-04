@@ -41,15 +41,20 @@ export const PLATFORM_ICON_COLORS: Record<PlatformType, string> = {
   other: "#64748b",
 };
 
-export const ALL_PLATFORM_TYPES: PlatformType[] = [
-  "unze",
+/** Offiziell unterstützte externe Kanäle (sichtbar in UI) */
+export const OFFICIAL_EXTERNAL_PLATFORMS: PlatformType[] = [
   "discord",
   "whatsapp",
   "telegram",
-  "facebook",
+  "youtube",
   "instagram",
   "tiktok",
-  "youtube",
+  "facebook",
   "website",
+];
+
+export const ALL_PLATFORM_TYPES: PlatformType[] = [
+  "unze",
+  ...OFFICIAL_EXTERNAL_PLATFORMS,
   "other",
 ];

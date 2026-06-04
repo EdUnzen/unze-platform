@@ -1,3 +1,6 @@
+import { isDemoCommunitySlug } from "@/lib/constants/demo";
+import { mapGroupToDiscoverCard } from "@/lib/community/map-discover-group";
+import { getDemoGroups } from "@/services/community/demo-data";
 import type { CommunityGroup, DiscoverGroup } from "@/types/community";
 import {
   createGroupInDb,
@@ -13,8 +16,14 @@ import { getGroupVisual } from "@/lib/demo/group-visuals";
 
 export async function getCommunityGroups(
   communityId: string,
+  communitySlug?: string,
 ): Promise<CommunityGroup[]> {
-  return fetchGroupsByCommunityId(communityId);
+  const fromDb = await fetchGroupsByCommunityId(communityId);
+  if (fromDb.length > 0) return fromDb;
+  if (communitySlug && isDemoCommunitySlug(communitySlug)) {
+    return getDemoGroups(communitySlug);
+  }
+  return fromDb;
 }
 
 export async function getDiscoverGroups(
@@ -27,32 +36,44 @@ export async function getDiscoverGroups(
   const communityIds = [...new Set(groups.map((g) => g.communityId))];
   const stats = await getCommunityActivityStats(communityIds);
 
-  return Promise.all(
-    groups.map(async (group) => {
-      const visual = getGroupVisual(group.communitySlug, group.slug);
-      const engagement = await buildGroupCardEngagement({
-        communitySlug: group.communitySlug,
-        groupSlug: group.slug,
-        isTrending: group.isTrending,
-        weeklyViews: group.viewCountWeekly,
-        shareCount: group.shareCount,
-        weeklyPostCount: stats[group.communityId]?.weeklyPostCount,
-        activityLabel: visual?.activityLabel,
-      });
-      return {
-        ...group,
-        weeklyPostCount: stats[group.communityId]?.weeklyPostCount ?? 0,
-        engagement,
-      };
-    }),
-  );
+  return groups.map((group) => {
+    const visual = getGroupVisual(group.communitySlug, group.slug);
+    const engagement = buildGroupCardEngagement({
+      communitySlug: group.communitySlug,
+      groupSlug: group.slug,
+      isTrending: group.isTrending,
+      weeklyViews: group.viewCountWeekly,
+      shareCount: group.shareCount,
+      weeklyPostCount: stats[group.communityId]?.weeklyPostCount,
+      activityLabel: visual?.activityLabel,
+    });
+    return {
+      ...group,
+      weeklyPostCount: stats[group.communityId]?.weeklyPostCount ?? 0,
+      engagement,
+    };
+  });
 }
 
 export async function getGroupBySlugs(
   communitySlug: string,
   groupSlug: string,
 ): Promise<DiscoverGroup | null> {
-  return fetchGroupBySlugsFromDb(communitySlug, groupSlug);
+  const fromDb = await fetchGroupBySlugsFromDb(communitySlug, groupSlug);
+  if (fromDb) return fromDb;
+
+  if (!isDemoCommunitySlug(communitySlug)) return null;
+
+  const group = getDemoGroups(communitySlug).find(
+    (g) => g.slug === groupSlug && g.isPublic !== false,
+  );
+  if (!group) return null;
+
+  const { getCommunityBySlug } = await import("@/services/community/community.service");
+  const community = await getCommunityBySlug(communitySlug);
+  if (!community) return null;
+
+  return mapGroupToDiscoverCard(community, group);
 }
 
 export async function createCommunityGroup(input: {

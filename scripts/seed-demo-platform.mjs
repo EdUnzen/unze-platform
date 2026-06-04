@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 /**
  * UNZE Demo-Plattform Seed
- * Legt 3 Demo-Communities, Feed, Mitglieder & Bewerbungen an.
+ * Legt/aktualisiert 3 Demo-Communities, Gruppen, Feed, Mitglieder & Bewerbungen.
+ *
+ * Demo-Daten werden standardmäßig NICHT gelöscht — nur migriert/ergänzt.
+ * Vollständiger Reset nur mit: UNZE_DEMO_FORCE_RESET=true npm run seed:demo
  *
  * Voraussetzung: SUPABASE_SERVICE_ROLE_KEY in .env.local
  * Usage: npm run seed:demo
@@ -110,47 +113,124 @@ async function deleteDemoBySlugs(db, slugs) {
   await db.from("community_groups").delete().in("community_id", ids);
   await db.from("community_members").delete().in("community_id", ids);
   await db.from("communities").delete().in("id", ids);
-  console.log(`  ↺ Alte Demo-Communities entfernt (${slugs.join(", ")})`);
+  console.log(`  ↺ Demo-Communities entfernt (${slugs.join(", ")}) — nur mit UNZE_DEMO_FORCE_RESET`);
 }
 
-async function createCommunity(db, creatorId, config) {
+function communityPayload(creatorId, config) {
+  return {
+    slug: config.slug,
+    title: config.title,
+    description: config.description,
+    banner_gradient: config.bannerGradient,
+    platform_type: config.platformType,
+    category: config.category,
+    tags: config.tags,
+    focus_tags: config.focusTags ?? [],
+    community_level: config.communityLevel ?? "gold",
+    level_score: config.levelScore ?? 50,
+    show_member_area: true,
+    visibility: "public",
+    creator_id: creatorId,
+    is_verified: config.isVerified ?? true,
+    is_trending: config.isTrending ?? true,
+    discover_enabled: true,
+    discover_score: config.discoverScore ?? 100,
+    rating_avg: config.rating ?? 0,
+    review_count: config.reviews ?? 0,
+    external_url: config.externalUrl ?? null,
+    join_approval_mode: config.joinApprovalMode ?? "auto_accept",
+    access_status: "open",
+    community_rules: config.rules ?? null,
+    require_rules_consent: Boolean(config.rules),
+    waitlist_enabled: config.waitlistEnabled ?? false,
+    admissions_paused: false,
+  };
+}
+
+async function ensureDemoCommunity(db, creatorId, config) {
+  const { data: existing } = await db
+    .from("communities")
+    .select("id, slug")
+    .eq("slug", config.slug)
+    .maybeSingle();
+
+  const payload = communityPayload(creatorId, config);
+
+  if (existing) {
+    const { data, error } = await db
+      .from("communities")
+      .update(payload)
+      .eq("id", existing.id)
+      .select("id, slug")
+      .single();
+    if (error) throw new Error(`Community Update ${config.slug}: ${error.message}`);
+    console.log(`  ✓ Demo-Community aktualisiert: ${config.slug}`);
+    return data;
+  }
+
   const { data, error } = await db
     .from("communities")
-    .insert({
-      slug: config.slug,
-      title: config.title,
-      description: config.description,
-      banner_gradient: config.bannerGradient,
-      platform_type: config.platformType,
-      category: config.category,
-      tags: config.tags,
-      visibility: "public",
-      creator_id: creatorId,
-      is_verified: config.isVerified ?? true,
-      is_trending: config.isTrending ?? true,
-      discover_enabled: true,
-      discover_score: config.discoverScore ?? 100,
-      member_count: 0,
-      rating_avg: config.rating ?? 0,
-      review_count: config.reviews ?? 0,
-      external_url: config.externalUrl ?? null,
-      join_approval_mode: config.joinApprovalMode ?? "auto_accept",
-      access_status: "open",
-      community_rules: config.rules ?? null,
-      require_rules_consent: Boolean(config.rules),
-      waitlist_enabled: config.waitlistEnabled ?? false,
-      admissions_paused: false,
-    })
+    .insert({ ...payload, member_count: 0 })
     .select("id, slug")
     .single();
 
   if (error) throw new Error(`Community ${config.slug}: ${error.message}`);
+  console.log(`  + Demo-Community angelegt: ${config.slug}`);
   return data;
 }
 
-async function addMember(db, communityId, userId, role = "member") {
+async function ensureGroup(db, communityId, g, sortOrder, extra = {}) {
+  const { data: existing } = await db
+    .from("community_groups")
+    .select("id")
+    .eq("community_id", communityId)
+    .eq("slug", g.slug)
+    .maybeSingle();
+
+  const row = {
+    community_id: communityId,
+    slug: g.slug,
+    title: g.title,
+    description: g.description,
+    sort_order: sortOrder,
+    is_public: true,
+    group_type: extra.groupType ?? "group",
+    price_cents: extra.priceCents ?? null,
+    currency: extra.currency ?? "eur",
+    rating_avg: extra.rating ?? 0,
+    review_count: extra.reviews ?? 0,
+  };
+
+  if (existing) {
+    await db.from("community_groups").update(row).eq("id", existing.id);
+    return existing.id;
+  }
+
+  const { data, error } = await db
+    .from("community_groups")
+    .insert(row)
+    .select("id")
+    .single();
+  if (error) throw new Error(`Gruppe ${g.slug}: ${error.message}`);
+  return data.id;
+}
+
+async function communityHasPosts(db, communityId) {
+  const { count } = await db
+    .from("posts")
+    .select("*", { count: "exact", head: true })
+    .eq("community_id", communityId);
+  return (count ?? 0) > 0;
+}
+
+async function addMember(db, communityId, userId, role = "member", roleTitle = null) {
   const { error } = await db.from("community_members").upsert(
-    { community_id: communityId, user_id: userId, role },
+    {
+      community_id: communityId,
+      user_id: userId,
+      role,
+      role_title: roleTitle,
+    },
     { onConflict: "community_id,user_id" },
   );
   if (error) throw error;
@@ -257,10 +337,15 @@ async function main() {
     );
   }
 
-  console.log("\n2. Demo-Communities anlegen…");
-  await deleteDemoBySlugs(db, DEMO_SLUGS);
+  console.log("\n2. Demo-Communities (beibehalten & aktualisieren)…");
+  if (process.env.UNZE_DEMO_FORCE_RESET === "true") {
+    console.log("  ⚠ UNZE_DEMO_FORCE_RESET=true — löscht Demo-Daten vor Neuaufbau");
+    await deleteDemoBySlugs(db, DEMO_SLUGS);
+  } else {
+    console.log("  → Bestehende Demo-Daten bleiben erhalten (nur Update/Ergänzung)");
+  }
 
-  const gaming = await createCommunity(db, creator.id, {
+  const gaming = await ensureDemoCommunity(db, creator.id, {
     slug: "rocket-league-ssl",
     title: "Rocket League SSL Coaching",
     description:
@@ -275,9 +360,14 @@ async function main() {
     discoverScore: 220,
     rules:
       "Respektvoller Umgang · Kein Boosting-Verkauf · Replays nur in Coaching-Kanal · Mindest-Rang Diamond 2",
+    focusTags: ["Coaching", "Analyse", "Turniere", "Community"],
+    communityLevel: "diamond",
+    levelScore: 72,
+    rating: 4.9,
+    reviews: 84,
   });
 
-  const business = await createCommunity(db, creator.id, {
+  const business = await ensureDemoCommunity(db, creator.id, {
     slug: "business-circle-dach",
     title: "Business Circle DACH",
     description:
@@ -289,9 +379,14 @@ async function main() {
     joinApprovalMode: "manual_review",
     discoverScore: 200,
     rules: "Kein Spam · Services klar kennzeichnen · Vertraulichkeit in Masterminds",
+    focusTags: ["Netzwerk", "Marketing", "Investments", "Events"],
+    communityLevel: "platinum",
+    levelScore: 58,
+    rating: 4.7,
+    reviews: 42,
   });
 
-  const entertainment = await createCommunity(db, creator.id, {
+  const entertainment = await ensureDemoCommunity(db, creator.id, {
     slug: "creator-lounge",
     title: "Creator Lounge",
     description:
@@ -302,6 +397,11 @@ async function main() {
     tags: ["Creator", "Social", "Content", "Collab"],
     joinApprovalMode: "auto_accept",
     discoverScore: 190,
+    focusTags: ["Community", "Collabs", "Events", "Netzwerk"],
+    communityLevel: "gold",
+    levelScore: 46,
+    rating: 4.8,
+    reviews: 156,
   });
 
   const communities = [
@@ -317,27 +417,42 @@ async function main() {
       { slug: "coaching", title: "SSL Coaching", description: "1:1 und Gruppen-Coaching" },
       { slug: "clips", title: "Clips & Highlights", description: "Deine besten Plays" },
       { slug: "turniere", title: "Turniere", description: "Events & Scrims" },
+      {
+        slug: "einzelcoaching",
+        title: "Einzelcoaching 1v1",
+        description: "60 Min Replay-Review",
+        groupType: "service",
+        priceCents: 5000,
+        rating: 5,
+        reviews: 28,
+      },
     ],
     business: [
       { slug: "networking", title: "Networking", description: "Kontakte & Intros" },
       { slug: "marketing", title: "Marketing", description: "Ads, Funnel, Brand" },
-      { slug: "services", title: "Services & Angebote", description: "B2B-Angebote der Mitglieder" },
+      {
+        slug: "services",
+        title: "Meta Ads Audit",
+        description: "30-Min-Audit für E-Commerce",
+        groupType: "service",
+        priceCents: 9900,
+        rating: 4.8,
+        reviews: 15,
+      },
     ],
     entertainment: [
-      { slug: "feed", title: "Creator Feed", description: "Updates & Clips" },
+      { slug: "feed", title: "Creator Feed", description: "Ankündigungen & News" },
       { slug: "collabs", title: "Collabs", description: "Gemeinsame Projekte" },
     ],
   };
 
   for (const { row, key } of communities) {
     for (const [i, g] of groups[key].entries()) {
-      await db.from("community_groups").insert({
-        community_id: row.id,
-        slug: g.slug,
-        title: g.title,
-        description: g.description,
-        sort_order: i,
-        is_public: true,
+      await ensureGroup(db, row.id, g, i, {
+        groupType: g.groupType,
+        priceCents: g.priceCents,
+        rating: g.rating,
+        reviews: g.reviews,
       });
     }
   }
@@ -372,11 +487,18 @@ async function main() {
     },
   ];
 
-  for (const q of gamingQuestions) {
-    await db.from("community_join_questions").insert({
-      community_id: gaming.id,
-      ...q,
-    });
+  const { count: gqCount } = await db
+    .from("community_join_questions")
+    .select("*", { count: "exact", head: true })
+    .eq("community_id", gaming.id);
+
+  if ((gqCount ?? 0) === 0) {
+    for (const q of gamingQuestions) {
+      await db.from("community_join_questions").insert({
+        community_id: gaming.id,
+        ...q,
+      });
+    }
   }
 
   const businessQuestions = [
@@ -395,23 +517,31 @@ async function main() {
     },
   ];
 
-  for (const q of businessQuestions) {
-    await db.from("community_join_questions").insert({
-      community_id: business.id,
-      ...q,
-    });
+  const { count: bqCount } = await db
+    .from("community_join_questions")
+    .select("*", { count: "exact", head: true })
+    .eq("community_id", business.id);
+
+  if ((bqCount ?? 0) === 0) {
+    for (const q of businessQuestions) {
+      await db.from("community_join_questions").insert({
+        community_id: business.id,
+        ...q,
+      });
+    }
   }
 
   await addMember(db, gaming.id, creator.id, "creator");
   await addMember(db, business.id, creator.id, "creator");
   await addMember(db, entertainment.id, creator.id, "creator");
 
-  await addMember(db, gaming.id, members[0].id, "moderator");
-  await addMember(db, gaming.id, members[1].id, "member");
-  await addMember(db, business.id, members[1].id, "admin");
+  await addMember(db, gaming.id, members[0].id, "moderator", "SSL Coach");
+  await addMember(db, gaming.id, members[1].id, "expert", "Turnierleiter");
+  await addMember(db, gaming.id, members[2].id, "verified_member", "VIP");
+  await addMember(db, business.id, members[1].id, "admin", "Community Manager");
   await addMember(db, business.id, members[2].id, "member");
   await addMember(db, entertainment.id, members[2].id, "member");
-  await addMember(db, entertainment.id, members[0].id, "member");
+  await addMember(db, entertainment.id, members[0].id, "moderator", "Support");
 
   for (const { row } of communities) {
     await syncMemberCount(db, row.id);
@@ -470,6 +600,15 @@ async function main() {
   }
 
   console.log("\n4. Feed-Posts, Likes & Kommentare…");
+
+  const seedPosts =
+    !(await communityHasPosts(db, gaming.id)) ||
+    !(await communityHasPosts(db, business.id)) ||
+    !(await communityHasPosts(db, entertainment.id));
+
+  if (!seedPosts) {
+    console.log("  → Feed-Posts bereits vorhanden — übersprungen (Demo-Inhalt bleibt)");
+  }
 
   async function groupId(communityId, slug) {
     const { data } = await db
@@ -666,7 +805,7 @@ async function main() {
   ];
 
   const insertedPosts = [];
-  for (const p of posts) {
+  if (seedPosts) for (const p of posts) {
     const row = {
       author_id: p.authorId,
       community_id: p.communityId,
@@ -698,7 +837,7 @@ async function main() {
     }
   }
 
-  for (const post of insertedPosts) {
+  if (seedPosts) for (const post of insertedPosts) {
     await db.from("post_likes").upsert(
       { post_id: post.id, user_id: creator.id },
       { onConflict: "post_id,user_id" },
@@ -749,13 +888,16 @@ async function main() {
     },
   ];
 
-  for (const c of comments) {
-    const post = insertedPosts[c.postIdx];
-    await db.from("comments").insert({
-      post_id: post.id,
-      author_id: c.authorId,
-      content: c.content,
-    });
+  if (seedPosts) {
+    for (const c of comments) {
+      const post = insertedPosts[c.postIdx];
+      if (!post) continue;
+      await db.from("comments").insert({
+        post_id: post.id,
+        author_id: c.authorId,
+        content: c.content,
+      });
+    }
   }
 
   console.log("\n5. Bewerbung für Creator-Dashboard…");

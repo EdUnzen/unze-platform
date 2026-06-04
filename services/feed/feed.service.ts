@@ -16,6 +16,7 @@ import {
   FEED_EXPLORE_RATIO,
   interleaveFeedPosts,
 } from "@/lib/feed/blend-feed";
+import { isFeedPostType } from "@/lib/constants/posts";
 import type { PostMediaItem, PostMetadata } from "@/types/post";
 import type { PostType } from "@/types/database";
 
@@ -158,7 +159,13 @@ export async function getDiscoverFeedPosts(limit = 20): Promise<FeedPost[]> {
     return [];
   }
 
-  return enrichFeedPosts((data ?? []).map((row) => mapPostRow(row as PostRow)));
+  return enrichFeedPosts(filterOrganisationPosts(data ?? []).map((row) => mapPostRow(row as PostRow)));
+}
+
+function filterOrganisationPosts<T extends { post_type?: string }>(rows: T[]): T[] {
+  return rows.filter((row) =>
+    isFeedPostType((row.post_type ?? "text") as PostType),
+  );
 }
 
 export async function getFeedCommunityMeta(
@@ -254,7 +261,7 @@ async function fetchExploreFeedPosts(
     return [];
   }
 
-  return (data ?? []).map((row) => ({
+  return filterOrganisationPosts(data ?? []).map((row) => ({
     ...mapPostRow(row as PostRow),
     feedSource: "explore" as const,
   }));
@@ -296,7 +303,7 @@ async function fetchFollowFeedPosts(
     return [];
   }
 
-  return (data ?? []).map((row) => ({
+  return filterOrganisationPosts(data ?? []).map((row) => ({
     ...mapPostRow(row as PostRow),
     feedSource: "follow" as const,
   }));
@@ -347,7 +354,9 @@ export async function getCommunityPosts(
     return [];
   }
 
-  return enrichFeedPosts((data ?? []).map((row) => mapPostRow(row as PostRow)));
+  return enrichFeedPosts(
+    filterOrganisationPosts(data ?? []).map((row) => mapPostRow(row as PostRow)),
+  );
 }
 
 export async function createPost(input: {

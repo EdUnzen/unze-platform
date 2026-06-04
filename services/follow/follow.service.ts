@@ -284,6 +284,37 @@ export async function getFollowedEventIds(): Promise<string[]> {
     .filter((id): id is string => Boolean(id));
 }
 
+/** Nur Follow-Status für angezeigte Events (Community-/Discover-Seiten) */
+export async function getFollowedEventIdsAmong(
+  eventIds: string[],
+): Promise<string[]> {
+  if (eventIds.length === 0) return [];
+
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("follows")
+    .select("target_event_id")
+    .eq("follower_id", user.id)
+    .eq("target_type", "event")
+    .in("target_event_id", eventIds);
+
+  if (error) {
+    if (error.code === "42703") return [];
+    return [];
+  }
+
+  return (data ?? [])
+    .map((r: { target_event_id: string | null }) => r.target_event_id)
+    .filter((id): id is string => Boolean(id));
+}
+
 export async function isFollowingEvent(eventId: string): Promise<boolean> {
   const ids = await getFollowedEventIds();
   return ids.includes(eventId);

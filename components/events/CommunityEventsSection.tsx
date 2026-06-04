@@ -9,6 +9,8 @@ interface CommunityEventsSectionProps {
   events: CommunityEvent[];
   followedEventIds?: string[];
   showFollowButtons?: boolean;
+  /** Kein äußerer Karten-Header (z. B. Community-Events-Tab) */
+  embedded?: boolean;
 }
 
 function formatEventDate(iso: string): string {
@@ -26,26 +28,29 @@ export function CommunityEventsSection({
   events,
   followedEventIds = [],
   showFollowButtons = false,
+  embedded = false,
 }: CommunityEventsSectionProps) {
   const followedSet = new Set(followedEventIds);
   if (events.length === 0) return null;
 
   return (
-    <section className="rounded-3xl bg-white p-4 shadow-card">
-      <header className="mb-4 flex items-center justify-between gap-2">
-        <div>
-          <h2 className="text-sm font-semibold text-unze-ink">Events</h2>
-          <p className="text-xs text-unze-ink-secondary">
-            Termine und Veranstaltungen dieser Community
-          </p>
-        </div>
-        <Link
-          href={`/discover?tab=events&q=${encodeURIComponent(communitySlug)}`}
-          className="text-xs font-semibold text-unze-green"
-        >
-          Alle →
-        </Link>
-      </header>
+    <section className={embedded ? "" : "rounded-3xl bg-white p-4 shadow-card"}>
+      {!embedded && (
+        <header className="mb-4 flex items-center justify-between gap-2">
+          <div>
+            <h2 className="text-sm font-semibold text-unze-ink">Events</h2>
+            <p className="text-xs text-unze-ink-secondary">
+              Termine und Veranstaltungen dieser Community
+            </p>
+          </div>
+          <Link
+            href={`/discover?tab=events&q=${encodeURIComponent(communitySlug)}`}
+            className="text-xs font-semibold text-unze-green"
+          >
+            Alle →
+          </Link>
+        </header>
+      )}
 
       <ul className="space-y-3">
         {events.slice(0, 5).map((event) => (
@@ -68,7 +73,12 @@ export function CommunityEventsSection({
                     </span>
                   )}
                 </div>
-                <p className="font-semibold text-unze-ink">{event.title}</p>
+                <Link
+                  href={`/community/${communitySlug}/event/${event.id}`}
+                  className="font-semibold text-unze-ink hover:text-unze-green"
+                >
+                  {event.title}
+                </Link>
                 {event.description && (
                   <p className="mt-1 line-clamp-2 text-xs text-unze-ink-secondary">
                     {event.description}
@@ -179,7 +189,16 @@ export function DiscoverEventList({
                 )}
               </div>
             </div>
-            <h3 className="font-semibold text-unze-ink">{event.title}</h3>
+            <Link
+              href={
+                event.communitySlug
+                  ? `/community/${event.communitySlug}/event/${event.id}`
+                  : "#"
+              }
+              className="font-semibold text-unze-ink hover:text-unze-green"
+            >
+              {event.title}
+            </Link>
             <p className="mt-1 line-clamp-2 text-sm text-unze-ink-secondary">
               {event.description || "Keine Beschreibung"}
             </p>

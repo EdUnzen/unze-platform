@@ -3,6 +3,7 @@ import type {
   JoinAccessState,
   JoinApplication,
 } from "@/types/access";
+import type { CommunityLevel } from "@/lib/constants/community-level";
 import type { CardEngagementMetrics } from "@/types/engagement";
 import type { CommunityRole } from "@/types/database";
 
@@ -71,7 +72,11 @@ export interface Community {
   bannerUrl?: string | null;
   platformType: PlatformType;
   category: string;
+  focusTags: string[];
   tags: string[];
+  communityLevel: CommunityLevel;
+  levelScore: number;
+  showMemberArea: boolean;
   memberCount: number;
   rating: number;
   reviewCount: number;
@@ -121,6 +126,7 @@ export interface CommunityFormInput {
   description: string;
   platformType: PlatformType;
   category: string;
+  focusTags: string[];
   tags: string[];
   visibility: CommunityVisibility;
   bannerGradient: string;

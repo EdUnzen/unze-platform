@@ -42,7 +42,9 @@ export async function startGroupCheckoutAction(input: {
   groupTitle: string;
   priceCents: number;
   stripePriceId?: string | null;
-}) {
+  bookingSlotId?: string;
+  bookingSlotLabel?: string;
+}): Promise<{ error?: string }> {
   const user = await getCurrentUser();
   if (!user?.email) return { error: "Anmelden erforderlich" };
 
@@ -56,11 +58,28 @@ export async function startGroupCheckoutAction(input: {
     groupTitle: input.groupTitle,
     priceCents: input.priceCents,
     stripePriceId: input.stripePriceId,
+    bookingSlotId: input.bookingSlotId,
+    bookingSlotLabel: input.bookingSlotLabel,
   });
 
   if (error) return { error };
   if (url) redirect(url);
   return { error: "Checkout konnte nicht gestartet werden" };
+}
+
+/** Kostenlose Services — Terminreservierung ohne Stripe */
+export async function confirmFreeServiceBookingAction(input: {
+  communitySlug: string;
+  groupSlug: string;
+  groupTitle: string;
+  slotId: string;
+  slotLabel: string;
+}): Promise<{ error?: string; success?: boolean }> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Anmelden erforderlich" };
+  if (!input.slotId?.trim()) return { error: "Bitte einen Termin wählen." };
+
+  return { success: true };
 }
 
 export async function openStripeCustomerPortalAction() {

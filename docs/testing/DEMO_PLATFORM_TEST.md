@@ -2,6 +2,8 @@
 
 Vollständiger manueller Test mit drei Demo-Communities und Creator-Account.
 
+**Demo-Daten:** `npm run seed:demo` aktualisiert/ergänzt bestehende Demo-Inhalte — löscht sie **nicht** (außer mit `UNZE_DEMO_FORCE_RESET=true`). Nach Schema-Änderungen: Migration 025 + optional `npm run migrate:demo`.
+
 ## 1. Supabase Auth konfigurieren
 
 **Authentication → URL Configuration**

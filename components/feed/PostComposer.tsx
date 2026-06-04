@@ -20,8 +20,6 @@ interface PostComposerProps {
   communities: ComposerCommunity[];
 }
 
-const MEDIA_TYPES: PostType[] = ["image", "gallery", "video", "clip", "highlight"];
-
 export function PostComposer({ communities }: PostComposerProps) {
   const [state, action, pending] = useActionState(createPostAction, null);
   const [communityId, setCommunityId] = useState("");
@@ -32,13 +30,9 @@ export function PostComposer({ communities }: PostComposerProps) {
     [communities, communityId],
   );
 
-  const showMedia = MEDIA_TYPES.includes(postType);
+  const showMedia = postType === "image";
   const showEventFields = postType === "event";
-  const showExternalLink =
-    postType === "video" ||
-    postType === "clip" ||
-    postType === "highlight" ||
-    showMedia;
+  const showExternalLink = postType === "community_update";
 
   return (
     <form action={action} className="space-y-4" data-testid="post-composer">
@@ -132,9 +126,11 @@ export function PostComposer({ communities }: PostComposerProps) {
           required
           rows={5}
           placeholder={
-            postType === "request"
-              ? "z. B. Suche 2v2 Mate für heute Abend — Diamond 2+"
-              : "Was möchtest du mit der Community teilen?"
+            postType === "community_update"
+              ? "z. B. Neues Coaching-Angebot oder Community-Update"
+              : postType === "event"
+                ? "Beschreibung zum Event (Datum unten)"
+                : "Ankündigung für deine Community"
           }
           className="w-full resize-none rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm"
         />
@@ -143,7 +139,7 @@ export function PostComposer({ communities }: PostComposerProps) {
       {showExternalLink && (
         <div>
           <label htmlFor="externalUrl" className="mb-1 block text-sm font-medium text-unze-ink">
-            Externer Link (YouTube, TikTok, Instagram, …)
+            Link zu Service oder externem Inhalt (optional)
           </label>
           <input
             id="externalUrl"

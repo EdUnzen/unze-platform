@@ -1,0 +1,51 @@
+---
+description: UNZE Design System V1.0 — Referenz-UI, keine Social-Media-Features
+alwaysApply: true
+---
+
+# UNZE Design System V1.0
+
+**Primäre Designreferenz:** `01_Designsystem/` (Screens 3–25, Logo). Nicht pixelgenau kopieren; UX, Übersicht und Performance dürfen verbessert werden. **Keine neuen Kernsysteme** erfinden.
+
+Vorrang bei Konflikten: `docs/ARCHITECTURE_DECISIONS.md` + `.cursor/rules/unze-architecture.mdc`.
+
+## Produkt
+- Plattform für Communities, Gruppen, Services, Events, Verifizierung, Mitgliedschaften, Monetarisierung — **kein** Social Network.
+- Kommunikation bleibt extern (Discord, WhatsApp, Telegram, YouTube, Instagram, TikTok, Facebook, Website).
+- Feed nur: Ankündigungen, Community News, Events, Serviceangebote — kein Social-Feed.
+
+## Nicht bauen
+Stories, Reels, eigene Video-Uploads, öffentliche Follower-/Share-Zähler, komplexe Rankings, TikTok/Instagram/Discord-Klone, permanente linke Sidebar.
+
+## Design
+- Heller Hintergrund, Weiß-Basis, **Grün** `#1DB872` als Hauptfarbe — **keine lila Hauptfarbe**, keine Gaming/Neon-Optik. UI-Akzente: Grün/Neutral.
+- Moderne Karten, große Abstände, Mobile First, wenig visuelle Unruhe.
+- **Logo:** `public/brand/unze-logo.png` / `UnzeLogo` — Header, Login, PWA. **Diamant** nur Community-Level & Premium — nie Plattformlogo.
+
+## Navigation (unten)
+Home · Discover · **Erstellen** (+) · Favoriten · Profil. **Keine linke Sidebar** im Nutzerbereich. Verwaltung über Dashboard/Menüs.
+
+## Feed-Typen (Composer + Anzeige)
+Nur `text`, `community_update`, `event`, `image` — siehe `FEED_POST_TYPES` in `lib/constants/posts.ts`.
+
+## Plattformen (sichtbar)
+`OFFICIAL_EXTERNAL_PLATFORMS` + `OfficialPlatformsGrid` auf Community-Seiten.
+
+## Entitäten
+- **Community:** Name, Beschreibung, Fokus, auto. Level (Bronze→Elite, Creator setzt nicht), Verifizierung, Plattformen, Gruppen, Services, Events, Mitgliederbereich, Feed.
+- **Gruppe:** immer in Community; Qualität über Bewertungen/Aktivität/Moderator — **kein** Gold/Silber/Diamant-Level auf Gruppen.
+- **Service/Event:** kostenlos oder kostenpflichtig; bezahlt → Bewertungen/Rezensionen Pflicht.
+- **Verifizierung:** nur durch UNZE; grüner Haken nie automatisch.
+- **Mitgliederbereich:** Creator, Moderatoren (individuelle Anzeigenamen, Rolle technisch `moderator`), VIPs, Experten.
+
+## UI-Zielbilder (Referenz)
+Gruppen-/Service-/Event-Detail mit Stat-Zeile, Plattform-Grid mit Verifizierung, Community-Level-Fortschritt, VIP/Experten-Listen, Premium-Beitritt, Discover mit Kategorien, Login/Verifizierung/Community-Erstellen wie Mockups in `01_Designsystem/`.
+
+## Demo-Daten (verbindlich)
+- Demo-Communities/Gruppen/Services/Events/Posts **nicht löschen** ohne Freigabe.
+- Seed: `npm run seed:demo` migriert/ergänzt; Reset nur `UNZE_DEMO_FORCE_RESET=true`.
+- Felder ergänzen: `npm run migrate:demo` (nach Migration 025).
+- Offline-Mocks: `MOCK_COMMUNITIES` + `demo-data.ts` (inkl. `rocket-league-ssl`, …).
+
+## Implementierung
+Bestehende Komponenten/Tokens (`styles/globals.css`, `tailwind.config.ts`) erweitern — kein Rewrite. Performance-Priorität laut Architektur-Regel.

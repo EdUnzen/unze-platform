@@ -148,8 +148,8 @@ export const DASHBOARD_TAB_GROUPS: DashboardTabGroup[] = [
 export const ROLE_LABELS: Record<string, string> = {
   creator: "Creator",
   admin: "Admin",
-  expert: "Experte / Coach",
-  moderator: "Experte / Coach",
+  expert: "Experte",
+  moderator: "Moderator",
   verified_member: "Verifiziertes Mitglied",
   member: "Mitglied",
 };

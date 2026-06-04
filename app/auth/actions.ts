@@ -94,6 +94,34 @@ export async function signUpWithEmail(
   };
 }
 
+export async function signInWithOAuthAction(
+  provider: "google" | "apple",
+  returnTo = "/",
+): Promise<{ error?: string }> {
+  if (!isSupabaseConfigured()) {
+    return {
+      error: process.env.VERCEL
+        ? "Supabase ist nicht konfiguriert."
+        : "Supabase ist nicht konfiguriert. Siehe .env.example",
+    };
+  }
+
+  const supabase = await createClient();
+  if (!supabase) return { error: "Verbindung fehlgeschlagen" };
+
+  const safeReturn = safeRedirectPath(returnTo);
+  const redirectTo = `${getAppUrl()}/auth/callback?next=${encodeURIComponent(safeReturn)}`;
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider,
+    options: { redirectTo },
+  });
+
+  if (error) return { error: error.message };
+  if (data.url) redirect(data.url);
+  return { error: "OAuth konnte nicht gestartet werden" };
+}
+
 export async function signOutAction() {
   const supabase = await createClient();
   if (supabase) await supabase.auth.signOut();

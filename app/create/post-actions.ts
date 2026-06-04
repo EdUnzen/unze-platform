@@ -7,6 +7,7 @@ import {
   resolveExternalContent,
   shouldTreatAsExternalLink,
 } from "@/lib/external/resolve-external-content";
+import { isFeedPostType } from "@/lib/constants/posts";
 import type { PostType } from "@/types/database";
 import type { PostMediaItem, PostMetadata } from "@/types/post";
 import { revalidatePath } from "next/cache";
@@ -91,6 +92,10 @@ export async function createPostAction(
   const eventAt = String(formData.get("eventAt") ?? "").trim();
   const location = String(formData.get("location") ?? "").trim();
 
+  if (!isFeedPostType(postType)) {
+    return { error: "Dieser Beitragstyp ist im Organisations-Feed nicht erlaubt." };
+  }
+
   if (!content) {
     return { error: "Bitte Inhalt eingeben" };
   }
@@ -101,17 +106,6 @@ export async function createPostAction(
 
   const metadata = buildMetadata({ postType, externalUrl, mediaUrls, eventAt, location });
   const media = parseHostedMediaUrls(mediaUrls, postType);
-
-  if (
-    (postType === "video" || postType === "clip") &&
-    !metadata.externalUrl &&
-    media.length === 0
-  ) {
-    return {
-      error:
-        "Für Clips/Videos bitte einen externen Link (YouTube, TikTok, …) angeben — UNZE hostet keine fremden Videos neu.",
-    };
-  }
 
   const { error } = await createPost({
     content,

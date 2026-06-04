@@ -55,6 +55,31 @@ export async function updateMemberRoleAction(
 
   revalidatePath(`/dashboard/community/${slug}/members`);
   revalidatePath(`/dashboard/community/${slug}/roles`);
+  revalidatePath(`/community/${slug}`);
+  return { success: true };
+}
+
+export async function updateMemberRoleTitleAction(
+  slug: string,
+  memberId: string,
+  roleTitle: string,
+) {
+  const check = await requireManager(slug);
+  if (check.error || !check.ctx) return { error: check.error };
+
+  const { updateMemberRoleTitle } = await import(
+    "@/services/community/member.service"
+  );
+  const result = await updateMemberRoleTitle(
+    memberId,
+    roleTitle,
+    check.ctx.community.viewerRole,
+  );
+
+  if (result.error) return { error: result.error };
+
+  revalidatePath(`/dashboard/community/${slug}/members`);
+  revalidatePath(`/community/${slug}`);
   return { success: true };
 }
 

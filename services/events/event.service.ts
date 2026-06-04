@@ -7,3 +7,8 @@ export {
   fetchCommunityEventsAdminFromDb as getCommunityEventsAdmin,
   fetchEventsByIdsFromDb as getEventsByIds,
 } from "./event.repository";
+
+export {
+  getCommunityEventByIdOrSlug,
+  getCommunityEventsListed,
+} from "./event-detail.service";

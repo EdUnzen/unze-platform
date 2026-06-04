@@ -1,6 +1,9 @@
 import { RatingSummary } from "@/components/ui/RatingSummary";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
+import { CommunityFocusChips } from "@/components/community/CommunityFocusChips";
+import { CommunityLevelBadge } from "@/components/community/CommunityLevelBadge";
 import { CommunityStatusBadges } from "@/components/community/CommunityStatusBadges";
+import type { CommunityLevel } from "@/lib/constants/community-level";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
@@ -11,9 +14,12 @@ import { Users } from "lucide-react";
 
 interface CommunityHeaderProps {
   community: Community;
+  /** Berechnetes Level (überschreibt gespeichertes, wenn gesetzt) */
+  displayLevel?: CommunityLevel;
 }
 
-export function CommunityHeader({ community }: CommunityHeaderProps) {
+export function CommunityHeader({ community, displayLevel }: CommunityHeaderProps) {
+  const level = displayLevel ?? community.communityLevel;
   return (
     <header className="overflow-hidden rounded-3xl bg-white shadow-card">
       <div className="relative h-44 sm:h-52">
@@ -34,7 +40,10 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
           }}
         />
         <div className="absolute bottom-4 left-4 right-16 z-10 space-y-2">
-          <CommunityStatusBadges community={community} />
+          <div className="flex flex-wrap gap-1.5">
+            <CommunityStatusBadges community={community} />
+            <CommunityLevelBadge level={level} variant="dark" />
+          </div>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0 flex-1">
               <span className="mb-1 inline-block rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
@@ -48,6 +57,15 @@ export function CommunityHeader({ community }: CommunityHeaderProps) {
           </div>
         </div>
       </div>
+
+      {community.focusTags.length > 0 && (
+        <div className="border-b border-unze-border px-4 py-3">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-unze-ink-muted">
+            Community-Fokus
+          </p>
+          <CommunityFocusChips focusTags={community.focusTags} />
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-4 border-b border-unze-border px-4 py-3 text-sm text-unze-ink-secondary">
         <span className="flex items-center gap-1.5">

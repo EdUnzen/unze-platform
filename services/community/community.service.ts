@@ -1,4 +1,8 @@
+import { isDemoCommunitySlug } from "@/lib/constants/demo";
+import { isDemoMode } from "@/lib/demo/mode";
 import type { Community, CommunityFormInput } from "@/types/community";
+import { enrichMockCommunity } from "@/services/community/demo-data";
+import { MOCK_COMMUNITIES } from "@/services/community/community.mock";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { enableCreatorProfile } from "@/services/user/profile.service";
 import { isValidCommunitySlug, slugifyTitle } from "@/lib/utils/slug";
@@ -29,9 +33,15 @@ async function withViewerContext(communities: Community[]): Promise<Community[]>
   return enrichCommunitiesWithEngagement(result);
 }
 
+function withDemoFallback(communities: Community[] | null): Community[] {
+  if (communities && communities.length > 0) return communities;
+  if (!isDemoMode()) return [];
+  return MOCK_COMMUNITIES.map(enrichMockCommunity);
+}
+
 export async function getDiscoverCommunities(): Promise<Community[]> {
   const fromDb = await fetchCommunitiesFromDb({ discover: true, limit: 50 });
-  return withViewerContext(fromDb ?? []);
+  return withViewerContext(withDemoFallback(fromDb));
 }
 
 export async function getFeaturedCommunities(): Promise<Community[]> {
@@ -48,14 +58,19 @@ export async function getCommunityBySlug(
   inviteCode?: string | null,
 ): Promise<Community | null> {
   const user = await getCurrentUser();
-  const community = await fetchCommunityBySlugFromDb(
+  let community = await fetchCommunityBySlugFromDb(
     slug,
     user?.id ?? null,
     inviteCode,
   );
+
+  if (!community && (isDemoMode() || isDemoCommunitySlug(slug))) {
+    const mock = MOCK_COMMUNITIES.find((c) => c.slug === slug);
+    if (mock) community = enrichMockCommunity(mock);
+  }
+
   if (!community) return null;
-  const [enriched] = await enrichCommunitiesWithEngagement([community]);
-  return enriched ?? community;
+  return community;
 }
 
 export async function getFollowedCommunities(): Promise<Community[]> {
@@ -101,6 +116,7 @@ export async function createCommunity(
     platformType: input.platformType,
     category: input.category,
     tags: input.tags,
+    focusTags: input.focusTags,
     visibility: input.visibility,
     bannerGradient: input.bannerGradient,
     externalUrl: input.externalUrl,
@@ -142,6 +158,7 @@ export async function updateCommunity(
     platformType: input.platformType,
     category: input.category,
     tags: input.tags,
+    focusTags: input.focusTags,
     visibility: input.visibility,
     bannerGradient: input.bannerGradient,
     externalUrl: input.externalUrl ?? null,

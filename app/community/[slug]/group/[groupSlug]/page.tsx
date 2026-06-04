@@ -1,4 +1,4 @@
-import { GroupCheckoutButton } from "@/components/billing/GroupCheckoutButton";
+import { ServiceBookingPanel } from "@/components/services/ServiceBookingPanel";
 import { RatingSummary } from "@/components/ui/RatingSummary";
 import { FollowGroupButton } from "@/components/community/FollowGroupButton";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
@@ -8,8 +8,8 @@ import { getGroupVisualSeed } from "@/lib/demo/group-visuals";
 import { formatMemberCount } from "@/services/community/community.service";
 import { getGroupBySlugs } from "@/services/community/group.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
-import { getCommunityEvents } from "@/services/events/event.service";
-import { getFollowedEventIds, isFollowingGroup } from "@/services/follow/follow.service";
+import { getCommunityEventsListed } from "@/services/events/event.service";
+import { getFollowedEventIdsAmong, isFollowingGroup } from "@/services/follow/follow.service";
 import { CommunityEventsSection } from "@/components/events/CommunityEventsSection";
 import { BadgeCheck, Users, Wrench } from "lucide-react";
 import Link from "next/link";
@@ -33,13 +33,16 @@ export default async function GroupPage({ params }: GroupPageProps) {
   if (!group || !group.isPublic) notFound();
 
   const user = await getCurrentUser();
-  const [following, events, followedEventIds] = await Promise.all([
+  const [following, events] = await Promise.all([
     user ? isFollowingGroup(group.id) : Promise.resolve(false),
-    getCommunityEvents(group.communityId, 6),
-    user ? getFollowedEventIds() : Promise.resolve([]),
+    getCommunityEventsListed(group.communityId, slug, 6),
   ]);
 
   const groupEvents = events.filter((e) => e.groupId === group.id || !e.groupId);
+  const followedEventIds =
+    user && groupEvents.length > 0
+      ? await getFollowedEventIdsAmong(groupEvents.map((e) => e.id))
+      : [];
   const returnPath = `/community/${slug}/group/${groupSlug}`;
   const isService = group.groupType === "service";
   const priceLabel = formatPrice(group.priceCents, group.currency);
@@ -65,9 +68,9 @@ export default async function GroupPage({ params }: GroupPageProps) {
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <PlatformBadge platform={group.platformType} />
             {isService && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold text-violet-800">
+              <span className="inline-flex items-center gap-1 rounded-full bg-unze-green-muted px-2 py-0.5 text-[10px] font-semibold text-unze-green-dark">
                 <Wrench className="h-3 w-3" aria-hidden />
-                Dienstleistung
+                Service
               </span>
             )}
             {group.isVerified && (
@@ -95,8 +98,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
         </div>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
-        <div className="space-y-4">
+      <div className="flex flex-col gap-4">
+        <div className="space-y-4 order-2">
           <section className="rounded-3xl bg-white p-4 shadow-card">
             <h2 className="mb-2 text-sm font-semibold text-unze-ink">Beschreibung</h2>
             <p className="text-sm leading-relaxed text-unze-ink-secondary">
@@ -125,31 +128,18 @@ export default async function GroupPage({ params }: GroupPageProps) {
           />
         </div>
 
-        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
-          {isService && priceLabel && group.priceCents && group.priceCents > 0 ? (
-            user ? (
-              <section className="rounded-3xl bg-white p-4 shadow-card">
-                <h2 className="mb-2 text-sm font-semibold text-unze-ink">Buchen</h2>
-                <p className="mb-3 text-lg font-bold text-unze-ink">{priceLabel}</p>
-                <GroupCheckoutButton
-                  communityId={group.communityId}
-                  communitySlug={slug}
-                  groupId={group.id}
-                  groupSlug={groupSlug}
-                  groupTitle={group.title}
-                  priceCents={group.priceCents}
-                />
-              </section>
-            ) : (
-              <section className="rounded-3xl bg-white p-4 shadow-card text-center">
-                <p className="text-sm text-unze-ink-secondary">
-                  <Link href="/auth/login" className="font-semibold text-unze-green">
-                    Anmelden
-                  </Link>
-                  , um diese Dienstleistung zu buchen ({priceLabel}).
-                </p>
-              </section>
-            )
+        <aside className="order-1 space-y-4">
+          {isService ? (
+            <ServiceBookingPanel
+              communityId={group.communityId}
+              communitySlug={slug}
+              groupId={group.id}
+              groupSlug={groupSlug}
+              groupTitle={group.title}
+              priceCents={group.priceCents ?? 0}
+              currency={group.currency}
+              isLoggedIn={Boolean(user)}
+            />
           ) : null}
 
           {user ? (

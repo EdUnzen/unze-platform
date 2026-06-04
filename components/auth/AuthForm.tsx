@@ -1,6 +1,7 @@
 "use client";
 
 import { signInWithEmail, signUpWithEmail } from "@/app/auth/actions";
+import { OAuthProviderButtons } from "@/components/auth/OAuthProviderButtons";
 import { cn } from "@/lib/utils/cn";
 import { useActionState, useState } from "react";
 
@@ -114,6 +115,10 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
           {pending ? "Bitte warten…" : isLogin ? "Anmelden" : "Konto erstellen"}
         </button>
       </form>
+
+      <div className="mt-6">
+        <OAuthProviderButtons returnTo={returnTo} />
+      </div>
     </div>
   );
 }

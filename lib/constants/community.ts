@@ -29,9 +29,9 @@ export const BANNER_GRADIENTS = [
     value: "from-slate-700/90 via-slate-800/80 to-zinc-900/75",
   },
   {
-    id: "violet",
-    label: "Violett",
-    value: "from-violet-600/80 via-purple-700/70 to-indigo-800/65",
+    id: "amber",
+    label: "Warm",
+    value: "from-amber-500/85 via-orange-600/75 to-rose-700/65",
   },
   {
     id: "neutral",

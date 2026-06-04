@@ -13,6 +13,7 @@ const SIZE_CLASSES = {
   md: "h-10 w-10 text-sm rounded-full",
   lg: "h-14 w-14 text-base rounded-2xl",
   xl: "h-20 w-20 text-xl rounded-full",
+  "2xl": "h-28 w-28 text-2xl rounded-full",
 } as const;
 
 export type UserAvatarSize = keyof typeof SIZE_CLASSES;

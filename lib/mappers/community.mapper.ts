@@ -1,6 +1,8 @@
+import type { CommunityLevel } from "@/lib/constants/community-level";
 import { mapAccessConfigFromRow } from "@/lib/mappers/access.mapper";
 import { buildCommunityPriceSummary } from "@/lib/monetization/pricing-display";
-import type { Community, CommunityGroup, DiscoverGroup } from "@/types/community";import type { CommunityVisibility } from "@/types/community";
+import type { Community, CommunityGroup, DiscoverGroup } from "@/types/community";
+import type { CommunityVisibility } from "@/types/community";
 import type { CommunityRole, CommunityWithCreator } from "@/types/database";
 
 export function mapCommunityRow(
@@ -63,7 +65,16 @@ export function mapCommunityRow(
     bannerUrl: row.banner_url ?? null,
     platformType: row.platform_type,
     category: row.category,
+    focusTags:
+      (rowExt as { focus_tags?: string[] }).focus_tags ??
+      row.tags?.slice(0, 4) ??
+      [],
     tags: row.tags ?? [],
+    communityLevel:
+      ((rowExt as { community_level?: string }).community_level as CommunityLevel) ??
+      "bronze",
+    levelScore: (rowExt as { level_score?: number }).level_score ?? 0,
+    showMemberArea: (rowExt as { show_member_area?: boolean }).show_member_area ?? true,
     memberCount: row.member_count,
     rating: Number(row.rating_avg) || 0,
     reviewCount: row.review_count,

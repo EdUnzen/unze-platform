@@ -29,7 +29,17 @@ const ROUTES = [
   { path: "/community/rocket-league-ssl", name: "Gaming Community", expect: ["Rocket League"] },
   { path: "/community/business-circle-dach", name: "Business Community", expect: ["Business"] },
   { path: "/community/creator-lounge", name: "Creator Lounge", expect: ["Creator Lounge"] },
-  { path: "/auth/login", name: "Login", expect: ["Anmelden"] },
+  {
+    path: "/community/rocket-league-ssl/event/demo-ev-rl-1",
+    name: "Event Detail",
+    expect: ["SSL Community Cup"],
+  },
+  {
+    path: "/community/rocket-league-ssl/group/einzelcoaching",
+    name: "Service Detail",
+    expect: ["Einzelcoaching"],
+  },
+  { path: "/auth/login", name: "Login", expect: ["UNZE"] },
 ];
 
 async function main() {

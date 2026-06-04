@@ -1,3 +1,5 @@
+import { isDemoCommunitySlug } from "@/lib/constants/demo";
+import { getDemoShowcaseMembers } from "@/services/community/demo-data";
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityMemberView } from "@/types/dashboard";
 import type { CommunityRole } from "@/types/database";
@@ -34,6 +36,7 @@ export async function fetchMembersWithProfiles(
       id,
       user_id,
       role,
+      role_title,
       joined_at,
       profile:profiles (
         id,
@@ -74,6 +77,7 @@ export async function fetchMembersWithProfiles(
       id: row.id as string,
       userId: row.user_id as string,
       role: row.role as CommunityRole,
+      roleTitle: (row.role_title as string | null) ?? null,
       joinedAt: row.joined_at as string,
       displayName: profile?.display_name ?? null,
       username: profile?.username ?? null,
@@ -149,6 +153,46 @@ export async function leaveCommunityInDb(
     .eq("user_id", userId)
     .neq("role", "creator");
 
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
+const SHOWCASE_ROLES: CommunityRole[] = [
+  "creator",
+  "admin",
+  "moderator",
+  "expert",
+  "verified_member",
+];
+
+export async function fetchMembersForShowcase(
+  communityId: string,
+  communitySlug?: string,
+): Promise<CommunityMemberView[]> {
+  const all = await fetchMembersWithProfiles(communityId);
+  const filtered = all.filter((m) => SHOWCASE_ROLES.includes(m.role)).slice(0, 32);
+  if (filtered.length > 0) return filtered;
+  if (communitySlug && isDemoCommunitySlug(communitySlug)) {
+    return getDemoShowcaseMembers(communitySlug);
+  }
+  return filtered;
+}
+
+export async function updateMemberRoleTitleInDb(
+  memberId: string,
+  roleTitle: string | null,
+): Promise<{ error: string | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase nicht konfiguriert" };
+
+  const { error } = await supabase
+    .from("community_members")
+    .update({ role_title: roleTitle?.trim() || null })
+    .eq("id", memberId);
+
+  if (error?.message?.includes("role_title")) {
+    return { error: "Migration 025 ausführen (role_title)" };
+  }
   if (error) return { error: error.message };
   return { error: null };
 }

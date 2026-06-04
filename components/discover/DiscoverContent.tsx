@@ -10,7 +10,7 @@ import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDiscoverCommunities } from "@/services/community/community.service";
 import { getDiscoverGroups } from "@/services/community/group.service";
 import { getDiscoverEvents } from "@/services/events/event.service";
-import { getFollowedEventIds } from "@/services/follow/follow.service";
+import { getFollowedEventIdsAmong } from "@/services/follow/follow.service";
 import Link from "next/link";
 
 interface DiscoverContentProps {
@@ -47,11 +47,12 @@ export async function DiscoverContent({
       );
     }
     const user = await getCurrentUser();
-    const [events, followedEventIds] = await Promise.all([
-      getDiscoverEvents(24),
-      user ? getFollowedEventIds() : Promise.resolve([]),
-    ]);
+    const events = await getDiscoverEvents(24);
     const filtered = filterDiscoverEvents(events, query);
+    const followedEventIds =
+      user && filtered.length > 0
+        ? await getFollowedEventIdsAmong(filtered.map((e) => e.id))
+        : [];
 
     return (
       <DiscoverEventList

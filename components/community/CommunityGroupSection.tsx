@@ -30,10 +30,9 @@ export async function CommunityGroupSection({
     );
   }
 
-  const discoverGroups: DiscoverGroup[] = await Promise.all(
-    groups.map(async (group) => {
+  const discoverGroups: DiscoverGroup[] = groups.map((group) => {
       const visual = getGroupVisual(community.slug, group.slug);
-      const engagement = await buildGroupCardEngagement({
+      const engagement = buildGroupCardEngagement({
         communitySlug: community.slug,
         groupSlug: group.slug,
         isTrending: community.isTrending,
@@ -55,8 +54,7 @@ export async function CommunityGroupSection({
         isPremium: community.visibility === "premium",
         engagement,
       };
-    }),
-  );
+  });
 
   return (
     <section className="rounded-3xl bg-white p-4 shadow-card">

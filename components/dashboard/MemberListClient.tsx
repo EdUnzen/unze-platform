@@ -3,6 +3,7 @@
 import {
   removeMemberAction,
   updateMemberRoleAction,
+  updateMemberRoleTitleAction,
 } from "@/app/dashboard/actions";
 import { BanMemberButton } from "@/components/dashboard/RestrictionsPanel";
 import { UserAvatar } from "@/components/ui/UserAvatar";
@@ -48,6 +49,14 @@ export function MemberListClient({
     });
   };
 
+  const handleRoleTitleBlur = (memberId: string, title: string) => {
+    startTransition(async () => {
+      setError(null);
+      const result = await updateMemberRoleTitleAction(slug, memberId, title);
+      if (result.error) setError(result.error);
+    });
+  };
+
   if (members.length === 0) {
     return (
       <p className="py-8 text-center text-sm text-unze-ink-muted">
@@ -79,9 +88,21 @@ export function MemberListClient({
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium text-unze-ink">{name}</p>
                 <p className="text-xs text-unze-ink-muted">
-                  {ROLE_LABELS[member.role]}
+                  {member.roleTitle ?? ROLE_LABELS[member.role]}
                   {member.isVerified && " · Verifiziert"}
                 </p>
+                {canManageRoles &&
+                  !isCreator &&
+                  ["moderator", "admin", "expert"].includes(member.role) && (
+                    <input
+                      type="text"
+                      defaultValue={member.roleTitle ?? ""}
+                      placeholder="z. B. SSL Coach, Turnierleiter"
+                      onBlur={(e) => handleRoleTitleBlur(member.id, e.target.value)}
+                      className="mt-1 w-full rounded-lg border border-unze-border bg-unze-surface-muted px-2 py-1 text-[11px]"
+                      aria-label={`Anzeigename für ${name}`}
+                    />
+                  )}
               </div>
 
               {canManageRoles && !isCreator && (

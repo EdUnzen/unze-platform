@@ -2,6 +2,7 @@
 /** Diagnose: warum isPlatformSchemaReady() auf Vercel false liefert */
 import { existsSync, readFileSync } from "fs";
 import { join } from "path";
+import { validateAnonKey } from "./lib/supabase-anon-key.mjs";
 
 const root = process.cwd();
 
@@ -17,28 +18,6 @@ function loadEnvLocal() {
     env[trimmed.slice(0, idx).trim()] = trimmed.slice(idx + 1).trim();
   }
   return env;
-}
-
-function validateAnonKey(key) {
-  if (!key) return { ok: false, reason: "fehlt" };
-  if (/\.{2,}/.test(key) || key.includes("your-anon-key")) {
-    return { ok: false, reason: "Platzhalter oder abgeschnitten (...)" };
-  }
-  if (key.startsWith("sb_publishable_")) {
-    return {
-      ok: false,
-      reason:
-        "Neuer Publishable Key (sb_publishable_) — lib/env.ts erwartet aktuell JWT (eyJ...). Vercel-Wert muss der legacy anon JWT sein ODER env.ts anpassen.",
-    };
-  }
-  const parts = key.split(".");
-  if (parts.length !== 3 || !key.startsWith("eyJ")) {
-    return { ok: false, reason: "kein gültiger JWT (eyJ + 3 Segmente)" };
-  }
-  if (key.length < 150) {
-    return { ok: false, reason: `zu kurz (${key.length} Zeichen) — oft abgeschnitten in Vercel UI` };
-  }
-  return { ok: true };
 }
 
 async function probe(url, key) {
@@ -77,7 +56,7 @@ async function main() {
 
   const keyCheck = validateAnonKey(key);
   console.log(
-    `  Anon Key:     ${keyCheck.ok ? "✓ Format OK" : "✗ " + keyCheck.reason}`,
+    `  Anon Key:     ${keyCheck.ok ? `✓ ${keyCheck.detail}` : "✗ " + keyCheck.detail}`,
   );
   if (key) {
     console.log(`  Key-Länge:    ${key.length} Zeichen`);

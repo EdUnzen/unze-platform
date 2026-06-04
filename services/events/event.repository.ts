@@ -224,6 +224,45 @@ export async function fetchCommunityEventsAdminFromDb(communityId: string) {
   return (data ?? []).map((row) => mapEventRow(row as Record<string, unknown>));
 }
 
+export async function fetchEventByIdOrSlugFromDb(
+  communitySlug: string,
+  eventIdOrSlug: string,
+): Promise<CommunityEvent | null> {
+  const supabase = await createClient();
+  if (!supabase) return null;
+
+  const { data: community, error: communityError } = await supabase
+    .from("communities")
+    .select("id")
+    .eq("slug", communitySlug)
+    .maybeSingle();
+
+  if (communityError || !community) return null;
+
+  const isUuid = /^[0-9a-f-]{36}$/i.test(eventIdOrSlug);
+
+  let query = supabase
+    .from("community_events")
+    .select(EVENT_SELECT)
+    .eq("community_id", community.id)
+    .eq("is_public", true);
+
+  query = isUuid
+    ? query.eq("id", eventIdOrSlug)
+    : query.eq("slug", eventIdOrSlug);
+
+  const { data, error } = await query.maybeSingle();
+
+  if (error) {
+    if (error.code === "42P01") return null;
+    console.error("[event.repository] byIdOrSlug:", error.message);
+    return null;
+  }
+
+  if (!data) return null;
+  return mapEventRow(data as Record<string, unknown>);
+}
+
 export async function fetchEventsByIdsFromDb(eventIds: string[]) {
   const unique = [...new Set(eventIds.filter(Boolean))];
   if (unique.length === 0) return [];

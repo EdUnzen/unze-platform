@@ -93,25 +93,29 @@ export async function fetchCommunityBySlugFromDb(
   let membership: { isMember: boolean; role: CommunityRole | null } | undefined;
   let isFollowing = false;
 
+  let groupCount: number;
+
   if (viewerId) {
-    const member = await fetchMembership(communityId, viewerId);
+    const [member, followRes, counted] = await Promise.all([
+      fetchMembership(communityId, viewerId),
+      supabase
+        .from("follows")
+        .select("id")
+        .eq("follower_id", viewerId)
+        .eq("target_type", "community")
+        .eq("target_community_id", communityId)
+        .maybeSingle(),
+      countGroupsByCommunityId(communityId),
+    ]);
     membership = {
       isMember: Boolean(member),
       role: member?.role ?? null,
     };
-
-    const { data: followRow } = await supabase
-      .from("follows")
-      .select("id")
-      .eq("follower_id", viewerId)
-      .eq("target_type", "community")
-      .eq("target_community_id", communityId)
-      .maybeSingle();
-
-    isFollowing = Boolean(followRow);
+    isFollowing = Boolean(followRes.data);
+    groupCount = counted;
+  } else {
+    groupCount = await countGroupsByCommunityId(communityId);
   }
-
-  const groupCount = await countGroupsByCommunityId(communityId);
 
   let joinAccess;
   if (viewerId) {
@@ -173,6 +177,7 @@ export async function createCommunityInDb(input: {
   platformType: PlatformType;
   category: string;
   tags: string[];
+  focusTags?: string[];
   visibility: CommunityVisibility;
   bannerGradient?: string;
   externalUrl?: string;
@@ -191,6 +196,7 @@ export async function createCommunityInDb(input: {
       platform_type: input.platformType,
       category: input.category,
       tags: input.tags,
+      focus_tags: input.focusTags?.length ? input.focusTags : [],
       visibility: input.visibility,
       banner_gradient:
         input.bannerGradient ??
@@ -220,6 +226,7 @@ export async function updateCommunityInDb(
     platformType: PlatformType;
     category: string;
     tags: string[];
+    focusTags: string[];
     visibility: CommunityVisibility;
     bannerGradient: string;
     externalUrl: string | null;
@@ -237,6 +244,7 @@ export async function updateCommunityInDb(
   if (input.platformType !== undefined) payload.platform_type = input.platformType;
   if (input.category !== undefined) payload.category = input.category;
   if (input.tags !== undefined) payload.tags = input.tags;
+  if (input.focusTags !== undefined) payload.focus_tags = input.focusTags;
   if (input.visibility !== undefined) payload.visibility = input.visibility;
   if (input.bannerGradient !== undefined) payload.banner_gradient = input.bannerGradient;
   if (input.externalUrl !== undefined) payload.external_url = input.externalUrl;
