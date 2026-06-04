@@ -19,6 +19,9 @@ export async function publishPlatformEvent(
   input: PublishPlatformEventInput,
 ): Promise<{ error: string | null; eventId?: string; skipped?: boolean }> {
   const definition = getEventDefinition(input.eventType);
+  if (!definition) {
+    return { error: `Unbekannter Event-Typ: ${input.eventType}` };
+  }
 
   const persisted = await insertPlatformEventInDb({
     eventType: input.eventType,

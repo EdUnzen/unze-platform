@@ -11,7 +11,6 @@ import {
   fetchRevenueLedgerForUser,
   insertReferral,
   insertSandboxLedgerEntry,
-  updateReferralConflict,
 } from "./referral.repository";
 
 async function enrichReferral(row: {
@@ -89,6 +88,28 @@ export async function claimCreatorReferral(
       status: "active",
     });
     if (result.error) return { error: result.error };
+
+    const { dispatchNotification } = await import(
+      "@/services/notifications/notification-center.service"
+    );
+    const { data: referredProfile } = await supabase
+      .from("profiles")
+      .select("display_name, username")
+      .eq("id", referredUserId)
+      .maybeSingle();
+    const referredLabel =
+      (referredProfile?.display_name as string) ??
+      (referredProfile?.username as string) ??
+      "Ein Creator";
+
+    await dispatchNotification({
+      userId: referrerUserId,
+      category: "system",
+      title: "Neuer Creator-Referral",
+      body: `${referredLabel} hat dich als Empfehlungsgeber angegeben.`,
+      data: { referredUserId, type: "creator_referral" },
+    });
+
     return { error: null, status: "active" };
   }
 
@@ -96,13 +117,10 @@ export async function claimCreatorReferral(
     return { error: null, status: existing.status };
   }
 
-  await updateReferralConflict(
-    existing.id,
-    "Referral-Konflikt vorhanden — bitte prüfen.",
-    referrerUserId,
-  );
-
-  return { error: null, status: "conflict" };
+  return {
+    error:
+      "Du hast bereits einen Empfehlungsgeber. Eine Änderung ist nicht möglich.",
+  };
 }
 
 export async function getReferralSummary(userId: string): Promise<ReferralSummary> {
@@ -126,24 +144,40 @@ export async function getReferralSummary(userId: string): Promise<ReferralSummar
 
 export async function searchCreatorsForReferral(
   query: string,
-  limit = 8,
+  limit = 12,
 ): Promise<{ id: string; name: string; username: string | null }[]> {
   const supabase = await createClient();
-  if (!supabase || !query.trim()) return [];
+  const term = query.trim().replace(/[%_,]/g, "");
+  if (!supabase || term.length < 2) return [];
 
-  const q = `%${query.trim()}%`;
-  const { data } = await supabase
-    .from("profiles")
-    .select("id, display_name, username")
-    .eq("is_creator", true)
-    .or(`display_name.ilike.${q},username.ilike.${q}`)
-    .limit(limit);
+  const pattern = `%${term}%`;
+  const [byName, byUsername] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("id, display_name, username, is_creator, platform_role")
+      .ilike("display_name", pattern)
+      .limit(limit),
+    supabase
+      .from("profiles")
+      .select("id, display_name, username, is_creator, platform_role")
+      .ilike("username", pattern)
+      .limit(limit),
+  ]);
 
-  return (data ?? []).map((row) => ({
-    id: row.id as string,
-    name: (row.display_name as string) ?? (row.username as string) ?? "Creator",
-    username: (row.username as string) ?? null,
-  }));
+  const merged = new Map<string, { id: string; name: string; username: string | null }>();
+  for (const row of [...(byName.data ?? []), ...(byUsername.data ?? [])]) {
+    const isCreator =
+      row.is_creator === true || row.platform_role === "creator";
+    if (!isCreator) continue;
+    merged.set(row.id as string, {
+      id: row.id as string,
+      name: (row.display_name as string) ?? (row.username as string) ?? "Creator",
+      username: (row.username as string) ?? null,
+    });
+    if (merged.size >= limit) break;
+  }
+
+  return [...merged.values()];
 }
 
 export async function getRevenueLedger(userId: string): Promise<RevenueLedgerEntry[]> {

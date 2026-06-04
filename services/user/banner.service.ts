@@ -53,3 +53,18 @@ export async function uploadCommunityBanner(input: {
     error: null,
   };
 }
+
+export async function uploadEventCover(input: {
+  userId: string;
+  buffer: Buffer;
+  fileName: string;
+  mimeType: string;
+}): Promise<{ coverUrl: string | null; error: string | null }> {
+  const result = await uploadCommunityBanner({
+    userId: input.userId,
+    buffer: input.buffer,
+    fileName: input.fileName,
+    mimeType: input.mimeType,
+  });
+  return { coverUrl: result.bannerUrl, error: result.error };
+}

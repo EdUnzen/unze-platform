@@ -171,6 +171,11 @@ export async function createCommunity(
     return { community: null, error: toUserCommunityCreateError(createError) };
   }
 
+  const { ensureCreatorMembershipInDb } = await import(
+    "./member.repository"
+  );
+  await ensureCreatorMembershipInDb(community.id, user.id);
+
   const { publishPlatformEvent } = await import(
     "@/services/platform/event-bus.service"
   );

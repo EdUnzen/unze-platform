@@ -54,11 +54,12 @@ function toActivityItem(
   event: Awaited<ReturnType<typeof fetchPlatformEventsFromDb>>[number],
 ): ActivityFeedItem {
   const definition = getEventDefinition(event.eventType);
+  const label = definition?.label ?? event.eventType.replace(/[._]/g, " ");
   return {
     id: event.id,
     eventType: event.eventType,
     domain: event.domain,
-    label: definition.label,
+    label,
     actorId: event.actorId,
     communityId: event.communityId,
     payload: event.payload,

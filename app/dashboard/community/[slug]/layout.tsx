@@ -30,10 +30,14 @@ export default async function DashboardCommunityLayout({
     redirect("/dashboard");
   }
 
-  const pendingApplicationCount = await countPendingApplicationsFromDb(
-    community.id,
-  );
-  const pendingReportCount = await countPendingReportsFromDb(community.id);
+  let pendingApplicationCount = 0;
+  let pendingReportCount = 0;
+  try {
+    pendingApplicationCount = await countPendingApplicationsFromDb(community.id);
+    pendingReportCount = await countPendingReportsFromDb(community.id);
+  } catch (e) {
+    console.error("[dashboard.layout] pending counts:", e);
+  }
   const accessLabel =
     ACCESS_STATUS_OPTIONS.find(
       (o) => o.value === community.access?.accessStatus,

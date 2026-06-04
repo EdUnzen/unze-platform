@@ -1,5 +1,6 @@
 import { CommercialInfoDialog } from "@/components/referral/CommercialInfoDialog";
 import { CreatorReferralPanel } from "@/components/referral/CreatorReferralPanel";
+import { MyReferralsDashboard } from "@/components/referral/MyReferralsDashboard";
 import { RevenueOverviewPanel } from "@/components/referral/RevenueOverviewPanel";
 import { StripeConnectPanel } from "@/components/referral/StripeConnectPanel";
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -73,6 +74,7 @@ export default async function DashboardReferralsPage({
           stripeStatus={stripeStatus}
           sandboxCommunity={sandboxCommunity}
         />
+        <MyReferralsDashboard summary={summary} />
         <CreatorReferralPanel summary={summary} />
         <RevenueOverviewPanel ledger={ledger} userId={user.id} />
       </div>

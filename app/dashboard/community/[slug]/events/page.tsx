@@ -23,10 +23,18 @@ export default async function DashboardEventsPage({ params }: DashboardEventsPag
     <div className="space-y-6">
       <section>
         <h2 className="mb-4 text-base font-semibold text-unze-ink">Events</h2>
-        <EventManager communityId={community.id} slug={slug} />
+        <EventManager
+          communityId={community.id}
+          slug={slug}
+          communityBannerUrl={community.bannerUrl}
+        />
       </section>
 
-      <CommunityEventsSection communitySlug={slug} events={events} />
+      <CommunityEventsSection
+        communitySlug={slug}
+        events={events}
+        communityBannerUrl={community.bannerUrl}
+      />
     </div>
   );
 }

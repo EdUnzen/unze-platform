@@ -1,5 +1,10 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { FollowEventButton } from "@/components/events/FollowEventButton";
+import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import {
+  DEFAULT_EVENT_COVER_GRADIENT,
+  DEFAULT_EVENT_COVER_URL,
+} from "@/lib/constants/event-banners";
 import type { CommunityEvent } from "@/types/event";
 import { Calendar, ExternalLink, MapPin, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -11,6 +16,7 @@ interface CommunityEventsSectionProps {
   showFollowButtons?: boolean;
   /** Kein äußerer Karten-Header (z. B. Community-Events-Tab) */
   embedded?: boolean;
+  communityBannerUrl?: string | null;
 }
 
 function formatEventDate(iso: string): string {
@@ -29,6 +35,7 @@ export function CommunityEventsSection({
   followedEventIds = [],
   showFollowButtons = false,
   embedded = false,
+  communityBannerUrl,
 }: CommunityEventsSectionProps) {
   const followedSet = new Set(followedEventIds);
   if (events.length === 0) return null;
@@ -53,11 +60,23 @@ export function CommunityEventsSection({
       )}
 
       <ul className="space-y-3">
-        {events.slice(0, 5).map((event) => (
+        {events.slice(0, 5).map((event) => {
+          const cover =
+            event.coverUrl ?? communityBannerUrl ?? DEFAULT_EVENT_COVER_URL;
+          return (
           <li
             key={event.id}
-            className="rounded-2xl border border-unze-border/80 bg-unze-surface-muted/20 p-3"
+            className="overflow-hidden rounded-2xl border border-unze-border/80 bg-unze-surface-muted/20"
           >
+            <CommunityCoverVisual
+              seed={event.id}
+              bannerGradient={DEFAULT_EVENT_COVER_GRADIENT}
+              imageUrl={cover}
+              fallbackImageUrl={DEFAULT_EVENT_COVER_URL}
+              className="h-24"
+              overlay="card"
+            />
+            <div className="p-3">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex flex-wrap items-center gap-2">
@@ -116,8 +135,10 @@ export function CommunityEventsSection({
                 Externe Plattform öffnen
               </a>
             )}
+            </div>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </section>
   );

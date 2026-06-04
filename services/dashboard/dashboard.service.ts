@@ -92,6 +92,19 @@ export async function getManagedCommunities(
     rows.push({ community, role: row.role as CommunityRole });
   }
 
+  const seenIds = new Set(rows.map((r) => r.community.id));
+
+  const { data: ownedRows } = await supabase
+    .from("communities")
+    .select(COMMUNITY_SELECT)
+    .eq("creator_id", userId);
+
+  for (const community of ownedRows ?? []) {
+    if (seenIds.has(community.id)) continue;
+    seenIds.add(community.id);
+    rows.push({ community: community as CommunityWithCreator, role: "creator" });
+  }
+
   if (rows.length === 0) return [];
 
   const memberCounts: Record<string, number> = {};
@@ -146,6 +159,10 @@ export async function getDashboardCommunityAccess(
 
   let role = (membership?.role as CommunityRole) ?? null;
   if (!role && communityRow.creator_id === userId) {
+    const { ensureCreatorMembershipInDb } = await import(
+      "../community/member.repository"
+    );
+    await ensureCreatorMembershipInDb(communityRow.id, userId);
     role = "creator";
   }
 

@@ -257,6 +257,6 @@ export const PLATFORM_EVENT_CATALOG: Record<PlatformEventType, EventDefinition> 
 
 export function getEventDefinition(
   eventType: PlatformEventType,
-): EventDefinition {
+): EventDefinition | undefined {
   return PLATFORM_EVENT_CATALOG[eventType];
 }

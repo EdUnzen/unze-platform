@@ -27,7 +27,12 @@ export default async function DashboardOverviewPage({
   const { community } = await getDashboardCommunityAccess(slug, user.id);
   if (!community) redirect("/dashboard");
 
-  const activity = await getCommunityActivity(community.id, 15);
+  let activity: Awaited<ReturnType<typeof getCommunityActivity>> = [];
+  try {
+    activity = await getCommunityActivity(community.id, 15);
+  } catch (e) {
+    console.error("[dashboard.overview] activity:", e);
+  }
   const pendingApplicationCount = await countPendingApplicationsFromDb(
     community.id,
   );

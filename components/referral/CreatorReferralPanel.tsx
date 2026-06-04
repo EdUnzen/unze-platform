@@ -41,13 +41,9 @@ export function CreatorReferralPanel({ summary }: CreatorReferralPanelProps) {
         setMessage(result.error);
         return;
       }
-      if (result.status === "conflict") {
-        setMessage("Referral-Konflikt vorhanden — bitte prüfen.");
-      } else {
-        setMessage("Creator-Verbindung gespeichert.");
-        setQuery("");
-        setResults([]);
-      }
+      setMessage("Empfehlungsgeber gespeichert — danke!");
+      setQuery("");
+      setResults([]);
     });
   };
 
@@ -58,8 +54,8 @@ export function CreatorReferralPanel({ summary }: CreatorReferralPanelProps) {
         <h2 className="text-base font-semibold text-unze-ink">Creator Referral</h2>
       </div>
       <p className="mb-4 text-sm text-unze-ink-secondary">
-        Optional: Gib an, welcher Creator dich zur Plattform gebracht hat. Kein
-        Pflichtfeld — kein Multi-Level-System.
+        Optional: Ein Empfehlungsgeber pro Creator — danach nicht mehr änderbar.
+        Kein Multi-Level-System. Du kannst beliebig viele Creator werben.
       </p>
 
       {summary.myReferral ? (

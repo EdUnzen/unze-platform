@@ -48,7 +48,7 @@ export default async function HomePage() {
         subtitle={
           user
             ? "Communities, Gruppen, Events und Anträge — dein Verwaltungs-Hub."
-            : "Communities organisieren, verifizieren und monetarisieren — ohne Social-Media-Feed."
+            : "Communities organisieren, verifizieren und monetarisieren — dein Netzwerk an einem Ort."
         }
       />
 

@@ -10,9 +10,9 @@ import { revalidatePath } from "next/cache";
 export async function createEventAction(
   communityId: string,
   slug: string,
-  _prev: { error?: string } | null,
+  _prev: { error?: string; success?: boolean } | null,
   formData: FormData,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; success?: boolean }> {
   const user = await getCurrentUser();
   if (!user) return { error: "Nicht angemeldet" };
 
@@ -34,6 +34,21 @@ export async function createEventAction(
     return { error: "Ungültiger Event-Slug" };
   }
 
+  let coverUrl: string | undefined;
+  const coverFile = formData.get("coverFile");
+  if (coverFile instanceof File && coverFile.size > 0) {
+    const buffer = Buffer.from(await coverFile.arrayBuffer());
+    const { uploadEventCover } = await import("@/services/user/banner.service");
+    const uploaded = await uploadEventCover({
+      userId: user.id,
+      buffer,
+      fileName: coverFile.name,
+      mimeType: coverFile.type || "image/jpeg",
+    });
+    if (uploaded.error) return { error: uploaded.error };
+    coverUrl = uploaded.coverUrl ?? undefined;
+  }
+
   const { error } = await createCommunityEvent({
     communityId,
     slug: eventSlug,
@@ -45,6 +60,7 @@ export async function createEventAction(
     externalUrl,
     isPublic: formData.get("isPublic") === "on",
     createdBy: user.id,
+    coverUrl,
   });
 
   if (error) return { error };
@@ -52,5 +68,5 @@ export async function createEventAction(
   revalidatePath(`/community/${slug}`);
   revalidatePath(`/dashboard/community/${slug}/events`);
   revalidatePath("/discover");
-  return {};
+  return { success: true as const };
 }

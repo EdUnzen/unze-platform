@@ -44,8 +44,8 @@ export function HomeHub({
             UNZE — Communities organisieren & monetarisieren
           </h2>
           <p className="mb-4 text-sm text-unze-ink-secondary">
-            Kein Social-Media-Feed. Verwalte Communities, Gruppen, Events und
-            Anträge — Kommunikation bleibt auf Discord, WhatsApp, Telegram & Co.
+            Verwalte Communities, Gruppen, Events und Anträge — Kommunikation
+            bleibt auf Discord, WhatsApp, Telegram & Co.
           </p>
           <Link
             href="/auth/login"
@@ -87,7 +87,7 @@ export function HomeHub({
               Communities, Gruppen & Events — alles an einem Ort
             </h2>
             <p className="mt-1 max-w-md text-xs text-white/85 sm:text-sm">
-              Organisiere, verifiziere und monetarisiere — ohne Social-Media-Feed.
+              Organisiere, verifiziere und monetarisiere dein Netzwerk an einem Ort.
             </p>
             <Link
               href="/discover"

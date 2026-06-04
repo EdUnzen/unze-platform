@@ -444,6 +444,7 @@ export default async function CommunityPage({
                 events={events}
                 followedEventIds={followedEventIds}
                 showFollowButtons={Boolean(user)}
+                communityBannerUrl={communityWithLevel.bannerUrl}
                 embedded
               />
             )}

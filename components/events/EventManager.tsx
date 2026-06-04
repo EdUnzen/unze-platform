@@ -1,8 +1,15 @@
 "use client";
 
 import { createEventAction } from "@/app/dashboard/event-actions";
+import { ActionSuccessBanner } from "@/components/ui/ActionSuccessBanner";
+import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
+import {
+  DEFAULT_EVENT_COVER_GRADIENT,
+  DEFAULT_EVENT_COVER_URL,
+} from "@/lib/constants/event-banners";
 import { slugifyTitle } from "@/lib/utils/slug";
-import { useActionState, useState } from "react";
+import { Camera } from "lucide-react";
+import { useActionState, useRef, useState } from "react";
 
 const inputClass =
   "w-full rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2.5 text-sm outline-none focus:border-unze-green";
@@ -10,12 +17,20 @@ const inputClass =
 interface EventManagerProps {
   communityId: string;
   slug: string;
+  communityBannerUrl?: string | null;
 }
 
-export function EventManager({ communityId, slug }: EventManagerProps) {
+export function EventManager({
+  slug,
+  communityId,
+  communityBannerUrl,
+}: EventManagerProps) {
   const bound = createEventAction.bind(null, communityId, slug);
   const [state, action, pending] = useActionState(bound, null);
   const [title, setTitle] = useState("");
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const fallbackCover = communityBannerUrl ?? DEFAULT_EVENT_COVER_URL;
 
   return (
     <section className="rounded-3xl bg-white p-4 shadow-card">
@@ -24,7 +39,41 @@ export function EventManager({ communityId, slug }: EventManagerProps) {
         Termine erscheinen auf der Community-Seite und in Discover.
       </p>
 
-      <form action={action} className="space-y-3">
+      <form action={action} encType="multipart/form-data" className="space-y-3">
+        <div className="relative overflow-hidden rounded-2xl">
+          <CommunityCoverVisual
+            seed={`event-preview-${slug}`}
+            bannerGradient={DEFAULT_EVENT_COVER_GRADIENT}
+            imageUrl={previewUrl ?? fallbackCover}
+            fallbackImageUrl={DEFAULT_EVENT_COVER_URL}
+            className="h-32"
+            overlay="card"
+          />
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="absolute bottom-3 right-3 flex items-center gap-1.5 rounded-full bg-unze-green px-3 py-2 text-xs font-semibold text-white shadow-lg"
+          >
+            <Camera className="h-4 w-4" aria-hidden />
+            Eventbild
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            name="coverFile"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (!file) {
+                setPreviewUrl(null);
+                return;
+              }
+              setPreviewUrl(URL.createObjectURL(file));
+            }}
+          />
+        </div>
+
         <input
           name="title"
           required
@@ -62,9 +111,7 @@ export function EventManager({ communityId, slug }: EventManagerProps) {
           Öffentlich sichtbar
         </label>
         {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-        {!state?.error && state && Object.keys(state).length === 0 && (
-          <p className="text-sm text-unze-green">Event erstellt.</p>
-        )}
+        {state?.success && <ActionSuccessBanner message="Event erstellt" />}
         <button
           type="submit"
           disabled={pending}
