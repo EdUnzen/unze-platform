@@ -45,13 +45,13 @@ export function OfficialPlatformsGrid({
           <>
             <span
               className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-2xl border",
+                "flex h-11 w-11 items-center justify-center rounded-2xl border transition-colors",
                 connected
-                  ? "border-unze-green/30 bg-unze-green-muted/50"
-                  : "border-unze-border bg-unze-surface-muted/40",
+                  ? "border-unze-green/40 bg-white shadow-sm"
+                  : "border-unze-border/80 bg-unze-surface-muted/30",
               )}
             >
-              <PlatformIcon platform={platform} size="md" />
+              <PlatformIcon platform={platform} size="md" active={connected} />
             </span>
             <span className="mt-1.5 block truncate text-center text-[10px] font-medium text-unze-ink">
               {PLATFORM_LABELS[platform]}
@@ -93,7 +93,7 @@ export function OfficialPlatformsGrid({
         return (
           <div
             key={platform}
-            className="flex flex-col items-center rounded-2xl p-2 opacity-70"
+            className="flex flex-col items-center rounded-2xl p-2 opacity-80"
             aria-label={`${PLATFORM_LABELS[platform]} — nicht verknüpft`}
           >
             {inner}

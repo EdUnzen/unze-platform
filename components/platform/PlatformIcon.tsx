@@ -12,6 +12,8 @@ interface PlatformIconProps {
   size?: "xs" | "sm" | "md";
   /** Auf dunklen Bannern: Icon in Weiß */
   onDark?: boolean;
+  /** false = ausgegraut (Plattform nicht verknüpft) */
+  active?: boolean;
 }
 
 const SIZE = { xs: 12, sm: 14, md: 18 } as const;
@@ -21,6 +23,7 @@ export function PlatformIcon({
   className,
   size = "sm",
   onDark = false,
+  active = true,
 }: PlatformIconProps) {
   const px = SIZE[size];
   const color = onDark ? "#ffffff" : PLATFORM_ICON_COLORS[platform];
@@ -30,10 +33,14 @@ export function PlatformIcon({
       width={px}
       height={px}
       viewBox="0 0 24 24"
-      className={cn("shrink-0", className)}
+      className={cn(
+        "shrink-0 transition-opacity",
+        !active && "opacity-35 grayscale",
+        className,
+      )}
       aria-hidden
       fill="currentColor"
-      style={{ color }}
+      style={{ color: active ? color : "#94a3b8" }}
     >
       {ICON_PATHS[platform]}
     </svg>

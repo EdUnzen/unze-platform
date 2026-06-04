@@ -22,13 +22,38 @@ export async function enableCreatorProfile(userId: string) {
     .update({ is_creator: true, platform_role: "creator" as const })
     .eq("id", userId);
 
-  if (profileError) return { error: profileError };
+  if (profileError) {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const admin = createAdminClient();
+    if (admin) {
+      const { error: adminProfileErr } = await admin
+        .from("profiles")
+        .update({ is_creator: true, platform_role: "creator" as const })
+        .eq("id", userId);
+      if (adminProfileErr) return { error: adminProfileErr };
+    } else {
+      return { error: profileError };
+    }
+  }
 
   const { error: creatorError } = await supabase.from("creator_profiles").upsert({
     user_id: userId,
     headline: null,
     platform_links: [],
   });
+
+  if (creatorError) {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const admin = createAdminClient();
+    if (admin) {
+      const { error: adminCreatorErr } = await admin.from("creator_profiles").upsert({
+        user_id: userId,
+        headline: null,
+        platform_links: [],
+      });
+      return { error: adminCreatorErr };
+    }
+  }
 
   return { error: creatorError };
 }

@@ -6,7 +6,6 @@ import {
 import { DiscoverMigrationBanner } from "@/components/discover/DiscoverMigrationBanner";
 import { DiscoverTabs } from "@/components/discover/DiscoverTabs";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { getPlatformMigrationStatus } from "@/services/platform/schema.service";
 import { Suspense } from "react";
 
 interface DiscoverPageProps {
@@ -22,7 +21,6 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   const tab = params.tab ?? "communities";
   const query = params.q ?? "";
   const category = params.category ?? "Alle";
-  const migrationStatus = await getPlatformMigrationStatus();
 
   return (
     <div className="page-padding">
@@ -31,7 +29,9 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
         subtitle="Communities, Gruppen, Events und Dienstleistungen entdecken"
       />
 
-      <DiscoverMigrationBanner status={migrationStatus} />
+      <Suspense fallback={null}>
+        <DiscoverMigrationBanner />
+      </Suspense>
 
       <Suspense fallback={<div className="mb-4 h-12 animate-pulse rounded-2xl bg-unze-border/50" />}>
         <DiscoverSearchBar />
@@ -55,12 +55,7 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
           </div>
         }
       >
-        <DiscoverContent
-          tab={tab}
-          query={query}
-          category={category}
-          migrationDetails={migrationStatus.details}
-        />
+        <DiscoverContent tab={tab} query={query} category={category} />
       </Suspense>
     </div>
   );

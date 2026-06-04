@@ -1,10 +1,12 @@
 import {
   COMMUNITY_LEVEL_LABELS,
-  levelUsesDiamondIcon,
   type CommunityLevel,
 } from "@/lib/constants/community-level";
+import {
+  COMMUNITY_LEVEL_BADGE_STYLES,
+  COMMUNITY_LEVEL_ICONS,
+} from "@/lib/constants/community-level-styles";
 import { cn } from "@/lib/utils/cn";
-import { Gem } from "lucide-react";
 
 interface CommunityLevelBadgeProps {
   level: CommunityLevel;
@@ -17,11 +19,9 @@ export function CommunityLevelBadge({
   className,
   variant = "light",
 }: CommunityLevelBadgeProps) {
-  const showDiamond = levelUsesDiamondIcon(level);
-  const pill =
-    variant === "dark"
-      ? "bg-black/35 text-white backdrop-blur-md"
-      : "bg-unze-green-muted text-unze-green-dark";
+  const Icon = COMMUNITY_LEVEL_ICONS[level];
+  const styles = COMMUNITY_LEVEL_BADGE_STYLES[level];
+  const pill = variant === "dark" ? styles.pillDark : styles.pillLight;
 
   return (
     <span
@@ -31,7 +31,10 @@ export function CommunityLevelBadge({
         className,
       )}
     >
-      {showDiamond && <Gem className="h-3 w-3" aria-hidden />}
+      <Icon
+        className={cn("h-3.5 w-3.5 shrink-0", variant === "dark" ? styles.iconClass : "opacity-90")}
+        aria-hidden
+      />
       {COMMUNITY_LEVEL_LABELS[level]} Community
     </span>
   );

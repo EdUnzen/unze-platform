@@ -46,6 +46,14 @@ export const BANNER_PRESETS: BannerPreset[] = [
     categories: ["Business", "Finanzen"],
   },
   {
+    id: "sport-1",
+    label: "Sport",
+    imageUrl:
+      "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-sky-600/90 via-blue-700/80 to-indigo-900/75",
+    categories: ["Sport"],
+  },
+  {
     id: "fitness-1",
     label: "Sport & Fitness",
     imageUrl:
@@ -118,8 +126,19 @@ export function getBannerPresetById(id: string | null | undefined): BannerPreset
   return presetById.get(id) ?? null;
 }
 
+const CATEGORY_BANNER_ALIASES: Record<string, string> = {
+  Sport: "Fitness",
+};
+
+export function normalizeBannerCategory(category: string): string {
+  return CATEGORY_BANNER_ALIASES[category] ?? category;
+}
+
 export function getDefaultBannerPresetForCategory(category: string): BannerPreset {
-  const forCategory = BANNER_PRESETS.find((p) => p.categories.includes(category));
+  const normalized = normalizeBannerCategory(category);
+  const forCategory = BANNER_PRESETS.find((p) =>
+    p.categories.includes(normalized),
+  );
   return forCategory ?? presetById.get("general-1")!;
 }
 

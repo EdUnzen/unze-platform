@@ -83,14 +83,14 @@ export function ProfileHub({
         </div>
 
         <div className="relative px-5 pb-6 pt-0">
-          <div className="-mt-12 mb-3 flex justify-center sm:-mt-14 sm:mb-4">
+          <div className="-mt-[4.25rem] mb-3 flex justify-center sm:-mt-[4.75rem] sm:mb-4">
             <UserAvatar
               name={displayName}
               seed={userId}
               avatarUrl={profile?.avatar_url}
               size="2xl"
               verifiedRing={profile?.is_verified}
-              className="h-[5.5rem] w-[5.5rem] border-[4px] border-white shadow-lg ring-1 ring-black/5 sm:h-24 sm:w-24 sm:border-[5px]"
+              className="h-[5.75rem] w-[5.75rem] border-[4px] border-white shadow-xl ring-2 ring-unze-green/15 sm:h-[6.25rem] sm:w-[6.25rem] sm:border-[5px]"
             />
           </div>
 

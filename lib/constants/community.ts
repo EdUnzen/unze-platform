@@ -4,6 +4,7 @@ export const COMMUNITY_CATEGORIES = [
   "Gaming",
   "Business",
   "Fitness",
+  "Sport",
   "Technologie",
   "Finanzen",
   "Bildung",

@@ -230,30 +230,39 @@ export async function createCommunityInDb(input: {
     focus_tags: input.focusTags?.length ? input.focusTags : [],
   };
 
-  let { data, error } = await supabase
-    .from("communities")
-    .insert(withFocus)
-    .select(COMMUNITY_SELECT)
-    .single();
+  const {
+    buildCommunityInsertVariants,
+    insertCommunityRow,
+    isAuthOrRlsError,
+  } = await import("@/lib/community/insert-community-row");
 
-  const missingFocusColumn =
-    error &&
-    (error.code === "42703" ||
-      error.code === "PGRST204" ||
-      error.message?.includes("focus_tags"));
+  const variants = buildCommunityInsertVariants(basePayload, withFocus);
 
-  if (missingFocusColumn) {
-    ({ data, error } = await supabase
-      .from("communities")
-      .insert(basePayload)
-      .select(COMMUNITY_SELECT)
-      .single());
+  let { data, error: insertError } = await insertCommunityRow(supabase, variants);
+
+  if (!data) {
+    const { createAdminClient } = await import("@/lib/supabase/admin");
+    const admin = createAdminClient();
+    if (admin) {
+      const adminResult = await insertCommunityRow(admin, variants);
+      data = adminResult.data;
+      insertError = adminResult.error;
+    } else if (insertError && isAuthOrRlsError(insertError)) {
+      insertError = {
+        ...insertError,
+        message: `${insertError.message} (SUPABASE_SERVICE_ROLE_KEY fehlt auf dem Server)`,
+      };
+    }
   }
 
-  if (error || !data) {
-    const msg = error?.message ?? "Unbekannter Datenbankfehler";
+  if (!data && insertError) {
+    const msg = insertError.message ?? "Unbekannter Datenbankfehler";
     console.error("[community.repository] create:", msg);
     return { community: null, error: msg };
+  }
+
+  if (!data) {
+    return { community: null, error: "Community-Insert ohne Daten zurückgegeben" };
   }
 
   const communityId = (data as { id: string }).id;
@@ -264,7 +273,7 @@ export async function createCommunityInDb(input: {
     console.error("[community.repository] creator member:", memberResult.error);
   }
 
-  const community = mapCommunityRow(data as CommunityWithCreator, {
+  const community = mapCommunityRow(data as unknown as CommunityWithCreator, {
     membership: { isMember: true, role: "creator" },
   });
 

@@ -94,7 +94,7 @@ async function probePlatformMigrationStatus(): Promise<PlatformMigrationStatus> 
 const getCachedPlatformMigrationStatus = unstable_cache(
   probePlatformMigrationStatus,
   ["unze-platform-migration-status"],
-  { revalidate: 60 },
+  { revalidate: 300 },
 );
 
 /** Prüft ob Kern- und Phase-1-Migrationen (021/022) aktiv sind — 60s Cache */

@@ -10,13 +10,17 @@ import Link from "next/link";
 export default async function ProfilePage() {
   const configured = isSupabaseConfigured();
   const user = configured ? await getCurrentUser() : null;
-  const profile = user ? await getCurrentProfile() : null;
-  const notifData = user ? await loadNotifications(true) : null;
+
+  const [profile, notifData, managesCommunities] = user
+    ? await Promise.all([
+        getCurrentProfile(),
+        loadNotifications(true),
+        hasManagedCommunities(user.id),
+      ])
+    : [null, null, false];
 
   const showCreatorHub =
-    Boolean(user) &&
-    (Boolean(profile?.is_creator) ||
-      (await hasManagedCommunities(user!.id)));
+    Boolean(user) && (Boolean(profile?.is_creator) || managesCommunities);
 
   if (!user) {
     return (

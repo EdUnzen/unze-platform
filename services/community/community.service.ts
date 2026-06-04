@@ -25,13 +25,21 @@ export function formatMemberCount(count: number): string {
 }
 
 async function withViewerContext(communities: Community[]): Promise<Community[]> {
+  if (communities.length === 0) return communities;
   try {
     const user = await getCurrentUser();
-    let result = communities;
-    if (user && communities.length > 0) {
-      result = await enrichCommunitiesForViewer(communities, user.id);
-    }
-    return await enrichCommunitiesWithEngagement(result);
+    const [enriched, withEngagement] = await Promise.all([
+      user
+        ? enrichCommunitiesForViewer(communities, user.id)
+        : Promise.resolve(communities),
+      enrichCommunitiesWithEngagement(communities),
+    ]);
+    if (!user) return withEngagement;
+    const engagementById = new Map(withEngagement.map((c) => [c.id, c.engagement]));
+    return enriched.map((c) => ({
+      ...c,
+      engagement: engagementById.get(c.id) ?? c.engagement,
+    }));
   } catch (error) {
     console.error("[community.service] discover viewer context:", error);
     return communities;
@@ -112,7 +120,10 @@ export async function createCommunity(
     return { community: null, error: "Dieser Slug ist bereits vergeben." };
   }
 
-  await enableCreatorProfile(user.id);
+  const { error: creatorProfileError } = await enableCreatorProfile(user.id);
+  if (creatorProfileError) {
+    console.error("[community.service] enableCreatorProfile:", creatorProfileError.message);
+  }
 
   const { resolveBannerFromPresetOrUrl } = await import(
     "@/lib/constants/category-banners"
@@ -141,18 +152,13 @@ export async function createCommunity(
   });
 
   if (!community) {
+    const err = createError ?? "Community konnte nicht erstellt werden.";
     const hint = createError?.includes("focus_tags")
-      ? " Datenbank-Migration 025 fehlt."
-      : createError?.includes("row-level security") ||
-          createError?.includes("creator")
-        ? " Bitte SUPABASE_SERVICE_ROLE_KEY auf Vercel setzen oder Migration 026 ausführen."
+      ? " (Migration 025: focus_tags)"
+      : createError?.toLowerCase().includes("row-level security")
+        ? " Bitte erneut anmelden oder Admin kontaktieren."
         : "";
-    return {
-      community: null,
-      error:
-        createError ??
-        `Community konnte nicht erstellt werden.${hint}`,
-    };
+    return { community: null, error: `${err}${hint}` };
   }
 
   const { publishPlatformEvent } = await import(

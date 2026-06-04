@@ -214,8 +214,9 @@ export default async function CommunityPage({
   const levelResult = resolveCommunityLevelFromMetrics(levelMetrics);
 
   if (
-    levelResult.level !== community.communityLevel ||
-    levelResult.score !== community.levelScore
+    tab === "overview" &&
+    (levelResult.level !== community.communityLevel ||
+      levelResult.score !== community.levelScore)
   ) {
     void persistCommunityLevel(community.id, levelResult);
   }
