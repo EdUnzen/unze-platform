@@ -15,9 +15,13 @@ const MENU_ICONS = {
 interface PlusMenuProps {
   open: boolean;
   onClose: () => void;
+  showCreatorMenu?: boolean;
 }
 
-export function PlusMenu({ open, onClose }: PlusMenuProps) {
+export function PlusMenu({ open, onClose, showCreatorMenu = false }: PlusMenuProps) {
+  const menuItems = showCreatorMenu
+    ? PLUS_MENU_ITEMS
+    : PLUS_MENU_ITEMS.filter((item) => item.id !== "dashboard");
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => {
@@ -64,7 +68,7 @@ export function PlusMenu({ open, onClose }: PlusMenuProps) {
         </div>
 
         <ul className="flex flex-col gap-2">
-          {PLUS_MENU_ITEMS.map((item) => {
+          {menuItems.map((item) => {
             const Icon = MENU_ICONS[item.id];
             return (
               <li key={item.id}>

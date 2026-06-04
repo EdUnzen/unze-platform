@@ -27,7 +27,7 @@ export const getCurrentUser = cache(async (): Promise<User | null> => {
   return user;
 });
 
-export async function getCurrentProfile(): Promise<ProfileRow | null> {
+export const getCurrentProfile = cache(async (): Promise<ProfileRow | null> => {
   const supabase = await createClient();
   if (!supabase) return null;
 
@@ -44,7 +44,7 @@ export async function getCurrentProfile(): Promise<ProfileRow | null> {
 
   if (error || !data) return null;
   return data as ProfileRow;
-}
+});
 
 export async function signOut() {
   const supabase = await createClient();

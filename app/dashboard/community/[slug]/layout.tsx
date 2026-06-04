@@ -1,8 +1,7 @@
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
-import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
-import { countPendingReportsFromDb } from "@/services/governance/report.repository";
+import { getCachedDashboardPendingCounts } from "@/lib/cache/data-cache";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
 import Link from "next/link";
@@ -33,8 +32,9 @@ export default async function DashboardCommunityLayout({
   let pendingApplicationCount = 0;
   let pendingReportCount = 0;
   try {
-    pendingApplicationCount = await countPendingApplicationsFromDb(community.id);
-    pendingReportCount = await countPendingReportsFromDb(community.id);
+    const pending = await getCachedDashboardPendingCounts(community.id);
+    pendingApplicationCount = pending.applications;
+    pendingReportCount = pending.reports;
   } catch (e) {
     console.error("[dashboard.layout] pending counts:", e);
   }

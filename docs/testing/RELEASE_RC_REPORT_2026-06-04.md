@@ -35,6 +35,16 @@
 - Schema-Probe-Cache 300s
 - `npm run measure:perf` dokumentiert in `PERFORMANCE_SPRINT_2026-06-04.md`
 
+## Sprint 3 (Benachrichtigungen & Stabilität) – Commit `1aade48`
+
+- **Benachrichtigungen:** `/notifications` als Hub; beim Öffnen alle als gelesen (`markAllNotificationsRead`)
+- **Community-Aktivität:** Events für Event/Gruppe/Service/Premium/Update; Handler + Toggle pro Community
+- **Profil:** Einstellungen verlinken auf `/notifications` (kein komplexes Push-Panel)
+- **Performance:** Home/Profil nutzen `hasManagedCommunities` / `getUnreadNotificationCount` statt voller Listen
+- **Community-Create:** `ensureProfileExists` in Repository; Erfolgsbanner vor Redirect
+- **Dashboard:** `error.tsx` für Community-Routen
+- **Join-Panel:** `CommunityActivityToggle` mit `activityFeedEnabled`-Prop
+
 ## Sprint 2 (Abschlussphase)
 
 - **Community-Create:** `ensureUserProfile` per Admin-Upsert **vor** Insert; Creator-Mitgliedschaft ist Pflicht (Fehler bei Misserfolg)

@@ -1,6 +1,4 @@
-import { CommunityVisibilityCard } from "@/components/dashboard/CommunityVisibilityCard";
-import { MonetizationPrepPanel } from "@/components/dashboard/MonetizationPrepPanel";
-import { CreatorFinanceDashboard } from "@/components/dashboard/CreatorFinanceDashboard";
+import { MonetizationPanelsLazy } from "@/components/dashboard/MonetizationPanelsLazy";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
 import { getCreatorFinanceOverview } from "@/services/monetization/billing.service";
@@ -51,26 +49,16 @@ export default async function DashboardMonetizationPage({
   }
 
   return (
-    <section className="space-y-6">
-      <h2 className="text-base font-semibold text-unze-ink">Finanzen & Monetarisierung</h2>
-      <CommunityVisibilityCard
-        slug={slug}
-        visibility={community.visibility}
-        discoverEnabled={community.discoverEnabled ?? false}
-        monetizationEnabled={community.monetizationEnabled ?? false}
-      />
-      <CreatorFinanceDashboard
-        stats={finance.stats}
-        subscriptions={finance.subscriptions}
-      />
-      <MonetizationPrepPanel
-        slug={slug}
-        monetizationEnabled={community.monetizationEnabled ?? false}
-        isCreator={community.viewerRole === "creator"}
-        pricing={pricing}
-        premiumScheduledAt={premiumScheduledAt}
-        premiumNotifyMembers={premiumNotifyMembers}
-      />
-    </section>
+    <MonetizationPanelsLazy
+      slug={slug}
+      visibility={community.visibility}
+      discoverEnabled={community.discoverEnabled ?? false}
+      monetizationEnabled={community.monetizationEnabled ?? false}
+      isCreator={community.viewerRole === "creator"}
+      finance={finance}
+      pricing={pricing}
+      premiumScheduledAt={premiumScheduledAt}
+      premiumNotifyMembers={premiumNotifyMembers}
+    />
   );
 }

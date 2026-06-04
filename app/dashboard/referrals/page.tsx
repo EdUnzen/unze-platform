@@ -1,8 +1,5 @@
 import { CommercialInfoDialog } from "@/components/referral/CommercialInfoDialog";
-import { CreatorReferralPanel } from "@/components/referral/CreatorReferralPanel";
-import { MyReferralsDashboard } from "@/components/referral/MyReferralsDashboard";
-import { RevenueOverviewPanel } from "@/components/referral/RevenueOverviewPanel";
-import { StripeConnectPanel } from "@/components/referral/StripeConnectPanel";
+import { ReferralsPanelsLazy } from "@/components/referral/ReferralsPanelsLazy";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getManagedCommunities } from "@/services/dashboard/dashboard.service";
@@ -69,15 +66,13 @@ export default async function DashboardReferralsPage({
         </p>
       )}
 
-      <div className="flex flex-col gap-4">
-        <StripeConnectPanel
-          stripeStatus={stripeStatus}
-          sandboxCommunity={sandboxCommunity}
-        />
-        <MyReferralsDashboard summary={summary} />
-        <CreatorReferralPanel summary={summary} />
-        <RevenueOverviewPanel ledger={ledger} userId={user.id} />
-      </div>
+      <ReferralsPanelsLazy
+        stripeStatus={stripeStatus}
+        sandboxCommunity={sandboxCommunity}
+        summary={summary}
+        ledger={ledger}
+        userId={user.id}
+      />
     </div>
   );
 }

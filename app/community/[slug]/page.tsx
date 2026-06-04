@@ -26,6 +26,7 @@ import { CommunityRulesSection } from "@/components/community/CommunityRulesSect
 
 import { CommunityStatsRow } from "@/components/community/CommunityStatsRow";
 
+import { CommunityVisitTracker } from "@/components/community/CommunityVisitTracker";
 import { CommunityViewRecorder } from "@/components/community/CommunityViewRecorder";
 
 import { CreatorProfileCard } from "@/components/community/CreatorProfileCard";
@@ -280,6 +281,7 @@ export default async function CommunityPage({
   return (
     <div className="page-padding">
       <CommunityViewRecorder communityId={community.id} />
+      <CommunityVisitTracker slug={slug} />
 
       <div className="mb-4 flex items-center justify-between">
         <Link

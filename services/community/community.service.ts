@@ -14,6 +14,10 @@ import { ensureUserProfile } from "@/services/user/profile.service";
 import { enrichCommunitiesWithEngagement } from "@/services/engagement/engagement.service";
 import { enrichCommunitiesForViewer } from "./community.viewer-enrichment";
 import {
+  getCachedDiscoverList,
+  getCachedCommunityBySlug,
+} from "@/lib/cache/data-cache";
+import {
   createCommunityInDb,
   fetchCommunitiesByCreatorId,
   fetchCommunitiesFromDb,
@@ -58,7 +62,7 @@ function withDemoFallback(communities: Community[] | null): Community[] {
 }
 
 export async function getDiscoverCommunities(): Promise<Community[]> {
-  const fromDb = await fetchCommunitiesFromDb({ discover: true, limit: 50 });
+  const fromDb = await getCachedDiscoverList();
   return withViewerContext(withDemoFallback(fromDb));
 }
 
@@ -76,7 +80,7 @@ export async function getCommunityBySlug(
   inviteCode?: string | null,
 ): Promise<Community | null> {
   const user = await getCurrentUser();
-  let community = await fetchCommunityBySlugFromDb(
+  let community = await getCachedCommunityBySlug(
     slug,
     user?.id ?? null,
     inviteCode,

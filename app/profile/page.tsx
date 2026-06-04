@@ -1,26 +1,21 @@
-import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { ProfileHub } from "@/components/profile/ProfileHub";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getCurrentProfile, getCurrentUser } from "@/services/auth/auth.service";
-import { hasManagedCommunities } from "@/services/dashboard/dashboard.service";
+import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
 import Link from "next/link";
 
 export default async function ProfilePage() {
   const configured = isSupabaseConfigured();
   const user = configured ? await getCurrentUser() : null;
 
-  const [profile, unreadCount, managesCommunities] = user
-    ? await Promise.all([
-        getCurrentProfile(),
-        getUnreadNotificationCount(user.id),
-        hasManagedCommunities(user.id),
-      ])
-    : [null, 0, false];
+  const shell = user ? await getPlatformShellContext() : null;
+  const profile = user ? await getCurrentProfile() : null;
 
   const showCreatorHub =
-    Boolean(user) && (Boolean(profile?.is_creator) || managesCommunities);
+    Boolean(user) &&
+    (Boolean(profile?.is_creator) || Boolean(shell?.showDashboard));
 
   if (!user) {
     return (
@@ -66,7 +61,7 @@ export default async function ProfilePage() {
         userId={user.id}
         email={user.email}
         profile={profile}
-        unreadCount={unreadCount}
+        unreadCount={shell?.unreadCount ?? 0}
         showCreatorHub={showCreatorHub}
       />
     </div>

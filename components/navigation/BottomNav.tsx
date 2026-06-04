@@ -20,9 +20,14 @@ function getActiveNavId(pathname: string): NavItemId | null {
 
 interface BottomNavProps {
   unreadNotifications?: number;
+  /** Creator-Menü im +-Button — nur wenn Nutzer Communities verwaltet */
+  showCreatorMenu?: boolean;
 }
 
-export function BottomNav({ unreadNotifications = 0 }: BottomNavProps) {
+export function BottomNav({
+  unreadNotifications = 0,
+  showCreatorMenu = false,
+}: BottomNavProps) {
   const pathname = usePathname();
   const [plusOpen, setPlusOpen] = useState(false);
   const activeId = getActiveNavId(pathname);
@@ -97,7 +102,11 @@ export function BottomNav({ unreadNotifications = 0 }: BottomNavProps) {
         </div>
       </nav>
 
-      <PlusMenu open={plusOpen} onClose={() => setPlusOpen(false)} />
+      <PlusMenu
+        open={plusOpen}
+        onClose={() => setPlusOpen(false)}
+        showCreatorMenu={showCreatorMenu}
+      />
     </>
   );
 }

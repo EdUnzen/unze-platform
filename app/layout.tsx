@@ -1,5 +1,4 @@
-import { MobileShell } from "@/components/layout/MobileShell";
-import { PlatformTopBar } from "@/components/layout/PlatformTopBar";
+import { PlatformShell } from "@/components/layout/PlatformShell";
 import "@/styles/globals.css";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -57,10 +56,7 @@ export default async function RootLayout({
   return (
     <html lang="de" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="font-sans">
-        <MobileShell>
-          <PlatformTopBar />
-          {children}
-        </MobileShell>
+        <PlatformShell>{children}</PlatformShell>
       </body>
     </html>
   );

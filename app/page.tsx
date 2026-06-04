@@ -1,33 +1,28 @@
 import { HomeHub } from "@/components/home/HomeHub";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { getCurrentUser } from "@/services/auth/auth.service";
 import { getFollowedCommunities } from "@/services/community/community.service";
-import { hasManagedCommunities } from "@/services/dashboard/dashboard.service";
 import { getUpcomingEventsForCommunities } from "@/services/events/event.service";
 import { getFollowedGroups } from "@/services/follow/follow.service";
 import {
   getMyMemberCommunities,
   getMyPendingApplications,
 } from "@/services/home/home.service";
-import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
+import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
 
 export default async function HomePage() {
-  const user = await getCurrentUser();
+  const shell = await getPlatformShellContext();
+  const user = shell.user;
 
   const [
     myCommunities,
     followedCommunities,
     followedGroups,
     pendingApplications,
-    managed,
-    unreadCount,
   ] = await Promise.all([
     user ? getMyMemberCommunities(user.id) : Promise.resolve([]),
     user ? getFollowedCommunities() : Promise.resolve([]),
     user ? getFollowedGroups() : Promise.resolve([]),
     user ? getMyPendingApplications(user.id) : Promise.resolve([]),
-    user ? hasManagedCommunities(user.id) : Promise.resolve(false),
-    user ? getUnreadNotificationCount(user.id) : Promise.resolve(0),
   ]);
 
   const communityIds = [
@@ -59,8 +54,8 @@ export default async function HomePage() {
         followedGroups={followedGroups}
         upcomingEvents={upcomingEvents}
         pendingApplications={pendingApplications}
-        unreadNotifications={unreadCount}
-        managedCount={managed ? 1 : 0}
+        unreadNotifications={shell.unreadCount}
+        managedCount={shell.showDashboard ? 1 : 0}
       />
     </div>
   );
