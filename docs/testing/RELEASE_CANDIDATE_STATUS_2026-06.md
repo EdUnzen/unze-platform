@@ -30,6 +30,7 @@
 | D3 | Discover: `discover_score`-Spalte fehlt → leere Liste | Fallback-Query ohne `discover_score` |
 | D4 | Discover: Join-Applications-Query bricht bei Schema-Fehler | Fehlertoleranz in `enrichCommunitiesForViewer` |
 | D5 | E2E „Discover Feed“ falsch positiv | Legacy-Tab `feed` → Communities; Test angepasst |
+| D6 | Discover Vercel: „Etwas ist schiefgelaufen“ (Digest) | `unstable_cache` + `cookies()` in Schema-Probe → `createPublicSupabaseClient` (`8740c00`) |
 | C1 | Community-Erstellen: kein `creator`-Member → Dashboard-Redirect scheitert | Migration 026 RLS + Insert + Admin-Fallback + `creator_id`-Fallback |
 | C2 | Alte Communities ohne Member-Zeile | Migration `027_backfill_creator_memberships.sql` |
 | M1 | Fokus/Tags: Komma auf iOS | `CommaSeparatedInput` (uncontrolled) |
