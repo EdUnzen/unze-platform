@@ -37,7 +37,7 @@ interface CommunityPageTabsProps {
 export function CommunityPageTabs({ slug, activeTab }: CommunityPageTabsProps) {
   return (
     <nav
-      className="grid grid-cols-3 gap-1 sm:grid-cols-6 sm:gap-1.5"
+      className="grid grid-cols-6 gap-0.5 sm:gap-1"
       aria-label="Community-Bereiche"
     >
       {COMMUNITY_TAB_IDS.map((tab) => {
@@ -48,15 +48,15 @@ export function CommunityPageTabs({ slug, activeTab }: CommunityPageTabsProps) {
             key={tab}
             href={tab === "overview" ? `/community/${slug}` : `/community/${slug}?tab=${tab}`}
             className={cn(
-              "flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-xl px-1 py-2 text-center transition-colors sm:flex-row sm:gap-1.5 sm:rounded-full sm:px-2.5",
+              "flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-1.5 text-center transition-colors sm:rounded-full sm:px-2 sm:py-2",
               active
                 ? "bg-unze-green text-white shadow-sm"
                 : "bg-white text-unze-ink-secondary shadow-sm",
             )}
             aria-current={active ? "page" : undefined}
           >
-            <Icon className="h-3.5 w-3.5 shrink-0 opacity-90" aria-hidden />
-            <span className="truncate text-[10px] font-semibold leading-tight sm:text-xs">
+            <Icon className="h-3 w-3 shrink-0 opacity-90 sm:h-3.5 sm:w-3.5" aria-hidden />
+            <span className="max-w-full truncate text-[9px] font-semibold leading-none sm:text-[11px] sm:leading-tight">
               {COMMUNITY_TAB_LABELS[tab]}
             </span>
           </Link>

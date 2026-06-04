@@ -1,13 +1,16 @@
 import type { CommunityVisibility } from "@/types/community";
 
-/** Discover: nur öffentlich und Premium (nicht privat). */
+/** Discover / Verzeichnis: nur öffentlich (+ optional Premium). */
 export function discoverEnabledForVisibility(
   visibility: CommunityVisibility,
   formDiscoverChecked?: boolean,
 ): boolean {
   if (visibility === "private" || visibility === "hidden") return false;
-  if (visibility === "public") return formDiscoverChecked !== false;
   return formDiscoverChecked !== false;
+}
+
+export function isPubliclyListedVisibility(visibility: CommunityVisibility): boolean {
+  return visibility === "public" || visibility === "premium";
 }
 
 /** DB access_status beim Anlegen. */

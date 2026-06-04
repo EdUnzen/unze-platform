@@ -2,8 +2,31 @@ import { createClient } from "@/lib/supabase/server";
 import type { ProfileRow } from "@/types/database";
 import type { User } from "@supabase/supabase-js";
 
+function buildProfileRow(user: User) {
+  const displayName =
+    (user.user_metadata?.display_name as string | undefined) ??
+    (user.user_metadata?.full_name as string | undefined) ??
+    user.email?.split("@")[0] ??
+    "UNZE Mitglied";
+
+  return {
+    id: user.id,
+    display_name: displayName,
+    avatar_url: (user.user_metadata?.avatar_url as string | undefined) ?? null,
+  };
+}
+
 /** Stellt sicher, dass profiles-Zeile existiert (behebt creator_id FK bei Community-Create). */
 export async function ensureUserProfile(user: User): Promise<{ error: Error | null }> {
+  const row = buildProfileRow(user);
+
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const admin = createAdminClient();
+  if (admin) {
+    const { error } = await admin.from("profiles").upsert(row, { onConflict: "id" });
+    return { error: error ? new Error(error.message) : null };
+  }
+
   const supabase = await createClient();
   if (!supabase) return { error: new Error("Supabase nicht konfiguriert") };
 
@@ -15,32 +38,8 @@ export async function ensureUserProfile(user: User): Promise<{ error: Error | nu
 
   if (existing) return { error: null };
 
-  const displayName =
-    (user.user_metadata?.display_name as string | undefined) ??
-    (user.user_metadata?.full_name as string | undefined) ??
-    user.email?.split("@")[0] ??
-    "UNZE Mitglied";
-
-  const avatarUrl =
-    (user.user_metadata?.avatar_url as string | undefined) ?? null;
-
-  const row = {
-    id: user.id,
-    display_name: displayName,
-    avatar_url: avatarUrl,
-  };
-
   const { error: insertErr } = await supabase.from("profiles").insert(row);
-  if (!insertErr) return { error: null };
-
-  const { createAdminClient } = await import("@/lib/supabase/admin");
-  const admin = createAdminClient();
-  if (!admin) return { error: insertErr };
-
-  const { error: upsertErr } = await admin.from("profiles").upsert(row, {
-    onConflict: "id",
-  });
-  return { error: upsertErr ?? null };
+  return { error: insertErr ?? null };
 }
 
 export async function updateProfile(

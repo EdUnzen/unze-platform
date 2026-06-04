@@ -319,7 +319,7 @@ export function CommunityForm({
         </div>
       </fieldset>
 
-      {values.visibility !== "private" && (
+      {values.visibility !== "private" && values.visibility !== "hidden" && (
         <label className="flex items-center gap-3 rounded-2xl border border-unze-border p-3">
           <input
             type="checkbox"
@@ -341,7 +341,7 @@ export function CommunityForm({
         </label>
       )}
 
-      {values.visibility === "private" && (
+      {(values.visibility === "private" || values.visibility === "hidden") && (
         <input type="hidden" name="discoverEnabled" value="off" />
       )}
 

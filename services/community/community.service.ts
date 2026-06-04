@@ -125,6 +125,16 @@ export async function createCommunity(
     return { community: null, error: "Dieser Slug ist bereits vergeben." };
   }
 
+  const { error: profileError } = await ensureUserProfile(user);
+  if (profileError) {
+    console.error("[community.service] ensureUserProfile:", profileError.message);
+    return {
+      community: null,
+      error:
+        "Dein Profil konnte nicht vorbereitet werden. Bitte abmelden, erneut anmelden und nochmal versuchen.",
+    };
+  }
+
   const { error: creatorProfileError } = await enableCreatorProfile(user.id);
   if (creatorProfileError) {
     console.error("[community.service] enableCreatorProfile:", creatorProfileError.message);

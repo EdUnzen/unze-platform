@@ -10,6 +10,7 @@ export const COMMUNITY_CATEGORIES = [
   "Sport",
   "Musik",
   "Creator",
+  "Coaching",
   "Lifestyle",
   "Kreativität",
   "Allgemein",
@@ -59,7 +60,14 @@ export const VISIBILITY_OPTIONS: {
     value: "private",
     label: "Privat",
     description: "Nicht öffentlich sichtbar. Beitritt nur auf Einladung oder nach Freigabe.",
-    hint: "Erscheint nicht in Discover.",
+    hint: "Erscheint nicht in Discover, Suche oder Verzeichnis.",
+  },
+  {
+    value: "hidden",
+    label: "Intern",
+    description:
+      "Community existiert auf UNZE, ist aber nicht öffentlich auffindbar. Direkter Link funktioniert — ideal für Discord, TikTok oder Firmen.",
+    hint: "Nicht in Discover oder Verzeichnis — nur per URL teilen.",
   },
   {
     value: "premium",

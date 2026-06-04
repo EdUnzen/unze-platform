@@ -28,7 +28,11 @@ export function RatingSummary({
   const displayRating =
     reviewCount > 0 ? Number(rating).toFixed(1).replace(".", ",") : "0,0";
   const countLabel =
-    reviewCount === 1 ? "1 Bewertung" : `${reviewCount} Bewertungen`;
+    reviewCount === 0
+      ? "Noch keine Bewertungen"
+      : reviewCount === 1
+        ? "1 Bewertung"
+        : `${reviewCount} Bewertungen`;
 
   return (
     <span

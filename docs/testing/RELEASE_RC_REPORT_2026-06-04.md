@@ -35,6 +35,17 @@
 - Schema-Probe-Cache 300s
 - `npm run measure:perf` dokumentiert in `PERFORMANCE_SPRINT_2026-06-04.md`
 
+## Sprint 2 (Abschlussphase)
+
+- **Community-Create:** `ensureUserProfile` per Admin-Upsert **vor** Insert; Creator-Mitgliedschaft ist Pflicht (Fehler bei Misserfolg)
+- **Sichtbarkeit „Intern“:** DB-Wert `hidden`, UI-Label „Intern“ (nicht in Discover/Verzeichnis, URL funktioniert)
+- **Home:** Hero-Bild mit Discover-CTA
+- **Discover:** leicht größere Karten-Banner, `revalidate = 60`
+- **Level:** „Bronze Badge“ statt „Bronze Community“
+- **Bewertungen:** „Noch keine Bewertungen“ im Header
+- **Coaching:** Kategorie + 5 Banner-Presets
+- **Dashboard:** Sichtbarkeits-Karte unter Monetarisierung
+
 ## Offen / manuell
 
 | Punkt | Aktion |

@@ -286,6 +286,46 @@ export const BANNER_PRESETS: BannerPreset[] = [
     categories: ["Creator"],
   },
   {
+    id: "coaching-1",
+    label: "Mentoring",
+    imageUrl:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-emerald-500/90 via-teal-600/80 to-cyan-800/75",
+    categories: ["Coaching"],
+  },
+  {
+    id: "coaching-2",
+    label: "Workshop",
+    imageUrl:
+      "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-green-600/85 via-emerald-700/75 to-teal-900/70",
+    categories: ["Coaching", "Bildung"],
+  },
+  {
+    id: "coaching-3",
+    label: "1:1 Session",
+    imageUrl:
+      "https://images.unsplash.com/photo-1573497019940-1c28c88b3811?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-teal-500/85 via-cyan-600/75 to-slate-900/70",
+    categories: ["Coaching"],
+  },
+  {
+    id: "coaching-4",
+    label: "Growth",
+    imageUrl:
+      "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-lime-600/85 via-green-700/75 to-emerald-900/70",
+    categories: ["Coaching", "Business"],
+  },
+  {
+    id: "coaching-5",
+    label: "Mindset",
+    imageUrl:
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-amber-500/85 via-orange-600/75 to-rose-800/70",
+    categories: ["Coaching"],
+  },
+  {
     id: "creative-1",
     label: "Kreativ",
     imageUrl:

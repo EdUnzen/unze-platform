@@ -3,7 +3,7 @@ import { formatMemberCount } from "@/services/community/community.service";
 import type { Community } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
-import { VISIBILITY_OPTIONS } from "@/lib/constants/community";
+import { getVisibilityDisplayLabel } from "@/lib/constants/visibility-display";
 import { isDemoCommunitySlug } from "@/lib/constants/demo";
 import { getAppUrl } from "@/lib/env";
 import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
@@ -29,9 +29,7 @@ function CommunityCardInner({
   className,
   priority = false,
 }: CommunityCardProps) {
-  const visibilityLabel =
-    VISIBILITY_OPTIONS.find((o) => o.value === community.visibility)?.label ??
-    community.visibility;
+  const visibilityLabel = getVisibilityDisplayLabel(community.visibility);
   const accessLabel = community.access
     ? ACCESS_STATUS_OPTIONS.find((o) => o.value === community.access?.accessStatus)
         ?.label
@@ -61,7 +59,7 @@ function CommunityCardInner({
               bannerGradient={banner.gradient}
               imageUrl={community.bannerUrl ?? banner.imageUrl}
               fallbackImageUrl={categoryFallback.imageUrl}
-              className="h-[10.5rem] sm:h-44"
+              className="h-48 sm:h-[13rem]"
               overlay="card"
             />
             <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 pr-12">
@@ -105,7 +103,7 @@ function CommunityCardInner({
 
           <div className="p-4 pb-3">
             <div className="mb-1 flex items-start justify-between gap-2">
-              <h3 className="line-clamp-1 text-base font-semibold tracking-tight text-unze-ink">
+              <h3 className="line-clamp-1 text-[1.05rem] font-bold tracking-tight text-unze-ink sm:text-lg">
                 {community.title}
               </h3>
               <RatingSummary

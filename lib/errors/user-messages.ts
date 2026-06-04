@@ -17,6 +17,16 @@ export function toUserCommunityCreateError(technical?: string | null): string {
   if (lower.includes("titel ist erforderlich")) {
     return "Bitte gib einen Titel für deine Community ein.";
   }
+  if (
+    lower.includes("creator_id") ||
+    lower.includes("foreign key") ||
+    lower.includes("profiles")
+  ) {
+    return "Dein Profil ist noch nicht vollständig angelegt. Bitte abmelden, erneut anmelden und die Community erneut erstellen.";
+  }
+  if (lower.includes("creator-mitgliedschaft") || lower.includes("community_members")) {
+    return "Die Community wurde teilweise angelegt. Bitte im Dashboard prüfen oder erneut versuchen.";
+  }
 
   return COMMUNITY_CREATE_GENERIC;
 }

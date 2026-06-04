@@ -28,9 +28,9 @@ export const COMMUNITY_LEVEL_THRESHOLDS: Record<CommunityLevel, number> = {
   elite: 85,
 };
 
-/** Anzeige: „Bronze-Level“ (kein „Bronze Community“) */
+/** Anzeige: „Bronze Badge“ (Auszeichnung, kein „Bronze Community“) */
 export function getCommunityLevelDisplayLabel(level: CommunityLevel): string {
-  return `${COMMUNITY_LEVEL_LABELS[level]}-Level`;
+  return `${COMMUNITY_LEVEL_LABELS[level]} Badge`;
 }
 
 /** @deprecated — Nutze getCommunityLevelDisplayLabel */

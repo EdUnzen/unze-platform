@@ -287,6 +287,10 @@ export async function createCommunityInDb(input: {
 
   if (memberResult.error) {
     console.error("[community.repository] creator member:", memberResult.error);
+    return {
+      community: null,
+      error: `Creator-Mitgliedschaft fehlgeschlagen: ${memberResult.error}`,
+    };
   }
 
   const community = mapCommunityRow(data as unknown as CommunityWithCreator, {
