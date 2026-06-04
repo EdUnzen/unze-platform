@@ -1,12 +1,12 @@
 import type { CommunityLevel } from "@/lib/constants/community-level";
 import type { LucideIcon } from "lucide-react";
-import { Award, Crown, Gem, Shield, Sparkles, Star } from "lucide-react";
+import { Crown, Gem, Medal, Shield, Sparkles, Star } from "lucide-react";
 
-/** Bronze-Schild, Silber-Stern, Gold-Abzeichen, Platin-Kristall, Diamant, Elite-Krone */
+/** Bronze-Schild, Silber-Stern, Gold-Medaille, Platin-Kristall, Diamant, Elite-Krone */
 export const COMMUNITY_LEVEL_ICONS: Record<CommunityLevel, LucideIcon> = {
   bronze: Shield,
   silver: Star,
-  gold: Award,
+  gold: Medal,
   platinum: Sparkles,
   diamond: Gem,
   elite: Crown,

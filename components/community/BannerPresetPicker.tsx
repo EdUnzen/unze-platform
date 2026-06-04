@@ -13,7 +13,7 @@ interface BannerPresetPickerProps {
   category: string;
   selectedPresetId: string;
   bannerGradient: string;
-  customBannerUrl?: string;
+  hasUpload?: boolean;
   onSelect: (preset: BannerPreset) => void;
 }
 
@@ -21,7 +21,7 @@ export function BannerPresetPicker({
   category,
   selectedPresetId,
   bannerGradient,
-  customBannerUrl,
+  hasUpload = false,
   onSelect,
 }: BannerPresetPickerProps) {
   const presets = useMemo(() => getBannerPresetsForCategory(category), [category]);
@@ -36,36 +36,25 @@ export function BannerPresetPicker({
     } else {
       setActiveId(selectedPresetId);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- nur Kategorie-Wechsel
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Kategorie-Wechsel
   }, [category]);
-
-  const activePreset =
-    presets.find((p) => p.id === activeId) ?? getDefaultBannerPresetForCategory(category);
-
-  const previewImageUrl = customBannerUrl?.trim() || activePreset.imageUrl;
 
   return (
     <div className="space-y-3">
-      <CommunityCoverVisual
-        seed={`preview-${category}`}
-        bannerGradient={bannerGradient}
-        imageUrl={previewImageUrl}
-        fallbackImageUrl={activePreset.imageUrl}
-        className="h-36 rounded-2xl"
-        overlay="card"
-      />
-
       <input type="hidden" name="bannerPresetId" value={activeId} />
       <input type="hidden" name="bannerGradient" value={bannerGradient} />
+      <input type="hidden" name="bannerUrl" value="" />
 
       <div>
         <p className="mb-2 text-sm font-medium text-unze-ink">Standardbanner wählen</p>
         <p className="mb-3 text-xs text-unze-ink-muted">
-          Passend zu „{category}“ — oder eigenes Bild-URL-Feld unten
+          {hasUpload
+            ? "Dein Upload wird verwendet — oder wähle ein Kategorie-Banner als Alternative."
+            : `Passend zu „${category}“ — wird automatisch gesetzt, wenn du kein Bild hochlädst.`}
         </p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {presets.map((preset) => {
-            const isActive = preset.id === activeId && !customBannerUrl?.trim();
+            const isActive = preset.id === activeId && !hasUpload;
             return (
               <button
                 key={preset.id}
@@ -94,20 +83,6 @@ export function BannerPresetPicker({
             );
           })}
         </div>
-      </div>
-
-      <div>
-        <label htmlFor="customBannerUrl" className="mb-1 block text-sm font-medium text-unze-ink">
-          Eigenes Bannerbild (URL, optional)
-        </label>
-        <input
-          id="customBannerUrl"
-          name="bannerUrl"
-          type="url"
-          defaultValue={customBannerUrl ?? ""}
-          placeholder="https://… (überschreibt Standardbanner)"
-          className="w-full rounded-xl border border-unze-border bg-unze-surface-muted px-4 py-3 text-base outline-none focus:border-unze-green focus:ring-2 focus:ring-unze-green/20 sm:text-sm"
-        />
       </div>
     </div>
   );

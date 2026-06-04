@@ -1,5 +1,4 @@
 import { RatingSummary } from "@/components/ui/RatingSummary";
-import { hasReviews } from "@/lib/utils/ratings";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { Community } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
@@ -109,14 +108,13 @@ function CommunityCardInner({
               <h3 className="line-clamp-1 text-base font-semibold tracking-tight text-unze-ink">
                 {community.title}
               </h3>
-              {hasReviews(community.reviewCount) && (
-                <RatingSummary
-                  rating={community.rating}
-                  reviewCount={community.reviewCount}
-                  starClassName="h-3.5 w-3.5"
-                  className="shrink-0 text-unze-ink-secondary text-xs font-medium"
-                />
-              )}
+              <RatingSummary
+                rating={community.rating}
+                reviewCount={community.reviewCount}
+                alwaysShow
+                starClassName="h-3.5 w-3.5"
+                className="shrink-0 text-xs"
+              />
             </div>
 
             <p className="mb-3 line-clamp-2 text-sm leading-relaxed text-unze-ink-secondary">

@@ -1,6 +1,7 @@
 "use client";
 
 import { BannerPresetPicker } from "@/components/community/BannerPresetPicker";
+import { CommunityBannerUpload } from "@/components/community/CommunityBannerUpload";
 import {
   COMMUNITY_CATEGORIES,
   PLATFORM_OPTIONS,
@@ -55,19 +56,24 @@ export function CommunityForm({
   const [values, setValues] = useState<CommunityFormInput>(() =>
     toInitialValues(initial),
   );
-  const [slugTouched, setSlugTouched] = useState(Boolean(initial?.slug));
+  const [hasBannerUpload, setHasBannerUpload] = useState(false);
+  const [bannerPreviewUrl, setBannerPreviewUrl] = useState(
+    () => values.bannerUrl || getDefaultBannerPresetForCategory(values.category).imageUrl,
+  );
+  const previewBannerUrl = bannerPreviewUrl;
   const prevCategoryRef = useRef(values.category);
 
   useEffect(() => {
-    if (!slugTouched && values.title) {
+    if (mode === "create" && values.title) {
       setValues((v) => ({ ...v, slug: slugifyTitle(v.title) }));
     }
-  }, [values.title, slugTouched]);
+  }, [values.title, mode]);
 
   useEffect(() => {
     if (prevCategoryRef.current === values.category) return;
     prevCategoryRef.current = values.category;
     const preset = getDefaultBannerPresetForCategory(values.category);
+    setBannerPreviewUrl(preset.imageUrl);
     setValues((v) => ({
       ...v,
       bannerPresetId: preset.id,
@@ -80,21 +86,34 @@ export function CommunityForm({
   const tagsDefault = (initial?.tags ?? values.tags).join(", ");
 
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} encType="multipart/form-data" className="space-y-6">
       <section className="space-y-4 rounded-3xl border border-unze-border/60 bg-white p-4 shadow-card sm:p-5">
-        <h2 className="text-sm font-bold text-unze-ink">1. Community-Design</h2>
+        <h2 className="text-sm font-bold text-unze-ink">1. Banner & Design</h2>
+        <CommunityBannerUpload
+          category={values.category}
+          bannerGradient={values.bannerGradient}
+          previewUrl={previewBannerUrl}
+          onFileSelect={(file) => {
+            setHasBannerUpload(Boolean(file));
+            if (file) {
+              setValues((v) => ({ ...v, bannerUrl: "" }));
+            }
+          }}
+        />
         <BannerPresetPicker
           category={values.category}
           selectedPresetId={values.bannerPresetId ?? "general-1"}
           bannerGradient={values.bannerGradient}
-          customBannerUrl={values.bannerUrl}
-          onSelect={(preset) =>
+          hasUpload={hasBannerUpload}
+          onSelect={(preset) => {
+            setBannerPreviewUrl(preset.imageUrl);
             setValues((v) => ({
               ...v,
               bannerPresetId: preset.id,
               bannerGradient: preset.gradient,
-            }))
-          }
+              bannerUrl: "",
+            }));
+          }}
         />
       </section>
 
@@ -116,30 +135,39 @@ export function CommunityForm({
         />
       </div>
 
-      <div>
-        <label htmlFor="slug" className="mb-1 block text-sm font-medium text-unze-ink">
-          URL-Slug *
-        </label>
-        <div className="flex items-center gap-1 rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2 text-sm">
-          <span className="text-unze-ink-muted">unze.app/community/</span>
-          <input
-            id="slug"
-            name="slug"
-            required
-            readOnly={mode === "edit"}
-            value={values.slug}
-            onChange={(e) => {
-              setSlugTouched(true);
-              setValues((v) => ({
-                ...v,
-                slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""),
-              }));
-            }}
-            className="min-w-0 flex-1 bg-transparent outline-none"
-            placeholder="meine-community"
-          />
+      {mode === "create" ? (
+        <>
+          <input type="hidden" name="slug" value={values.slug} />
+          {values.slug ? (
+            <p className="rounded-xl bg-unze-surface-muted px-3 py-2.5 text-xs text-unze-ink-secondary">
+              Adresse:{" "}
+              <span className="font-semibold text-unze-ink">
+                unze.app/community/{values.slug}
+              </span>
+              <span className="mt-1 block text-unze-ink-muted">
+                Wird automatisch aus dem Titel erzeugt.
+              </span>
+            </p>
+          ) : null}
+        </>
+      ) : (
+        <div>
+          <label htmlFor="slug" className="mb-1 block text-sm font-medium text-unze-ink">
+            URL-Slug
+          </label>
+          <div className="flex items-center gap-1 rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2 text-sm">
+            <span className="text-unze-ink-muted">unze.app/community/</span>
+            <input
+              id="slug"
+              name="slug"
+              required
+              readOnly
+              value={values.slug}
+              className="min-w-0 flex-1 bg-transparent outline-none"
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <div>
         <label htmlFor="description" className="mb-1 block text-sm font-medium text-unze-ink">

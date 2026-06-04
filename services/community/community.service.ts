@@ -5,7 +5,12 @@ import { enrichMockCommunity } from "@/services/community/demo-data";
 import { MOCK_COMMUNITIES } from "@/services/community/community.mock";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { enableCreatorProfile } from "@/services/user/profile.service";
+import {
+  logCommunityCreateError,
+  toUserCommunityCreateError,
+} from "@/lib/errors/user-messages";
 import { isValidCommunitySlug, slugifyTitle } from "@/lib/utils/slug";
+import { ensureUserProfile } from "@/services/user/profile.service";
 import { enrichCommunitiesWithEngagement } from "@/services/engagement/engagement.service";
 import { enrichCommunitiesForViewer } from "./community.viewer-enrichment";
 import {
@@ -152,13 +157,8 @@ export async function createCommunity(
   });
 
   if (!community) {
-    const err = createError ?? "Community konnte nicht erstellt werden.";
-    const hint = createError?.includes("focus_tags")
-      ? " (Migration 025: focus_tags)"
-      : createError?.toLowerCase().includes("row-level security")
-        ? " Bitte erneut anmelden oder Admin kontaktieren."
-        : "";
-    return { community: null, error: `${err}${hint}` };
+    logCommunityCreateError(createError ?? "unknown", { slug, userId: user.id });
+    return { community: null, error: toUserCommunityCreateError(createError) };
   }
 
   const { publishPlatformEvent } = await import(

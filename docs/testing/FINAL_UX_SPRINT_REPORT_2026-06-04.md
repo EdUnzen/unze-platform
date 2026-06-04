@@ -37,7 +37,7 @@
 ## Performance (TTFB, `npm run measure:perf`)
 
 Vor Sprint (Prod): Ø **283 ms** (7 Routen).  
-Nach letztem Deploy variabel (Cold Start); erneut messen nach diesem Deploy.
+Nach Deploy `2fc9454` (Prod, warm): Discover **637 ms**, Community **420 ms**, Feed **362 ms**, Ø **534 ms** (Cold-Start-Spitzen möglich).
 
 Strukturelle Optimierungen in dieser Runde:
 

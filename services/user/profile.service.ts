@@ -1,5 +1,47 @@
 import { createClient } from "@/lib/supabase/server";
 import type { ProfileRow } from "@/types/database";
+import type { User } from "@supabase/supabase-js";
+
+/** Stellt sicher, dass profiles-Zeile existiert (behebt creator_id FK bei Community-Create). */
+export async function ensureUserProfile(user: User): Promise<{ error: Error | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: new Error("Supabase nicht konfiguriert") };
+
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (existing) return { error: null };
+
+  const displayName =
+    (user.user_metadata?.display_name as string | undefined) ??
+    (user.user_metadata?.full_name as string | undefined) ??
+    user.email?.split("@")[0] ??
+    "UNZE Mitglied";
+
+  const avatarUrl =
+    (user.user_metadata?.avatar_url as string | undefined) ?? null;
+
+  const row = {
+    id: user.id,
+    display_name: displayName,
+    avatar_url: avatarUrl,
+  };
+
+  const { error: insertErr } = await supabase.from("profiles").insert(row);
+  if (!insertErr) return { error: null };
+
+  const { createAdminClient } = await import("@/lib/supabase/admin");
+  const admin = createAdminClient();
+  if (!admin) return { error: insertErr };
+
+  const { error: upsertErr } = await admin.from("profiles").upsert(row, {
+    onConflict: "id",
+  });
+  return { error: upsertErr ?? null };
+}
 
 export async function updateProfile(
   userId: string,

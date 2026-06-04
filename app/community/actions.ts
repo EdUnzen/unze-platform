@@ -1,6 +1,6 @@
 "use server";
 
-import { isValidCommunitySlug, isValidGroupSlug, parseTagsInput, slugifyTitle } from "@/lib/utils/slug";
+import { isValidGroupSlug, parseTagsInput, slugifyTitle } from "@/lib/utils/slug";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import {
   createCommunity,
@@ -27,6 +27,7 @@ import type { CommunityFormInput } from "@/types/community";
 import { resolveBannerFromPresetOrUrl } from "@/lib/constants/category-banners";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { uploadCommunityBanner } from "@/services/user/banner.service";
 
 function parseCommunityForm(formData: FormData): CommunityFormInput {
   const category = String(formData.get("category") ?? "Allgemein");
@@ -65,19 +66,34 @@ export async function createCommunityAction(
     return { error: "Bitte melde dich an, um eine Community zu erstellen." };
   }
 
-  const input = parseCommunityForm(formData);
-
-  if (!input.title.trim()) {
-    return { error: "Titel ist erforderlich" };
+  let bannerUrlFromUpload: string | undefined;
+  const bannerFile = formData.get("bannerFile");
+  if (bannerFile instanceof File && bannerFile.size > 0) {
+    const buffer = Buffer.from(await bannerFile.arrayBuffer());
+    const uploaded = await uploadCommunityBanner({
+      userId: user.id,
+      buffer,
+      fileName: bannerFile.name,
+      mimeType: bannerFile.type || "image/jpeg",
+    });
+    if (uploaded.error || !uploaded.bannerUrl) {
+      return { error: uploaded.error ?? "Banner konnte nicht hochgeladen werden." };
+    }
+    bannerUrlFromUpload = uploaded.bannerUrl;
   }
 
-  if (!isValidCommunitySlug(input.slug)) {
-    return { error: "Ungültiger Slug (3–60 Zeichen, a-z, 0-9, -)" };
+  const input = parseCommunityForm(formData);
+  if (bannerUrlFromUpload) {
+    input.bannerUrl = bannerUrlFromUpload;
+  }
+
+  if (!input.title.trim()) {
+    return { error: "Bitte gib einen Titel für deine Community ein." };
   }
 
   const { community, error } = await createCommunity(input);
   if (error || !community) {
-    return { error: error ?? "Erstellung fehlgeschlagen" };
+    return { error: error ?? "Die Community konnte aktuell nicht erstellt werden. Bitte erneut versuchen." };
   }
 
   revalidatePath("/discover");

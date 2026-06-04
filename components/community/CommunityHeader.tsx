@@ -57,6 +57,22 @@ export function CommunityHeader({ community, displayLevel }: CommunityHeaderProp
               <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
                 {community.title}
               </h1>
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                <RatingSummary
+                  rating={community.rating}
+                  reviewCount={community.reviewCount}
+                  alwaysShow
+                  onDark
+                  starClassName="h-3.5 w-3.5"
+                />
+                <span className="flex items-center gap-1 text-white/90">
+                  <Users className="h-3.5 w-3.5" aria-hidden />
+                  <strong className="font-semibold">
+                    {formatMemberCount(community.memberCount)}
+                  </strong>
+                  Mitglieder
+                </span>
+              </div>
             </div>
             <PlatformBadge platform={community.platformType} variant="overlay" />
           </div>
@@ -73,18 +89,6 @@ export function CommunityHeader({ community, displayLevel }: CommunityHeaderProp
       )}
 
       <div className="flex flex-wrap items-center gap-4 border-b border-unze-border px-4 py-3 text-sm text-unze-ink-secondary">
-        <span className="flex items-center gap-1.5">
-          <Users className="h-4 w-4 text-unze-green" aria-hidden />
-          <strong className="font-semibold text-unze-ink">
-            {formatMemberCount(community.memberCount)}
-          </strong>
-          Mitglieder
-        </span>
-        <RatingSummary
-          rating={community.rating}
-          reviewCount={community.reviewCount}
-          className="text-sm text-unze-ink-secondary"
-        />
         {community.priceLabel && (
           <PriceBadge label={community.priceLabel} variant="inline" className="text-unze-green-dark" />
         )}
