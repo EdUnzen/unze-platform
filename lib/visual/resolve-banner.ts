@@ -2,6 +2,8 @@ import {
   getDefaultBannerPresetForCategory,
   resolveBannerFromPresetOrUrl,
 } from "@/lib/constants/category-banners";
+import { isUsableImageUrl } from "@/lib/visual/image-url";
+import { normalizeBannerGradient } from "@/lib/visual/normalize-cover";
 
 export function resolveCommunityBannerDisplay(community: {
   bannerUrl?: string | null;
@@ -20,16 +22,18 @@ export function resolveGroupCoverDisplay(group: {
   bannerGradient: string;
   category: string;
 }) {
-  if (group.coverUrl?.trim()) {
+  const preset = getDefaultBannerPresetForCategory(group.category);
+  const gradient = normalizeBannerGradient(group.bannerGradient, group.category);
+
+  if (isUsableImageUrl(group.coverUrl)) {
     return {
-      imageUrl: group.coverUrl.trim(),
-      gradient: group.bannerGradient,
+      imageUrl: group.coverUrl!.trim(),
+      gradient,
     };
   }
 
-  const preset = getDefaultBannerPresetForCategory(group.category);
   return {
     imageUrl: preset.imageUrl,
-    gradient: group.bannerGradient || preset.gradient,
+    gradient,
   };
 }

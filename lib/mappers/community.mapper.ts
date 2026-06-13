@@ -1,6 +1,7 @@
 import type { CommunityLevel } from "@/lib/constants/community-level";
 import { mapAccessConfigFromRow } from "@/lib/mappers/access.mapper";
 import { buildCommunityPriceSummary } from "@/lib/monetization/pricing-display";
+import { isUsableImageUrl } from "@/lib/visual/image-url";
 import type { Community, CommunityGroup, DiscoverGroup } from "@/types/community";
 import type { CommunityVisibility } from "@/types/community";
 import type { CommunityRole, CommunityWithCreator } from "@/types/database";
@@ -62,7 +63,7 @@ export function mapCommunityRow(
     title: row.title,
     description: row.description,
     bannerGradient: row.banner_gradient,
-    bannerUrl: row.banner_url ?? null,
+    bannerUrl: isUsableImageUrl(row.banner_url) ? row.banner_url : null,
     platformType: row.platform_type,
     category: row.category,
     focusTags:

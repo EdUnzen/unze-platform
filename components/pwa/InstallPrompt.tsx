@@ -5,6 +5,7 @@ import { Download, Share, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const DISMISS_KEY = "unze-pwa-install-dismissed";
+const ONBOARDING_KEY = "unze-onboarding-complete-v1";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -33,6 +34,7 @@ export function InstallPrompt() {
 
   useEffect(() => {
     if (isStandalone()) return;
+    if (!localStorage.getItem(ONBOARDING_KEY)) return;
     if (localStorage.getItem(DISMISS_KEY)) return;
 
     setIsIosDevice(isIOS());

@@ -1,6 +1,7 @@
 import { BottomNav } from "@/components/navigation/BottomNav";
 import { PlatformTopBarActions } from "@/components/layout/PlatformTopBarActions";
 import { UnzeLogo } from "@/components/brand/UnzeLogo";
+import { FirstVisitOnboarding } from "@/components/onboarding/FirstVisitOnboarding";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
 import { RoutePrefetch } from "@/components/pwa/RoutePrefetch";
@@ -40,6 +41,7 @@ export async function PlatformShell({ children }: PlatformShellProps) {
         unreadNotifications={unreadCount}
         showCreatorMenu={showDashboard}
       />
+      <FirstVisitOnboarding />
       <InstallPrompt />
       <RoutePrefetch />
       <PwaBootstrap userId={user?.id ?? null} />

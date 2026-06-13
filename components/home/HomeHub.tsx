@@ -2,6 +2,7 @@ import { CommunityCardList } from "@/components/community/CommunityCardList";
 import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeValueProps } from "@/components/home/HomeValueProps";
+import { GuestOnboardingHint } from "@/components/onboarding/GuestOnboardingHint";
 import type { HomePendingApplication } from "@/services/home/home.service";
 import type { Community } from "@/types/community";
 import type { CommunityEvent } from "@/types/event";
@@ -46,6 +47,7 @@ export function HomeHub({
     return (
       <div className="space-y-5">
         <HomeHero variant="guest" />
+        <GuestOnboardingHint />
         <HomeValueProps />
         {discoverCommunities.length > 0 && (
           <CommunityCardList
@@ -64,10 +66,12 @@ export function HomeHub({
         )}
         <section className="rounded-3xl border border-unze-green/20 bg-unze-green-muted/20 p-4 text-center sm:p-5">
           <p className="text-sm font-medium text-unze-ink">
-            Bereit für dein Community-Netzwerk?
+            Von der Startseite in die App
           </p>
           <p className="mt-1 text-xs text-unze-ink-secondary sm:text-sm">
-            Registriere dich kostenlos — Communities, Gruppen, Events und Services warten auf dich.
+            Registriere dich oder melde dich an — dann findest du Communities unter{" "}
+            <strong className="font-semibold text-unze-ink">Entdecken</strong>, verwaltest dein
+            Netzwerk auf der Startseite und kannst UNZE als App installieren.
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <Link
@@ -78,9 +82,9 @@ export function HomeHub({
             </Link>
             <Link
               href="/discover"
-              className="inline-flex rounded-xl border border-unze-border bg-white px-4 py-2.5 text-sm font-semibold text-unze-ink"
+              className="inline-flex rounded-xl border border-unze-green/40 bg-white px-4 py-2.5 text-sm font-semibold text-unze-green"
             >
-              Discover erkunden
+              Communities entdecken
             </Link>
           </div>
         </section>

@@ -43,7 +43,14 @@ Normale Nutzer, Creator und Moderatoren: `/owner` → Redirect.
 
 ---
 
-## Automatisierte Tests
+## Erstbesucher-Onboarding
+
+- **Einmalig:** Willkommens-Dialog (Was ist UNZE? → Säulen → Installation)
+- **Profil:** „Was ist UNZE?“ und „UNZE installieren“ jederzeit erneut
+- **Gast-Startseite:** Button „Was ist UNZE?“
+- Speicherung: `localStorage` `unze-onboarding-complete-v1`
+
+---
 
 ```bash
 npm run test:services           # Service CRUD + Discover

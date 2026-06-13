@@ -2,10 +2,11 @@
 
 import { AbstractNetworkPattern } from "@/components/visual/AbstractNetworkPattern";
 import { patternVariantForSeed } from "@/lib/visual/seed-from-string";
+import { isUsableImageUrl } from "@/lib/visual/image-url";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { Users, Wrench } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface GroupCoverVisualProps {
   seed: string;
@@ -33,44 +34,55 @@ export function GroupCoverVisual({
   compact = false,
   groupType = "group",
 }: GroupCoverVisualProps) {
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(imageUrl) && !imageFailed;
-  const useNextImage = showImage && isNextImageUrl(imageUrl!);
+  const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
+  const url = isUsableImageUrl(imageUrl) ? imageUrl!.trim() : null;
+  const activeUrl = useMemo(() => {
+    if (!url) return null;
+    return failedUrls.has(url) ? null : url;
+  }, [url, failedUrls]);
+
+  const showImage = Boolean(activeUrl);
+  const useNextImage = showImage && isNextImageUrl(activeUrl!);
   const variant = patternVariantForSeed(`${seed}-group`);
   const Icon = groupType === "service" ? Wrench : Users;
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
+    <div className={cn("relative overflow-hidden bg-unze-green-dark/15", className)}>
       <div
         className={cn("absolute inset-0 bg-gradient-to-br", bannerGradient)}
         aria-hidden
       />
 
+      <AbstractNetworkPattern variant={variant} opacity={showImage ? 0.16 : 0.4} />
+
       {showImage && useNextImage ? (
         <Image
-          src={imageUrl!}
+          src={activeUrl!}
           alt=""
           fill
           sizes={compact ? "280px" : "(max-width: 512px) 100vw, 384px"}
           className="object-cover"
           loading="lazy"
-          onError={() => setImageFailed(true)}
+          onError={() =>
+            setFailedUrls((prev) => new Set(prev).add(activeUrl!))
+          }
         />
       ) : null}
 
       {showImage && !useNextImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={imageUrl!}
+          src={activeUrl!}
           alt=""
           loading="lazy"
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
-          onError={() => setImageFailed(true)}
+          onError={() =>
+            setFailedUrls((prev) => new Set(prev).add(activeUrl!))
+          }
         />
       ) : null}
 
-      <AbstractNetworkPattern variant={variant} opacity={showImage ? 0.2 : 0.38} />
       <div
         className={cn(
           "absolute flex items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md",

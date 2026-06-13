@@ -3,6 +3,19 @@
  * Eigenes Upload-Feld: banner_url in DB (Formular erweiterbar).
  */
 
+import { isUsableImageUrl } from "@/lib/visual/image-url";
+
+function normalizeBannerGradient(
+  gradient: string | null | undefined,
+  category: string,
+): string {
+  const trimmed = gradient?.trim() ?? "";
+  if (trimmed.includes("from-") && trimmed.includes("to-")) {
+    return trimmed;
+  }
+  return getDefaultBannerPresetForCategory(category).gradient;
+}
+
 export type BannerPreset = {
   id: string;
   label: string;
@@ -418,22 +431,25 @@ export function resolveBannerFromPresetOrUrl(input: {
   bannerGradient?: string | null;
   category: string;
 }): { imageUrl: string; gradient: string; presetId: string } {
-  if (input.bannerUrl?.trim()) {
-    const preset = getDefaultBannerPresetForCategory(input.category);
+  const preset =
+    getBannerPresetById(input.bannerPresetId) ??
+    getDefaultBannerPresetForCategory(input.category);
+  const gradient = normalizeBannerGradient(
+    input.bannerGradient ?? preset.gradient,
+    input.category,
+  );
+
+  if (isUsableImageUrl(input.bannerUrl)) {
     return {
-      imageUrl: input.bannerUrl.trim(),
-      gradient: input.bannerGradient?.trim() || preset.gradient,
+      imageUrl: input.bannerUrl!.trim(),
+      gradient,
       presetId: input.bannerPresetId ?? preset.id,
     };
   }
 
-  const preset =
-    getBannerPresetById(input.bannerPresetId) ??
-    getDefaultBannerPresetForCategory(input.category);
-
   return {
     imageUrl: preset.imageUrl,
-    gradient: input.bannerGradient?.trim() || preset.gradient,
+    gradient,
     presetId: preset.id,
   };
 }

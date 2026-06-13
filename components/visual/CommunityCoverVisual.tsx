@@ -5,18 +5,15 @@ import { patternVariantForSeed } from "@/lib/visual/seed-from-string";
 import { getListThumbnailUrl, getHeroImageUrl } from "@/lib/visual/optimized-image-url";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface CommunityCoverVisualProps {
   seed: string;
   bannerGradient: string;
-  /** Primäres Banner (Upload oder Kategorie) */
   imageUrl?: string | null;
-  /** Fallback wenn primäres Bild fehlschlägt — immer Kategorie-Standard */
   fallbackImageUrl: string;
   className?: string;
   overlay?: "card" | "hero" | "subtle";
-  /** Listen-Thumbnails statt Vollbild-URLs */
   imageVariant?: "card" | "list" | "hero";
 }
 
@@ -29,6 +26,13 @@ function isNextImageUrl(url: string): boolean {
   }
 }
 
+function optimizeUrl(raw: string, imageVariant: CommunityCoverVisualProps["imageVariant"]) {
+  if (imageVariant === "hero") {
+    return getHeroImageUrl(raw) ?? raw;
+  }
+  return getListThumbnailUrl(raw) ?? raw;
+}
+
 export function CommunityCoverVisual({
   seed,
   bannerGradient,
@@ -38,18 +42,30 @@ export function CommunityCoverVisual({
   overlay = "card",
   imageVariant = "card",
 }: CommunityCoverVisualProps) {
-  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
 
-  const primary = imageUrl?.trim() || null;
-  const useFallback = !primary || failedUrl === primary;
-  const rawUrl = useFallback ? fallbackImageUrl : primary!;
-  const activeUrl =
-    imageVariant === "hero"
-      ? getHeroImageUrl(rawUrl) ?? rawUrl
-      : getListThumbnailUrl(rawUrl) ?? rawUrl;
-  const showImage = Boolean(activeUrl) && failedUrl !== activeUrl;
+  const candidates = useMemo(() => {
+    const list: string[] = [];
+    const primary = imageUrl?.trim();
+    if (primary) list.push(primary);
+    if (fallbackImageUrl?.trim() && !list.includes(fallbackImageUrl.trim())) {
+      list.push(fallbackImageUrl.trim());
+    }
+    return list;
+  }, [imageUrl, fallbackImageUrl]);
 
-  const useNextImage = showImage && isNextImageUrl(activeUrl);
+  const activeUrl = useMemo(() => {
+    for (const raw of candidates) {
+      const optimized = optimizeUrl(raw, imageVariant);
+      if (!failedUrls.has(optimized) && !failedUrls.has(raw)) {
+        return optimized;
+      }
+    }
+    return null;
+  }, [candidates, failedUrls, imageVariant]);
+
+  const showImage = Boolean(activeUrl);
+  const useNextImage = showImage && isNextImageUrl(activeUrl!);
   const patternVariant = patternVariantForSeed(seed);
   const isHero = overlay === "hero";
 
@@ -67,56 +83,54 @@ export function CommunityCoverVisual({
         ? "(max-width: 512px) 50vw, 240px"
         : "(max-width: 512px) 100vw, 480px";
 
-  const handleError = (url: string) => {
-    setFailedUrl(url);
+  const markFailed = (url: string) => {
+    setFailedUrls((prev) => {
+      const next = new Set(prev);
+      next.add(url);
+      return next;
+    });
   };
 
   return (
-    <div className={cn("relative overflow-hidden", className)}>
+    <div className={cn("relative overflow-hidden bg-unze-green-dark/20", className)}>
       <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-br transition-opacity",
-          bannerGradient,
-          showImage ? "opacity-30" : "opacity-100",
-        )}
+        className={cn("absolute inset-0 bg-gradient-to-br", bannerGradient)}
         aria-hidden
+      />
+
+      <AbstractNetworkPattern
+        variant={patternVariant}
+        opacity={showImage ? 0.14 : 0.4}
       />
 
       {showImage && useNextImage ? (
         <Image
-          src={activeUrl}
+          src={activeUrl!}
           alt=""
           fill
           sizes={imageSizes}
           className="object-cover"
           priority={isHero}
           loading={isHero ? "eager" : "lazy"}
-          onError={() => handleError(activeUrl)}
+          onError={() => markFailed(activeUrl!)}
         />
       ) : null}
 
       {showImage && !useNextImage ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={activeUrl}
+          src={activeUrl!}
           alt=""
           loading={isHero ? "eager" : "lazy"}
           decoding="async"
           fetchPriority={isHero ? "high" : "auto"}
           className="absolute inset-0 h-full w-full object-cover"
-          onError={() => handleError(activeUrl)}
+          onError={() => markFailed(activeUrl!)}
         />
       ) : null}
 
-      {!showImage && (
-        <AbstractNetworkPattern variant={patternVariant} opacity={0.35} />
-      )}
-
       <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-t",
-          overlayClass,
-        )}
+        className={cn("absolute inset-0 bg-gradient-to-t", overlayClass)}
         aria-hidden
       />
     </div>

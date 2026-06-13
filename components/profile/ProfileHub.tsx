@@ -1,4 +1,5 @@
 import { SignOutButton } from "@/components/auth/SignOutButton";
+import { ProfileHelpMenu } from "@/components/onboarding/ProfileHelpMenu";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import type { ProfileRow } from "@/types/database";
 import {
@@ -209,6 +210,8 @@ export function ProfileHub({
           description="Creator- oder Expertenstatus"
         />
       </nav>
+
+      <ProfileHelpMenu />
 
       <div className="pt-1">
         <SignOutButton />
