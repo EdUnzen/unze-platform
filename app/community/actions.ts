@@ -1,5 +1,7 @@
 "use server";
 
+import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
+import { mapDbError } from "@/lib/db/user-facing-errors";
 import { isValidGroupSlug, parseTagsInput, slugifyTitle } from "@/lib/utils/slug";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import {
@@ -149,12 +151,17 @@ export async function toggleFollowCommunity(
     : await followCommunity(communityId);
 
   if (result.error) {
-    return { error: result.error.message };
+    return { error: mapDbError(result.error.message) };
   }
 
   revalidatePath(`/community/${slug}`);
   revalidatePath("/favorites");
-  return { success: true };
+  return {
+    success: true,
+    message: currentlyFollowing
+      ? ACTION_MESSAGES.community.unfollowed
+      : ACTION_MESSAGES.community.followed,
+  };
 }
 
 export async function toggleFollowGroup(
@@ -168,12 +175,17 @@ export async function toggleFollowGroup(
     : await followGroup(groupId);
 
   if (result.error) {
-    return { error: result.error.message };
+    return { error: mapDbError(result.error.message) };
   }
 
   revalidatePath(`/community/${communitySlug}/group/${groupSlug}`);
   revalidatePath("/favorites");
-  return { success: true };
+  return {
+    success: true,
+    message: currentlyFollowing
+      ? ACTION_MESSAGES.group.left
+      : ACTION_MESSAGES.group.joined,
+  };
 }
 
 export async function toggleFollowEvent(
@@ -208,10 +220,11 @@ export async function leaveCommunityAction(communityId: string, slug: string) {
     community.membership?.role ?? null,
   );
 
-  if (result.error) return { error: result.error };
+  if (result.error) return { error: mapDbError(result.error) };
 
   revalidatePath(`/community/${slug}`);
-  return { success: true };
+  revalidateDiscover();
+  return { success: true, message: ACTION_MESSAGES.community.left };
 }
 
 export async function createGroupAction(

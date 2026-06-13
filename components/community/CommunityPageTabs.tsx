@@ -37,31 +37,44 @@ interface CommunityPageTabsProps {
 export function CommunityPageTabs({ slug, activeTab }: CommunityPageTabsProps) {
   return (
     <nav
-      className="grid grid-cols-6 gap-0.5 sm:gap-1"
+      className="-mx-1 overflow-x-auto px-1 pb-0.5 sm:overflow-visible"
       aria-label="Community-Bereiche"
     >
-      {COMMUNITY_TAB_IDS.map((tab) => {
-        const active = tab === activeTab;
-        const Icon = TAB_ICONS[tab];
-        return (
-          <Link
-            key={tab}
-            href={tab === "overview" ? `/community/${slug}` : `/community/${slug}?tab=${tab}`}
-            className={cn(
-              "flex min-w-0 flex-col items-center justify-center gap-0.5 rounded-lg px-0.5 py-1.5 text-center transition-colors sm:rounded-full sm:px-2 sm:py-2",
-              active
-                ? "bg-unze-green text-white shadow-sm"
-                : "bg-white text-unze-ink-secondary shadow-sm",
-            )}
-            aria-current={active ? "page" : undefined}
-          >
-            <Icon className="h-3 w-3 shrink-0 opacity-90 sm:h-3.5 sm:w-3.5" aria-hidden />
-            <span className="max-w-full truncate text-[9px] font-semibold leading-none sm:text-[11px] sm:leading-tight">
-              {COMMUNITY_TAB_LABELS[tab]}
-            </span>
-          </Link>
-        );
-      })}
+      <div className="grid min-w-[min(100%,22.5rem)] grid-cols-6 gap-1 sm:min-w-0 sm:gap-1.5">
+        {COMMUNITY_TAB_IDS.map((tab) => {
+          const active = tab === activeTab;
+          const Icon = TAB_ICONS[tab];
+          return (
+            <Link
+              key={tab}
+              href={tab === "overview" ? `/community/${slug}` : `/community/${slug}?tab=${tab}`}
+              className={cn(
+                "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2.5 text-center transition-all active:scale-[0.98] sm:min-h-[2.75rem] sm:rounded-2xl sm:px-2 sm:py-2",
+                active
+                  ? "bg-unze-green text-white shadow-md ring-2 ring-unze-green/25 ring-offset-1"
+                  : "bg-white text-unze-ink-secondary shadow-sm hover:bg-unze-surface-muted/60",
+              )}
+              aria-current={active ? "page" : undefined}
+            >
+              <Icon
+                className={cn(
+                  "h-4 w-4 shrink-0 sm:h-4 sm:w-4",
+                  active ? "opacity-100" : "opacity-80",
+                )}
+                aria-hidden
+              />
+              <span
+                className={cn(
+                  "max-w-full px-0.5 text-center text-[10px] font-semibold leading-snug sm:text-xs sm:leading-tight",
+                  active && "font-bold",
+                )}
+              >
+                {COMMUNITY_TAB_LABELS[tab]}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

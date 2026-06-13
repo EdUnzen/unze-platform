@@ -1,6 +1,6 @@
-/* UNZE PWA v2 — Shell, Assets, Navigation SWR, Bilder */
-const SHELL_CACHE = "unze-shell-v2";
-const ASSET_CACHE = "unze-assets-v2";
+/* UNZE PWA v3 — Shell, Assets, Navigation SWR, Bilder */
+const SHELL_CACHE = "unze-shell-v3";
+const ASSET_CACHE = "unze-assets-v3";
 const PREFETCH_PATH = "/api/pwa/prefetch";
 
 const SHELL_ASSETS = [
@@ -23,7 +23,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((k) => k !== SHELL_CACHE && k !== ASSET_CACHE && k !== "unze-shell-v1")
+          .filter((k) => !["unze-shell-v3", "unze-assets-v3"].includes(k))
           .map((k) => caches.delete(k)),
       ),
     ),

@@ -122,7 +122,10 @@ export async function joinCommunity(
     return { error: null, alreadyMember: true };
   }
 
-  return directJoinCommunity(communityId, userId);
+  const direct = await directJoinCommunity(communityId, userId);
+  if (direct.error) return { error: direct.error };
+  if (direct.alreadyMember) return { error: null, alreadyMember: true };
+  return { error: null };
 }
 
 export async function leaveCommunity(

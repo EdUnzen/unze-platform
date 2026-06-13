@@ -1,5 +1,6 @@
 "use server";
 
+import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import {
   createJoinQuestion,
@@ -178,7 +179,15 @@ export async function reviewApplicationAction(
   revalidatePath(`/dashboard/community/${slug}/access`);
   revalidatePath(`/dashboard/community/${slug}/members`);
   revalidatePath(`/community/${slug}`);
-  return { success: true, message: action === "accept" ? "Antrag angenommen" : action === "reject" ? "Antrag abgelehnt" : "Auf Warteliste gesetzt" };
+  return {
+    success: true,
+    message:
+      action === "accept"
+        ? ACTION_MESSAGES.community.applicationApproved
+        : action === "reject"
+          ? ACTION_MESSAGES.community.applicationRejected
+          : "Auf Warteliste gesetzt",
+  };
 }
 
 export async function promoteWaitlistAction(slug: string) {

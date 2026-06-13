@@ -24,9 +24,14 @@ async function warmPrefetch(userId: string | null): Promise<void> {
 
 function registerServiceWorker(): void {
   if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
-  navigator.serviceWorker.register("/sw.js").catch(() => {
-    /* unsupported or blocked */
-  });
+  navigator.serviceWorker
+    .register("/sw.js")
+    .then((reg) => {
+      void reg.update();
+    })
+    .catch(() => {
+      /* unsupported or blocked */
+    });
 }
 
 interface PwaBootstrapProps {

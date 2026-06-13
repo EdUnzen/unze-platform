@@ -9,6 +9,8 @@ import { toggleFollowCommunity } from "@/app/community/actions";
 import { CommunityActivityToggle } from "@/components/community/CommunityActivityToggle";
 import { SubscribeCommunityPanel } from "@/components/billing/SubscribeCommunityPanel";
 import { ApplicationStatusBadge, MemberRestrictionBadge } from "@/components/dashboard/StatusBadge";
+import { ActionFeedback } from "@/components/ui/ActionFeedback";
+import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
 import { PLATFORM_IDENTITY_OPTIONS } from "@/lib/constants/access";
 import { formatMaxSizeHint } from "@/lib/storage/validation";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
@@ -107,7 +109,8 @@ export function CommunityJoinPanel({
     startTransition(async () => {
       setError(null);
       setSuccess(null);
-      const result = isMember
+      const wasMember = isMember;
+      const result = wasMember
         ? await import("@/app/community/actions").then((m) =>
             m.leaveCommunityAction(community.id, slug),
           )
@@ -121,14 +124,27 @@ export function CommunityJoinPanel({
         setError(result.error);
         return;
       }
-      setIsMember(!isMember);
-      setSuccess(isMember ? null : "Willkommen in der Community!");
+
+      if ("alreadyMember" in result && result.alreadyMember) {
+        setIsMember(true);
+        setSuccess(ACTION_MESSAGES.community.alreadyMember);
+      } else {
+        setIsMember(!wasMember);
+        setSuccess(
+          result.message ??
+            (wasMember
+              ? ACTION_MESSAGES.community.left
+              : ACTION_MESSAGES.community.joined),
+        );
+      }
+      router.refresh();
     });
   };
 
   const handleFollow = () => {
     startTransition(async () => {
       setError(null);
+      setSuccess(null);
       const result = await toggleFollowCommunity(
         community.id,
         slug,
@@ -139,6 +155,7 @@ export function CommunityJoinPanel({
         return;
       }
       setFollowing(!following);
+      if (result.message) setSuccess(result.message);
     });
   };
 
@@ -156,7 +173,7 @@ export function CommunityJoinPanel({
         setError(result.error);
         return;
       }
-      setSuccess(result.message ?? "Antrag zurückgezogen");
+      setSuccess(result.message ?? ACTION_MESSAGES.community.applicationWithdrawn);
       router.refresh();
     });
   };
@@ -297,11 +314,7 @@ export function CommunityJoinPanel({
         </div>
       )}
 
-      {success && (
-        <p className="rounded-xl bg-unze-green-muted px-3 py-2 text-center text-xs font-medium text-unze-green-dark">
-          {success}
-        </p>
-      )}
+      {success && <ActionFeedback variant="success">{success}</ActionFeedback>}
 
       {!showApplication ? (
         <div className="grid grid-cols-2 gap-2">
@@ -375,8 +388,13 @@ export function CommunityJoinPanel({
                 return;
               }
               setShowApplication(false);
-              if (result.joined) setIsMember(true);
-              setSuccess(result.message ?? "Antrag eingereicht");
+              if (result.joined || result.alreadyMember) setIsMember(true);
+              setSuccess(
+                result.message ??
+                  (result.joined
+                    ? ACTION_MESSAGES.community.joined
+                    : ACTION_MESSAGES.community.applicationSent),
+              );
               router.refresh();
             });
           }}
@@ -513,11 +531,7 @@ export function CommunityJoinPanel({
         />
       )}
 
-      {error && (
-        <p className="text-center text-xs text-red-600" role="alert">
-          {error}
-        </p>
-      )}
+      {error && <ActionFeedback variant="error">{error}</ActionFeedback>}
     </div>
   );
 }

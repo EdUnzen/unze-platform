@@ -189,7 +189,7 @@ export function CommunityForm({
       </div>
 
       <p className="rounded-2xl border border-unze-green/20 bg-unze-green-muted/40 px-3 py-2.5 text-xs text-unze-ink-secondary">
-        Das Community-Level (Bronze bis Elite) wird automatisch berechnet — du kannst es
+        Der Community Score (0–100 Punkte) wird automatisch berechnet — du kannst ihn
         nicht manuell festlegen.
       </p>
 

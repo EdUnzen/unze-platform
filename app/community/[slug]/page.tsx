@@ -339,7 +339,7 @@ export default async function CommunityPage({
       <div className="space-y-4">
         <CommunityHeader
           community={communityWithLevel}
-          displayLevel={levelResult.level}
+          displayScore={levelResult.score}
         />
 
         <CommunityStatsRow

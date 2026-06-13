@@ -1,4 +1,8 @@
 import { isDemoCommunitySlug } from "@/lib/constants/demo";
+import {
+  isDuplicateMemberError,
+  mapDbError,
+} from "@/lib/db/user-facing-errors";
 import { getDemoShowcaseMembers } from "@/services/community/demo-data";
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityMemberView } from "@/types/dashboard";
@@ -168,9 +172,40 @@ export async function ensureCreatorMembershipInDb(
 export async function joinCommunityInDb(
   communityId: string,
   userId: string,
-): Promise<{ error: string | null }> {
+): Promise<{ error: string | null; alreadyMember?: boolean }> {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase nicht konfiguriert" };
+
+  const { data: active } = await supabase
+    .from("community_members")
+    .select("id")
+    .eq("community_id", communityId)
+    .eq("user_id", userId)
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (active) return { error: null, alreadyMember: true };
+
+  const { data: inactive } = await supabase
+    .from("community_members")
+    .select("id, role")
+    .eq("community_id", communityId)
+    .eq("user_id", userId)
+    .not("deleted_at", "is", null)
+    .maybeSingle();
+
+  if (inactive && inactive.role !== "creator") {
+    const { error: rejoinErr } = await supabase
+      .from("community_members")
+      .update({
+        deleted_at: null,
+        role: "member",
+      })
+      .eq("id", inactive.id);
+
+    if (rejoinErr) return { error: mapDbError(rejoinErr.message) };
+    return { error: null };
+  }
 
   const { error } = await supabase.from("community_members").insert({
     community_id: communityId,
@@ -178,7 +213,12 @@ export async function joinCommunityInDb(
     role: "member",
   });
 
-  if (error) return { error: error.message };
+  if (error) {
+    if (isDuplicateMemberError(error.message)) {
+      return { error: null, alreadyMember: true };
+    }
+    return { error: mapDbError(error.message) };
+  }
   return { error: null };
 }
 
@@ -205,7 +245,7 @@ export async function leaveCommunityInDb(
     p_actor_id: userId,
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: mapDbError(error.message) };
   return { error: null, memberId: member.id as string };
 }
 

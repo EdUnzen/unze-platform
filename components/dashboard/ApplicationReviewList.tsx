@@ -1,9 +1,11 @@
 "use client";
 
 import { reviewApplicationAction } from "@/app/dashboard/access-actions";
+import { ActionFeedback } from "@/components/ui/ActionFeedback";
 import { APPLICATION_STATUS_LABELS } from "@/lib/constants/access";
 import type { JoinApplication } from "@/types/access";
 import { Check, Clock, User, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTransition, useState } from "react";
 
 interface ApplicationReviewListProps {
@@ -19,6 +21,8 @@ export function ApplicationReviewList({
 }: ApplicationReviewListProps) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const router = useRouter();
 
   if (!canReview) {
     return (
@@ -38,8 +42,14 @@ export function ApplicationReviewList({
   ) => {
     startTransition(async () => {
       setError(null);
+      setSuccess(null);
       const result = await reviewApplicationAction(slug, applicationId, action);
-      if (result.error) setError(result.error);
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+      setSuccess(result.message ?? "Aktion erfolgreich");
+      router.refresh();
     });
   };
 
@@ -123,10 +133,15 @@ export function ApplicationReviewList({
         })}
       </ul>
 
+      {success && (
+        <ActionFeedback variant="success" className="mt-3">
+          {success}
+        </ActionFeedback>
+      )}
       {error && (
-        <p className="mt-3 text-center text-xs text-red-600" role="alert">
+        <ActionFeedback variant="error" className="mt-3">
           {error}
-        </p>
+        </ActionFeedback>
       )}
     </div>
   );

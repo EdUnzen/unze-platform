@@ -13,6 +13,7 @@ import {
   hasCommunityPermission,
 } from "@/lib/permissions/community.permissions";
 import { joinCommunityInDb } from "@/services/community/member.repository";
+import { mapDbError } from "@/lib/db/user-facing-errors";
 import { checkUserJoinRestriction } from "@/services/lifecycle/restriction.service";
 import { persistApplicationProofs } from "@/services/storage/proof.service";
 import type {
@@ -339,6 +340,9 @@ export async function submitJoinApplication(input: SubmitJoinApplicationInput) {
   } else if (row.join_approval_mode === "auto_accept" && questions.length === 0) {
     const direct = await joinCommunityInDb(input.communityId, input.userId);
     if (direct.error) return { error: direct.error };
+    if (direct.alreadyMember) {
+      return { error: null, application: null, joined: true, alreadyMember: true };
+    }
     await notifyApplicant({
       userId: input.userId,
       event: "application_accepted",
@@ -514,6 +518,7 @@ export async function directJoinCommunity(
 
   const result = await joinCommunityInDb(communityId, userId);
   if (result.error) return result;
+  if (result.alreadyMember) return { error: null, alreadyMember: true };
 
   const autoMessages = await getAutoMessagesFlag(communityId);
   await notifyApplicant({

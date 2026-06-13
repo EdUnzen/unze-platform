@@ -1,9 +1,7 @@
 import { RatingSummary } from "@/components/ui/RatingSummary";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { CommunityFocusChips } from "@/components/community/CommunityFocusChips";
-import { CommunityLevelBadge } from "@/components/community/CommunityLevelBadge";
 import { CommunityStatusBadges } from "@/components/community/CommunityStatusBadges";
-import type { CommunityLevel } from "@/lib/constants/community-level";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
@@ -16,12 +14,12 @@ import { Users } from "lucide-react";
 
 interface CommunityHeaderProps {
   community: Community;
-  /** Berechnetes Level (überschreibt gespeichertes, wenn gesetzt) */
-  displayLevel?: CommunityLevel;
+  /** Berechneter Community Score (0–100) */
+  displayScore?: number;
 }
 
-export function CommunityHeader({ community, displayLevel }: CommunityHeaderProps) {
-  const level = displayLevel ?? community.communityLevel;
+export function CommunityHeader({ community, displayScore }: CommunityHeaderProps) {
+  const score = displayScore ?? community.levelScore ?? 0;
   const banner = resolveCommunityBannerDisplay(community);
   const categoryFallback = getDefaultBannerPresetForCategory(community.category);
   return (
@@ -47,7 +45,9 @@ export function CommunityHeader({ community, displayLevel }: CommunityHeaderProp
         <div className="absolute bottom-4 left-4 right-16 z-10 space-y-2">
           <div className="flex flex-wrap gap-1.5">
             <CommunityStatusBadges community={community} />
-            <CommunityLevelBadge level={level} variant="dark" />
+            <span className="inline-flex items-center rounded-lg bg-black/30 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm">
+              Score {score}
+            </span>
           </div>
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div className="min-w-0 flex-1">

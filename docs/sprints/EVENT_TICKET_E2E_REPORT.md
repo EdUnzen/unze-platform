@@ -5,12 +5,12 @@
 
 | Schritt | Status | Notiz |
 |---------|--------|-------|
-| Event anlegen | ✅ | E2E Ticket Test Event (352617ff-5121-4842-acbe-015a1dcce1cc) |
+| Event anlegen | ✅ | E2E Ticket Test Event (185a4c13-e6f5-48e3-ac39-001938f1eebc) |
 | Testnutzer | ✅ | Max SSL |
-| Ticket buchen | ✅ | UNZE-TEST-9B8C73EFB1D8 |
+| Ticket buchen | ✅ | UNZE-TEST-529F4AB4DB1C |
 | Ticket im Profil (DB) | ✅ | status=active |
-| Creator Check-In | ✅ | ticketId=bb06eb71-d580-4eac-a9c7-e63bd852193b |
-| Status eingecheckt | ✅ | 2026-06-13T11:01:39.248318+00:00 |
+| Creator Check-In | ✅ | ticketId=31d8d611-98e7-41c1-822c-b68daedd1c8b |
+| Status eingecheckt | ✅ | 2026-06-13T11:27:59.012049+00:00 |
 | Mehrfachnutzung blockiert | ✅ | Ticket bereits verwendet |
 | Event-Statistik | ✅ | total=1, eingecheckt=1, offen=0 |
 | Cleanup | ✅ | Test-Ticket entfernt |

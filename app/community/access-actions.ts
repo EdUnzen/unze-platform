@@ -1,5 +1,7 @@
 "use server";
 
+import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
+import { mapDbError } from "@/lib/db/user-facing-errors";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getEffectiveJoinQuestions } from "@/lib/access/join-questions";
 import {
@@ -118,9 +120,12 @@ export async function submitJoinApplicationAction(
   return {
     success: true,
     joined: result.joined ?? false,
+    alreadyMember: result.alreadyMember ?? false,
     message: result.joined
-      ? "Willkommen in der Community!"
-      : "Antrag eingereicht",
+      ? result.alreadyMember
+        ? ACTION_MESSAGES.community.alreadyMember
+        : ACTION_MESSAGES.community.joined
+      : ACTION_MESSAGES.community.applicationSent,
   };
 }
 
@@ -141,10 +146,17 @@ export async function joinCommunityAction(communityId: string, slug: string) {
     community.visibility,
   );
 
-  if (result.error) return { error: result.error };
+  if (result.error) return { error: mapDbError(result.error) };
 
   revalidatePath(`/community/${slug}`);
-  return { success: true };
+  revalidatePath("/favorites");
+  return {
+    success: true,
+    alreadyMember: result.alreadyMember ?? false,
+    message: result.alreadyMember
+      ? ACTION_MESSAGES.community.alreadyMember
+      : ACTION_MESSAGES.community.joined,
+  };
 }
 
 export async function withdrawJoinApplicationAction(

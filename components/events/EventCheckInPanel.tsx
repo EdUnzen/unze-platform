@@ -1,6 +1,8 @@
 "use client";
 
 import { checkInEventTicketAction } from "@/app/event-ticket-actions";
+import { ActionFeedback } from "@/components/ui/ActionFeedback";
+import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
 import type { EventTicketStats } from "@/types/event-ticket";
 import { ScanLine } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -20,7 +22,7 @@ export function EventCheckInPanel({
   stats,
 }: EventCheckInPanelProps) {
   const [code, setCode] = useState("");
-  const [message, setMessage] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+  const [message, setMessage] = useState<{ type: "ok" | "err" | "info"; text: string } | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -59,7 +61,7 @@ export function EventCheckInPanel({
               setMessage({ type: "err", text: result.error });
               return;
             }
-            setMessage({ type: "ok", text: "Check-In erfolgreich" });
+            setMessage({ type: "ok", text: ACTION_MESSAGES.event.checkedIn });
             setCode("");
             router.refresh();
           });
@@ -88,12 +90,12 @@ export function EventCheckInPanel({
       </form>
 
       {message && (
-        <p
-          className={`mt-2 text-xs ${message.type === "ok" ? "text-unze-green-dark" : "text-red-600"}`}
-          role="status"
+        <ActionFeedback
+          variant={message.type === "err" ? "error" : "success"}
+          className="mt-2"
         >
           {message.text}
-        </p>
+        </ActionFeedback>
       )}
     </section>
   );

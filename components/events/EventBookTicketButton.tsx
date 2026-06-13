@@ -1,6 +1,8 @@
 "use client";
 
 import { bookEventTicketAction } from "@/app/event-ticket-actions";
+import { ActionFeedback } from "@/components/ui/ActionFeedback";
+import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
 import type { EventTicketView } from "@/types/event-ticket";
 import { Ticket } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +26,7 @@ export function EventBookTicketButton({
 }: EventBookTicketButtonProps) {
   const [ticket, setTicket] = useState(existingTicket);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -68,6 +71,7 @@ export function EventBookTicketButton({
         onClick={() =>
           startTransition(async () => {
             setError(null);
+            setSuccess(null);
             const result = await bookEventTicketAction(slug, eventId, communityId);
             if (result.error) {
               setError(result.error);
@@ -75,6 +79,7 @@ export function EventBookTicketButton({
             }
             if (result.ticket) {
               setTicket(result.ticket);
+              setSuccess(ACTION_MESSAGES.event.ticketBooked);
               router.refresh();
             }
           })
@@ -84,10 +89,15 @@ export function EventBookTicketButton({
         <Ticket className="h-4 w-4" aria-hidden />
         {pending ? "Wird gebucht…" : "Ticket buchen"}
       </button>
+      {success && (
+        <ActionFeedback variant="success" className="mt-2">
+          {success}
+        </ActionFeedback>
+      )}
       {error && (
-        <p className="mt-2 text-xs text-red-600" role="alert">
+        <ActionFeedback variant="error" className="mt-2">
           {error}
-        </p>
+        </ActionFeedback>
       )}
     </div>
   );
