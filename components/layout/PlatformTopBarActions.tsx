@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { LayoutDashboard } from "lucide-react";
+import { LayoutDashboard, Shield } from "lucide-react";
 import Link from "next/link";
 
 const NotificationCenter = dynamic(
@@ -16,15 +16,27 @@ interface PlatformTopBarActionsProps {
   userId: string | null;
   unreadCount: number;
   showDashboard: boolean;
+  showOwnerCenter: boolean;
 }
 
 export function PlatformTopBarActions({
   userId,
   unreadCount,
   showDashboard,
+  showOwnerCenter,
 }: PlatformTopBarActionsProps) {
   return (
     <div className="flex items-center gap-2">
+      {showOwnerCenter && (
+        <Link
+          href="/owner"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-unze-ink text-white shadow-sm"
+          aria-label="Owner Center"
+          data-testid="platform-owner-link"
+        >
+          <Shield className="h-4 w-4" aria-hidden />
+        </Link>
+      )}
       {showDashboard && (
         <Link
           href="/dashboard"

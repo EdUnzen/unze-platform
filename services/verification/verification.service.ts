@@ -3,6 +3,7 @@ import {
   grantCreatorVerificationTrust,
   recordVerificationRejected,
 } from "@/services/trust/trust.service";
+import { isPlatformOwner } from "@/lib/auth/platform-owner";
 import { notifyVerificationEvent } from "@/lib/notifications/verification-events";
 import {
   COMMUNITY_REQUIRED_DOCS,
@@ -35,7 +36,7 @@ import {
 } from "./verification-document.service";
 
 export function isPlatformAdmin(role: PlatformRole | string | null): boolean {
-  return role === "platform_admin";
+  return isPlatformOwner(role);
 }
 
 export async function canUserReviewVerification(

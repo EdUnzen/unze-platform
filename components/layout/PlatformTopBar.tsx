@@ -1,17 +1,10 @@
 import { UnzeLogo } from "@/components/brand/UnzeLogo";
 import { PlatformTopBarActions } from "@/components/layout/PlatformTopBarActions";
-import { hasManagedCommunities } from "@/services/dashboard/dashboard.service";
-import { getCurrentUser } from "@/services/auth/auth.service";
-import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
-export async function PlatformTopBar() {
-  const user = await getCurrentUser();
+import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
 
-  const [unreadCount, showDashboard] = user
-    ? await Promise.all([
-        getUnreadNotificationCount(user.id),
-        hasManagedCommunities(user.id),
-      ])
-    : [0, false];
+export async function PlatformTopBar() {
+  const { user, unreadCount, showDashboard, showOwnerCenter } =
+    await getPlatformShellContext();
 
   return (
     <header
@@ -25,6 +18,7 @@ export async function PlatformTopBar() {
           userId={user?.id ?? null}
           unreadCount={unreadCount}
           showDashboard={showDashboard}
+          showOwnerCenter={showOwnerCenter}
         />
       </div>
     </header>

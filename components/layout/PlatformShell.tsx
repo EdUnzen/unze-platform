@@ -15,7 +15,7 @@ interface PlatformShellProps {
  * Creator-Dashboard / Stripe / Referrals werden nur über /dashboard/* geladen.
  */
 export async function PlatformShell({ children }: PlatformShellProps) {
-  const { user, unreadCount, showDashboard } = await getPlatformShellContext();
+  const { user, unreadCount, showDashboard, showOwnerCenter } = await getPlatformShellContext();
 
   return (
     <div className="relative mx-auto min-h-dvh w-full max-w-lg bg-unze-surface-muted">
@@ -29,6 +29,7 @@ export async function PlatformShell({ children }: PlatformShellProps) {
             userId={user?.id ?? null}
             unreadCount={unreadCount}
             showDashboard={showDashboard}
+            showOwnerCenter={showOwnerCenter}
           />
         </div>
       </header>

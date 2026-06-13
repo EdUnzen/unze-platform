@@ -94,7 +94,7 @@ export type SubscriptionStatus =
   | "canceled"
   | "unpaid";
 export type BadgeType = "permanent" | "temporary" | "event";
-export type PlatformRole = "user" | "creator" | "platform_admin";
+export type PlatformRole = "user" | "creator" | "platform_admin" | "owner";
 
 export interface ProfileRow {
   id: string;
