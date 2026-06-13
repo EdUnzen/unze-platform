@@ -19,7 +19,14 @@ export const ACTION_MESSAGES = {
   event: {
     ticketBooked: "Ticket erfolgreich gebucht",
     ticketCancelled: "Ticket erfolgreich storniert",
+    ticketCancelFailed: "Ticket konnte nicht storniert werden",
+    eventAlreadyStarted: "Event bereits gestartet — Stornierung nicht mehr möglich",
+    ticketNotFound: "Ticket nicht gefunden",
     checkedIn: "Ticket erfolgreich eingecheckt",
+  },
+  service: {
+    booked: "Service erfolgreich gebucht",
+    bookingFailed: "Buchung fehlgeschlagen",
   },
   membership: {
     activated: "Mitgliedschaft aktiviert",

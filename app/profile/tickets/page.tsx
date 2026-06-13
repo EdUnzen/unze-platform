@@ -1,4 +1,4 @@
-import { EventTicketCard } from "@/components/events/EventTicketCard";
+import { EventTicketCardClient } from "@/components/events/EventTicketCardClient";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getUserEventTickets } from "@/services/events/event-ticket.service";
@@ -36,7 +36,7 @@ export default async function ProfileTicketsPage() {
       ) : (
         <div className="space-y-4">
           {tickets.map((ticket) => (
-            <EventTicketCard key={ticket.id} ticket={ticket} />
+            <EventTicketCardClient key={ticket.id} ticket={ticket} />
           ))}
         </div>
       )}

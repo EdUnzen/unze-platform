@@ -1,12 +1,14 @@
 "use client";
 
 import { confirmFreeServiceBookingAction, startGroupCheckoutAction } from "@/app/billing/actions";
+import { ActionFeedback } from "@/components/ui/ActionFeedback";
+import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
 import { formatGroupPrice } from "@/lib/monetization/pricing-display";
 import {
   generateServiceBookingSlots,
   type ServiceBookingSlot,
 } from "@/lib/service-booking/slots";
-import { Calendar, Check, CreditCard } from "lucide-react";
+import { Calendar, CreditCard } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, useTransition } from "react";
 
@@ -96,12 +98,9 @@ export function ServiceBookingPanel({
 
   if (bookedFree) {
     return (
-      <section className="rounded-3xl border border-unze-green/30 bg-unze-green-muted/20 p-4 shadow-card">
-        <div className="flex items-center gap-2 text-unze-green-dark">
-          <Check className="h-5 w-5" aria-hidden />
-          <p className="text-sm font-semibold">Termin angefragt</p>
-        </div>
-        <p className="mt-2 text-sm text-unze-ink-secondary">
+      <section className="rounded-3xl border border-unze-green/30 bg-unze-green-muted/20 p-4 shadow-card space-y-2">
+        <ActionFeedback variant="success">{ACTION_MESSAGES.service.booked}</ActionFeedback>
+        <p className="text-sm text-unze-ink-secondary">
           {selected?.label} — der Anbieter bestätigt deinen kostenlosen Slot.
         </p>
       </section>
@@ -145,9 +144,9 @@ export function ServiceBookingPanel({
       </div>
 
       {error && (
-        <p className="mb-3 rounded-xl bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+        <ActionFeedback variant="error" className="mb-3">
           {error}
-        </p>
+        </ActionFeedback>
       )}
 
       <button

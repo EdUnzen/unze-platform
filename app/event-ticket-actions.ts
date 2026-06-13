@@ -4,6 +4,7 @@ import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.serv
 import { getCurrentUser } from "@/services/auth/auth.service";
 import {
   bookEventTicket,
+  cancelEventTicket,
   checkInEventTicket,
 } from "@/services/events/event-ticket.service";
 import { revalidatePath } from "next/cache";
@@ -45,4 +46,15 @@ export async function checkInEventTicketAction(
 
   revalidatePath(`/dashboard/community/${slug}/events`);
   return { success: true, ticketId: result.ticketId };
+}
+
+export async function cancelEventTicketAction(ticketId: string) {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Nicht angemeldet" };
+
+  const result = await cancelEventTicket(ticketId);
+  if (result.error) return { error: result.error };
+
+  revalidatePath("/profile/tickets");
+  return { success: true, message: result.message };
 }

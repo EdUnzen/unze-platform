@@ -162,8 +162,39 @@ async function main() {
     record("Ticket im Profil (DB)", "ok", `status=${profileTicket.status}`);
   }
 
+  const { error: cancelErr } = await admin
+    .from("event_tickets")
+    .update({ status: "cancelled" })
+    .eq("id", ticket.id)
+    .eq("user_id", testUser.id);
+
+  if (cancelErr) {
+    record("Ticket stornieren", "fail", cancelErr.message);
+  } else {
+    record("Ticket stornieren", "ok", "status=cancelled");
+  }
+
+  const ticketCode2 = `UNZE-TEST-${randomBytes(6).toString("hex").toUpperCase()}`;
+  const { data: ticket2, error: book2Err } = await admin
+    .from("event_tickets")
+    .update({
+      status: "active",
+      ticket_code: ticketCode2,
+      booked_at: new Date().toISOString(),
+      checked_in_at: null,
+    })
+    .eq("id", ticket.id)
+    .select("id, ticket_code, status")
+    .single();
+
+  if (book2Err || !ticket2) {
+    record("Ticket für Check-In", "fail", book2Err?.message ?? "Insert fehlgeschlagen");
+    writeReport();
+    process.exit(1);
+  }
+
   const { data: checkInId, error: checkErr } = await admin.rpc("check_in_event_ticket", {
-    p_ticket_code: ticketCode,
+    p_ticket_code: ticketCode2,
     p_actor_id: member.user_id,
   });
 
@@ -176,7 +207,7 @@ async function main() {
   const { data: afterCheckIn } = await admin
     .from("event_tickets")
     .select("status, checked_in_at")
-    .eq("id", ticket.id)
+    .eq("id", ticket2.id)
     .single();
 
   if (afterCheckIn?.status === "used" && afterCheckIn.checked_in_at) {
@@ -186,7 +217,7 @@ async function main() {
   }
 
   const { error: doubleErr } = await admin.rpc("check_in_event_ticket", {
-    p_ticket_code: ticketCode,
+    p_ticket_code: ticketCode2,
     p_actor_id: member.user_id,
   });
 
@@ -216,6 +247,7 @@ async function main() {
     `total=${total ?? 0}, eingecheckt=${used ?? 0}, offen=${(total ?? 0) - (used ?? 0)}`,
   );
 
+  await admin.from("event_tickets").delete().eq("id", ticket2.id);
   await admin.from("event_tickets").delete().eq("id", ticket.id);
   record("Cleanup", "ok", "Test-Ticket entfernt");
 

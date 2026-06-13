@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { mapDbError } from "@/lib/db/user-facing-errors";
 import type { EventTicketStats, EventTicketView } from "@/types/event-ticket";
 import { randomBytes } from "crypto";
 
@@ -102,6 +103,36 @@ export async function bookEventTicketInDb(input: {
     return { error: null, ticket: existing };
   }
 
+  const { data: cancelledRow } = await supabase
+    .from("event_tickets")
+    .select("id")
+    .eq("user_id", input.userId)
+    .eq("event_id", input.eventId)
+    .eq("status", "cancelled")
+    .maybeSingle();
+
+  if (cancelledRow) {
+    const ticketCode = generateTicketCode();
+    const { data: reactivated, error: reactivateErr } = await supabase
+      .from("event_tickets")
+      .update({
+        status: "active",
+        ticket_code: ticketCode,
+        booked_at: new Date().toISOString(),
+        checked_in_at: null,
+        checked_in_by: null,
+      })
+      .eq("id", cancelledRow.id)
+      .select(TICKET_SELECT)
+      .single();
+
+    if (reactivateErr) return { error: mapDbError(reactivateErr.message) };
+    return {
+      error: null,
+      ticket: mapTicketRow(reactivated as Record<string, unknown>),
+    };
+  }
+
   const ticketCode = generateTicketCode();
 
   const { data, error } = await supabase
@@ -121,7 +152,7 @@ export async function bookEventTicketInDb(input: {
       const again = await fetchUserTicketForEventFromDb(input.userId, input.eventId);
       if (again) return { error: null, ticket: again };
     }
-    return { error: error.message };
+    return { error: mapDbError(error.message) };
   }
 
   return { error: null, ticket: mapTicketRow(data as Record<string, unknown>) };
@@ -202,4 +233,56 @@ export async function checkInEventTicketInDb(
 
   if (error) return { error: error.message };
   return { error: null, ticketId: data as string };
+}
+
+export async function cancelEventTicketInDb(
+  ticketId: string,
+  userId: string,
+): Promise<{ error: string | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase nicht konfiguriert" };
+
+  const { data: row, error: fetchErr } = await supabase
+    .from("event_tickets")
+    .select(
+      `
+      id,
+      user_id,
+      status,
+      event:community_events!inner ( starts_at )
+    `,
+    )
+    .eq("id", ticketId)
+    .maybeSingle();
+
+  if (fetchErr || !row) {
+    return { error: "not_found" };
+  }
+
+  if (row.user_id !== userId) {
+    return { error: "forbidden" };
+  }
+
+  if (row.status === "cancelled") {
+    return { error: null };
+  }
+
+  if (row.status === "used") {
+    return { error: "already_used" };
+  }
+
+  const eventRaw = row.event as { starts_at: string } | { starts_at: string }[] | null;
+  const event = Array.isArray(eventRaw) ? eventRaw[0] : eventRaw;
+  if (event?.starts_at && new Date(event.starts_at) <= new Date()) {
+    return { error: "event_started" };
+  }
+
+  const { error: updateErr } = await supabase
+    .from("event_tickets")
+    .update({ status: "cancelled" })
+    .eq("id", ticketId)
+    .eq("user_id", userId);
+
+  if (updateErr) return { error: updateErr.message };
+  return { error: null };
 }
