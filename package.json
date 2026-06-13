@@ -42,6 +42,7 @@
     "test:monetization": "node scripts/test-monetization-e2e.mjs",
     "test:event-tickets": "node scripts/test-event-tickets-e2e.mjs",
     "test:join-flow": "node scripts/test-join-flow-e2e.mjs",
+    "test:services": "node scripts/test-service-e2e.mjs",
     "test:stabilization": "node scripts/stabilization-audit.mjs",
     "brand:assets": "node scripts/generate-brand-assets.mjs",
     "measure:perf": "node scripts/measure-performance.mjs"

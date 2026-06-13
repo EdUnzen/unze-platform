@@ -14,7 +14,7 @@ export default async function ResetPasswordPage({ searchParams }: ResetPasswordP
   const returnTo = params.next ?? "/auth/login";
 
   if (!isSupabaseConfigured()) {
-    redirect("/auth/login?error=supabase_not_configured");
+    redirect("/auth/login?error=service_unavailable");
   }
 
   const supabase = await createClient();

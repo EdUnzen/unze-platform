@@ -1,6 +1,11 @@
 import { HomeHub } from "@/components/home/HomeHub";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { getFollowedCommunities } from "@/services/community/community.service";
+import { PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
+import {
+  getDiscoverCommunities,
+  getFollowedCommunities,
+} from "@/services/community/community.service";
+import { getDiscoverGroups } from "@/services/community/group.service";
 import { getUpcomingEventsForCommunities } from "@/services/events/event.service";
 import { getFollowedGroups } from "@/services/follow/follow.service";
 import {
@@ -18,11 +23,15 @@ export default async function HomePage() {
     followedCommunities,
     followedGroups,
     pendingApplications,
+    discoverCommunities,
+    discoverServices,
   ] = await Promise.all([
     user ? getMyMemberCommunities(user.id) : Promise.resolve([]),
     user ? getFollowedCommunities() : Promise.resolve([]),
     user ? getFollowedGroups() : Promise.resolve([]),
     user ? getMyPendingApplications(user.id) : Promise.resolve([]),
+    user ? Promise.resolve([]) : getDiscoverCommunities(),
+    user ? Promise.resolve([]) : getDiscoverGroups(6, { groupType: "service" }),
   ]);
 
   const communityIds = [
@@ -43,7 +52,7 @@ export default async function HomePage() {
         subtitle={
           user
             ? "Communities, Gruppen, Events und Anträge — dein Verwaltungs-Hub."
-            : "Communities organisieren, verifizieren und monetarisieren — dein Netzwerk an einem Ort."
+            : PLATFORM_TAGLINE
         }
       />
 
@@ -52,6 +61,8 @@ export default async function HomePage() {
         myCommunities={myCommunities}
         followedCommunities={followedCommunities}
         followedGroups={followedGroups}
+        discoverCommunities={discoverCommunities}
+        discoverServices={discoverServices}
         upcomingEvents={upcomingEvents}
         pendingApplications={pendingApplications}
         unreadNotifications={shell.unreadCount}

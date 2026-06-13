@@ -1,5 +1,6 @@
 "use server";
 
+import { authNotConfiguredMessage, mapAuthError } from "@/lib/auth/user-facing-errors";
 import { safeRedirectPath } from "@/lib/auth/routes";
 import { getAppUrl, isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -11,11 +12,7 @@ export async function signInWithEmail(
   formData: FormData,
 ): Promise<{ error?: string }> {
   if (!isSupabaseConfigured()) {
-    return {
-      error: process.env.VERCEL
-        ? "Supabase ist nicht konfiguriert. Prüfe Vercel Environment Variables."
-        : "Supabase ist nicht konfiguriert. Siehe .env.example",
-    };
+    return { error: authNotConfiguredMessage() };
   }
 
   const email = String(formData.get("email") ?? "").trim();
@@ -29,10 +26,10 @@ export async function signInWithEmail(
   }
 
   const supabase = await createClient();
-  if (!supabase) return { error: "Verbindung fehlgeschlagen" };
+  if (!supabase) return { error: "Verbindung fehlgeschlagen — bitte erneut versuchen." };
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) return { error: error.message };
+  if (error) return { error: mapAuthError(error.message) };
 
   revalidatePath("/", "layout");
   redirect(returnTo);
@@ -43,11 +40,7 @@ export async function signUpWithEmail(
   formData: FormData,
 ): Promise<{ error?: string; success?: string }> {
   if (!isSupabaseConfigured()) {
-    return {
-      error: process.env.VERCEL
-        ? "Supabase ist nicht konfiguriert. Prüfe Vercel Environment Variables."
-        : "Supabase ist nicht konfiguriert. Siehe .env.example",
-    };
+    return { error: authNotConfiguredMessage() };
   }
 
   const email = String(formData.get("email") ?? "").trim();
@@ -64,7 +57,7 @@ export async function signUpWithEmail(
   }
 
   const supabase = await createClient();
-  if (!supabase) return { error: "Verbindung fehlgeschlagen" };
+  if (!supabase) return { error: "Verbindung fehlgeschlagen — bitte erneut versuchen." };
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -75,7 +68,7 @@ export async function signUpWithEmail(
     },
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: mapAuthError(error.message) };
 
   if (data.user && displayName) {
     await supabase
@@ -90,7 +83,8 @@ export async function signUpWithEmail(
   }
 
   return {
-    success: `Bestätige deine E-Mail — der Link führt zurück zu ${getAppUrl()}. Danach kannst du dich anmelden.`,
+    success:
+      "Fast geschafft — bestätige deine E-Mail über den Link in deinem Postfach. Danach kannst du dich anmelden.",
   };
 }
 
@@ -99,15 +93,11 @@ export async function signInWithOAuthAction(
   returnTo = "/",
 ): Promise<{ error?: string }> {
   if (!isSupabaseConfigured()) {
-    return {
-      error: process.env.VERCEL
-        ? "Supabase ist nicht konfiguriert."
-        : "Supabase ist nicht konfiguriert. Siehe .env.example",
-    };
+    return { error: authNotConfiguredMessage() };
   }
 
   const supabase = await createClient();
-  if (!supabase) return { error: "Verbindung fehlgeschlagen" };
+  if (!supabase) return { error: "Verbindung fehlgeschlagen — bitte erneut versuchen." };
 
   const safeReturn = safeRedirectPath(returnTo);
   const redirectTo = `${getAppUrl()}/auth/callback?next=${encodeURIComponent(safeReturn)}`;
@@ -117,9 +107,9 @@ export async function signInWithOAuthAction(
     options: { redirectTo },
   });
 
-  if (error) return { error: error.message };
+  if (error) return { error: mapAuthError(error.message) };
   if (data.url) redirect(data.url);
-  return { error: "OAuth konnte nicht gestartet werden" };
+  return { error: "Anmeldung konnte nicht gestartet werden. Bitte erneut versuchen." };
 }
 
 export async function signOutAction() {

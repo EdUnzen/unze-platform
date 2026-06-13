@@ -25,6 +25,7 @@ function loadEnvLocal() {
 const ROUTES = [
   { path: "/", name: "Home", expect: ["UNZE", "Discover"] },
   { path: "/discover", name: "Discover", expect: ["Discover", "Communities"] },
+  { path: "/discover?tab=services", name: "Discover Services", expect: ["Discover"] },
   { path: "/discover?tab=groups", name: "Discover Gruppen", expect: ["Discover"] },
   { path: "/discover?tab=events", name: "Discover Events", expect: ["Discover"] },
   { path: "/discover?tab=feed", name: "Discover Legacy Feed-Tab", expect: ["Communities"] },

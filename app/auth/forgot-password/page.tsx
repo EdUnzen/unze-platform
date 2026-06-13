@@ -18,7 +18,9 @@ export default function ForgotPasswordPage() {
 
       {!configured ? (
         <div className="rounded-3xl bg-white p-6 text-center shadow-card">
-          <p className="text-sm text-unze-ink-secondary">Supabase ist nicht konfiguriert.</p>
+          <p className="text-sm text-unze-ink-secondary">
+            Passwort-Reset ist derzeit nicht verfügbar. Bitte versuche es später erneut.
+          </p>
           <Link href="/auth/login" className="mt-4 inline-block text-sm font-semibold text-unze-green">
             Zur Anmeldung
           </Link>

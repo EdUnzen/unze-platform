@@ -1,5 +1,7 @@
 import { CommunityCardList } from "@/components/community/CommunityCardList";
 import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
+import { HomeHero } from "@/components/home/HomeHero";
+import { HomeValueProps } from "@/components/home/HomeValueProps";
 import type { HomePendingApplication } from "@/services/home/home.service";
 import type { Community } from "@/types/community";
 import type { CommunityEvent } from "@/types/event";
@@ -20,6 +22,8 @@ interface HomeHubProps {
   myCommunities: Community[];
   followedCommunities: Community[];
   followedGroups: DiscoverGroup[];
+  discoverCommunities: Community[];
+  discoverServices: DiscoverGroup[];
   upcomingEvents: CommunityEvent[];
   pendingApplications: HomePendingApplication[];
   unreadNotifications: number;
@@ -31,6 +35,8 @@ export function HomeHub({
   myCommunities,
   followedCommunities,
   followedGroups,
+  discoverCommunities,
+  discoverServices,
   upcomingEvents,
   pendingApplications,
   unreadNotifications,
@@ -38,66 +44,53 @@ export function HomeHub({
 }: HomeHubProps) {
   if (!user) {
     return (
-      <>
-        <section className="mb-6 rounded-3xl bg-gradient-to-br from-unze-green/15 via-white to-emerald-50 p-4 shadow-card">
-          <h2 className="mb-2 text-sm font-semibold text-unze-ink">
-            UNZE — Communities organisieren & monetarisieren
-          </h2>
-          <p className="mb-4 text-sm text-unze-ink-secondary">
-            Verwalte Communities, Gruppen, Events und Anträge — Kommunikation
-            bleibt auf Discord, WhatsApp, Telegram & Co.
+      <div className="space-y-5">
+        <HomeHero variant="guest" />
+        <HomeValueProps />
+        {discoverCommunities.length > 0 && (
+          <CommunityCardList
+            communities={discoverCommunities.slice(0, 6)}
+            title="Communities entdecken"
+            subtitle="Organisierte Netzwerke auf UNZE"
+          />
+        )}
+        {discoverServices.length > 0 && (
+          <CommunityGroupCardList
+            groups={discoverServices.slice(0, 4)}
+            title="Services aus Communities"
+            subtitle="Coaching, Beratung und Angebote"
+            layout="horizontal"
+          />
+        )}
+        <section className="rounded-3xl border border-unze-green/20 bg-unze-green-muted/20 p-4 text-center sm:p-5">
+          <p className="text-sm font-medium text-unze-ink">
+            Bereit für dein Community-Netzwerk?
           </p>
-          <Link
-            href="/auth/login"
-            className="inline-flex rounded-xl bg-unze-green px-4 py-2.5 text-sm font-semibold text-white"
-          >
-            Anmelden
-          </Link>
+          <p className="mt-1 text-xs text-unze-ink-secondary sm:text-sm">
+            Registriere dich kostenlos — Communities, Gruppen, Events und Services warten auf dich.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <Link
+              href="/auth/login?mode=signup"
+              className="inline-flex rounded-xl bg-unze-green px-4 py-2.5 text-sm font-semibold text-white"
+            >
+              Jetzt starten
+            </Link>
+            <Link
+              href="/discover"
+              className="inline-flex rounded-xl border border-unze-border bg-white px-4 py-2.5 text-sm font-semibold text-unze-ink"
+            >
+              Discover erkunden
+            </Link>
+          </div>
         </section>
-        <CommunityCardList
-          communities={followedCommunities.slice(0, 6)}
-          title="Entdecken"
-          subtitle="Communities im Netzwerk"
-        />
-        <div className="mt-4 text-center">
-          <Link href="/discover" className="text-sm font-semibold text-unze-green">
-            Discover öffnen →
-          </Link>
-        </div>
-      </>
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-3xl shadow-card">
-        <div className="relative h-36 sm:h-44">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1400&q=80"
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/30 to-emerald-900/20" />
-          <div className="relative z-10 flex h-full flex-col justify-end p-4 sm:p-5">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-200/90">
-              Dein Netzwerk auf UNZE
-            </p>
-            <h2 className="mt-1 text-lg font-bold text-white sm:text-xl">
-              Communities, Gruppen & Events — alles an einem Ort
-            </h2>
-            <p className="mt-1 max-w-md text-xs text-white/85 sm:text-sm">
-              Organisiere, verifiziere und monetarisiere dein Netzwerk an einem Ort.
-            </p>
-            <Link
-              href="/discover"
-              className="mt-3 inline-flex w-fit rounded-xl bg-unze-green px-4 py-2 text-xs font-semibold text-white shadow-lg active:scale-[0.98] sm:text-sm"
-            >
-              Discover öffnen
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HomeHero variant="member" />
 
       <section className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         <Link

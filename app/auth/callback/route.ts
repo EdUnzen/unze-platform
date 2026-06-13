@@ -20,7 +20,7 @@ export async function GET(request: Request) {
 
   const supabase = await createClient();
   if (!supabase) {
-    return loginRedirect(origin, { error: "supabase_not_configured", next });
+    return loginRedirect(origin, { error: "service_unavailable", next });
   }
 
   if (code) {
@@ -29,7 +29,6 @@ export async function GET(request: Request) {
       return loginRedirect(origin, {
         error: "auth_callback_failed",
         next,
-        message: error.message,
       });
     }
     if (next === "/auth/reset-password") {
@@ -49,7 +48,6 @@ export async function GET(request: Request) {
       return loginRedirect(origin, {
         error: type === "recovery" ? "password_reset_failed" : "email_verification_failed",
         next,
-        message: error.message,
       });
     }
 

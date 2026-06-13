@@ -1,5 +1,6 @@
 "use server";
 
+import { authNotConfiguredMessage, mapAuthError } from "@/lib/auth/user-facing-errors";
 import { safeRedirectPath } from "@/lib/auth/routes";
 import { getAppUrl, isSupabaseConfigured } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
@@ -11,7 +12,7 @@ export async function requestPasswordResetAction(
   formData: FormData,
 ): Promise<{ error?: string; success?: string }> {
   if (!isSupabaseConfigured()) {
-    return { error: "Supabase ist nicht konfiguriert." };
+    return { error: authNotConfiguredMessage() };
   }
 
   const email = String(formData.get("email") ?? "").trim();
@@ -20,7 +21,7 @@ export async function requestPasswordResetAction(
   }
 
   const supabase = await createClient();
-  if (!supabase) return { error: "Verbindung fehlgeschlagen" };
+  if (!supabase) return { error: "Verbindung fehlgeschlagen — bitte erneut versuchen." };
 
   const redirectTo = `${getAppUrl()}/auth/callback?next=${encodeURIComponent("/auth/reset-password")}`;
 
@@ -29,7 +30,7 @@ export async function requestPasswordResetAction(
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: mapAuthError(error.message) };
   }
 
   return {
@@ -43,7 +44,7 @@ export async function updatePasswordAction(
   formData: FormData,
 ): Promise<{ error?: string; success?: string }> {
   if (!isSupabaseConfigured()) {
-    return { error: "Supabase ist nicht konfiguriert." };
+    return { error: authNotConfiguredMessage() };
   }
 
   const password = String(formData.get("password") ?? "");
@@ -59,7 +60,7 @@ export async function updatePasswordAction(
   }
 
   const supabase = await createClient();
-  if (!supabase) return { error: "Verbindung fehlgeschlagen" };
+  if (!supabase) return { error: "Verbindung fehlgeschlagen — bitte erneut versuchen." };
 
   const {
     data: { user },
@@ -74,7 +75,7 @@ export async function updatePasswordAction(
   const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
-    return { error: error.message };
+    return { error: mapAuthError(error.message) };
   }
 
   revalidatePath("/", "layout");
