@@ -1,8 +1,11 @@
+import { PendingRemovalPanel } from "@/components/dashboard/PendingRemovalPanel";
 import { MemberListClient } from "@/components/dashboard/MemberListClient";
 import { RemovedMembersPanel } from "@/components/dashboard/RemovedMembersPanel";
 import { RestrictionsPanel } from "@/components/dashboard/RestrictionsPanel";
 import { loadRestrictionsData } from "@/app/dashboard/lifecycle-actions";
-import { loadRemovedMembersData } from "@/app/dashboard/governance-actions";import { getCurrentUser } from "@/services/auth/auth.service";
+import { loadRemovedMembersData } from "@/app/dashboard/governance-actions";
+import { loadPendingRemovalsData } from "@/app/dashboard/removal-actions";
+import { getCurrentUser } from "@/services/auth/auth.service";
 import { canBanMembers } from "@/lib/permissions/community.permissions";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
 import {
@@ -28,6 +31,7 @@ export default async function DashboardMembersPage({ params }: MembersPageProps)
   const role = community.viewerRole;
   const restrictionsData = await loadRestrictionsData(slug);
   const removedData = await loadRemovedMembersData(slug);
+  const pendingRemovals = await loadPendingRemovalsData(slug);
 
   return (
     <section className="space-y-6">
@@ -37,6 +41,9 @@ export default async function DashboardMembersPage({ params }: MembersPageProps)
           {members.length} Mitglieder in dieser Community
         </p>
       </div>
+      {pendingRemovals && pendingRemovals.tasks.length > 0 && (
+        <PendingRemovalPanel slug={slug} tasks={pendingRemovals.tasks} />
+      )}
       <MemberListClient
         slug={slug}
         members={members}

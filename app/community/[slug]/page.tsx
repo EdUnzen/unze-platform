@@ -106,7 +106,7 @@ import { notFound } from "next/navigation";
 interface CommunityPageProps {
   params: Promise<{ slug: string }>;
 
-  searchParams: Promise<{ invite?: string; joined?: string; tab?: string }>;
+  searchParams: Promise<{ invite?: string; joined?: string; tab?: string; checkout?: string }>;
 }
 
 function parseTab(tab: string | undefined): CommunityTabId {
@@ -121,7 +121,7 @@ export default async function CommunityPage({
 }: CommunityPageProps) {
   const { slug } = await params;
 
-  const { invite, tab: tabParam } = await searchParams;
+  const { invite, tab: tabParam, checkout } = await searchParams;
 
   const tab = parseTab(tabParam);
 
@@ -412,6 +412,7 @@ export default async function CommunityPage({
                 isLoggedIn={Boolean(user)}
                 questions={questions}
                 activityFeedEnabled={activityFeedEnabled}
+                checkoutCancelled={checkout === "cancel"}
                 inviteCode={
                   invite ?? community.joinAccess?.validInviteCode ?? undefined
                 }

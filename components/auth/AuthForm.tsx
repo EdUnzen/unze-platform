@@ -3,6 +3,7 @@
 import { signInWithEmail, signUpWithEmail } from "@/app/auth/actions";
 import { OAuthProviderButtons } from "@/components/auth/OAuthProviderButtons";
 import { cn } from "@/lib/utils/cn";
+import Link from "next/link";
 import { useActionState, useState } from "react";
 
 interface AuthFormProps {
@@ -84,9 +85,19 @@ export function AuthForm({ returnTo = "/", initialMode = "login" }: AuthFormProp
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium text-unze-ink">
-            Passwort
-          </label>
+          <div className="mb-1 flex items-center justify-between">
+            <label htmlFor="password" className="text-sm font-medium text-unze-ink">
+              Passwort
+            </label>
+            {isLogin && (
+              <Link
+                href="/auth/forgot-password"
+                className="text-xs font-medium text-unze-green hover:underline"
+              >
+                Passwort vergessen?
+              </Link>
+            )}
+          </div>
           <input
             id="password"
             name="password"

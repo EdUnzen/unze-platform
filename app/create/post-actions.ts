@@ -1,6 +1,7 @@
 "use server";
 
 import { isFeedEnabled } from "@/lib/features/platform-features";
+import { revalidateDiscover } from "@/lib/cache/revalidate-discover";
 import { createPost } from "@/services/feed/feed.service";
 import {
   isExternalPlatformUrl,
@@ -122,7 +123,7 @@ export async function createPostAction(
     return { error: error.message };
   }
 
-  revalidatePath("/discover");
+  revalidateDiscover();
   revalidatePath("/");
   redirect("/discover?tab=events");
 }

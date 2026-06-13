@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateDiscover } from "@/lib/cache/revalidate-discover";
 import { revalidatePath } from "next/cache";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { uploadUserAvatar } from "@/services/user/avatar.service";
@@ -21,7 +22,7 @@ export async function updateProfileAction(formData: FormData) {
 
   revalidatePath("/profile");
   revalidatePath("/profile/settings");
-  revalidatePath("/discover");
+  revalidateDiscover();
   return { error: null };
 }
 
@@ -46,7 +47,7 @@ export async function uploadAvatarAction(formData: FormData) {
 
   revalidatePath("/profile");
   revalidatePath("/profile/settings");
-  revalidatePath("/discover");
+  revalidateDiscover();
   return { error: null, avatarUrl: result.avatarUrl };
 }
 
@@ -59,6 +60,6 @@ export async function removeAvatarAction() {
 
   revalidatePath("/profile");
   revalidatePath("/profile/settings");
-  revalidatePath("/discover");
+  revalidateDiscover();
   return { error: null };
 }

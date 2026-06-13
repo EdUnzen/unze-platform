@@ -7,10 +7,11 @@ import {
   fetchMembership,
   fetchMembersWithProfiles,
   leaveCommunityInDb,
-  removeMemberInDb,
   updateMemberRoleInDb,
   updateMemberRoleTitleInDb,
 } from "./member.repository";
+import { softRemoveMemberInDb } from "@/services/governance/soft-delete.repository";
+import { queueMemberRemovalTask } from "@/services/lifecycle/removal-task.service";
 
 export async function getMembership(communityId: string, userId: string) {
   const member = await fetchMembership(communityId, userId);
@@ -95,6 +96,7 @@ export async function removeMember(
   memberId: string,
   actorRole: CommunityRole,
   targetRole?: CommunityRole,
+  actorId?: string,
 ) {
   if (!hasCommunityPermission(actorRole, "manage_members")) {
     return { error: "Keine Berechtigung" };
@@ -102,7 +104,8 @@ export async function removeMember(
   if (targetRole && !canRemoveMember(actorRole, targetRole)) {
     return { error: "Keine Berechtigung zum Entfernen" };
   }
-  return removeMemberInDb(memberId);
+  if (!actorId) return { error: "Actor fehlt" };
+  return softRemoveMemberInDb(memberId, actorId);
 }
 
 export async function joinCommunity(
@@ -133,7 +136,18 @@ export async function leaveCommunity(
   if (!role) {
     return { error: "Du bist kein Mitglied." };
   }
-  return leaveCommunityInDb(communityId, userId);
+
+  const result = await leaveCommunityInDb(communityId, userId);
+  if (result.error) return result;
+
+  await queueMemberRemovalTask({
+    communityId,
+    userId,
+    memberId: result.memberId ?? null,
+    reason: "user_left",
+  });
+
+  return { error: null };
 }
 
 export function canEditCommunity(role: CommunityRole | null | undefined): boolean {

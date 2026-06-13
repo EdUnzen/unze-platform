@@ -16,33 +16,34 @@ export async function fetchCommunityEntityCounts(
   }
 
   const now = new Date().toISOString();
-  const groupsRes = await supabase
-    .from("community_groups")
-    .select("group_type")
-    .eq("community_id", communityId)
-    .eq("is_public", true);
+  const [regularRes, serviceRes, eventsRes] = await Promise.all([
+    supabase
+      .from("community_groups")
+      .select("*", { count: "exact", head: true })
+      .eq("community_id", communityId)
+      .eq("is_public", true)
+      .neq("group_type", "service"),
+    supabase
+      .from("community_groups")
+      .select("*", { count: "exact", head: true })
+      .eq("community_id", communityId)
+      .eq("is_public", true)
+      .eq("group_type", "service"),
+    supabase
+      .from("community_events")
+      .select("id", { count: "exact", head: true })
+      .eq("community_id", communityId)
+      .gte("starts_at", now),
+  ]);
+
+  const regularGroupCount = regularRes.error ? 0 : (regularRes.count ?? 0);
+  const serviceGroupCount = serviceRes.error ? 0 : (serviceRes.count ?? 0);
 
   let upcomingEventCount = 0;
-  const eventsRes = await supabase
-    .from("community_events")
-    .select("id", { count: "exact", head: true })
-    .eq("community_id", communityId)
-    .gte("starts_at", now);
-
   if (!eventsRes.error) {
     upcomingEventCount = eventsRes.count ?? 0;
   } else {
-    console.warn(
-      "[community-counts] events:",
-      eventsRes.error.message,
-    );
-  }
-
-  let regularGroupCount = 0;
-  let serviceGroupCount = 0;
-  for (const row of groupsRes.data ?? []) {
-    if (row.group_type === "service") serviceGroupCount += 1;
-    else regularGroupCount += 1;
+    console.warn("[community-counts] events:", eventsRes.error.message);
   }
 
   return {

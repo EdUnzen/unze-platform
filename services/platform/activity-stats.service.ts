@@ -8,38 +8,41 @@ export type CommunityActivityStats = {
   weeklyEventCount?: number;
 };
 
-const POST_BATCH_LIMIT = 5000;
+async function countPostsForCommunity(
+  communityId: string,
+  sinceIso?: string,
+): Promise<number> {
+  const supabase = await createClient();
+  if (!supabase) return 0;
+
+  let query = supabase
+    .from("posts")
+    .select("*", { count: "exact", head: true })
+    .eq("community_id", communityId);
+
+  if (sinceIso) {
+    query = query.gte("created_at", sinceIso);
+  }
+
+  const { count, error } = await query;
+  if (error) {
+    console.error("[activity-stats] count:", error.message);
+    return 0;
+  }
+
+  return count ?? 0;
+}
 
 async function countPostsByCommunityBatch(
   communityIds: string[],
   sinceIso?: string,
 ): Promise<Record<string, number>> {
   const counts: Record<string, number> = {};
-  for (const id of communityIds) counts[id] = 0;
-
-  const supabase = await createClient();
-  if (!supabase) return counts;
-
-  let query = supabase
-    .from("posts")
-    .select("community_id")
-    .in("community_id", communityIds);
-
-  if (sinceIso) {
-    query = query.gte("created_at", sinceIso);
-  }
-
-  const { data, error } = await query.limit(POST_BATCH_LIMIT);
-  if (error) {
-    console.error("[activity-stats] batch:", error.message);
-    return counts;
-  }
-
-  for (const row of data ?? []) {
-    const id = row.community_id as string;
-    if (counts[id] !== undefined) counts[id] += 1;
-  }
-
+  await Promise.all(
+    communityIds.map(async (id) => {
+      counts[id] = await countPostsForCommunity(id, sinceIso);
+    }),
+  );
   return counts;
 }
 

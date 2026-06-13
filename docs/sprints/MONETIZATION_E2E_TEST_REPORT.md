@@ -1,6 +1,6 @@
 # Monetization E2E Testbericht
 
-**Datum:** 2026-05-31  
+**Datum:** 2026-06-13  
 **Umgebung:** https://unze-platform.vercel.app  
 **Supabase:** https://zzbjvcwmdrnuzzlepfja.supabase.co  
 **Stripe Testmodus:** konfiguriert

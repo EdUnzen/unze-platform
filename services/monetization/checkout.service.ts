@@ -113,19 +113,24 @@ export async function createCommunitySubscriptionCheckout(input: {
   const base = getAppUrl();
   const returnPath = input.returnPath ?? `/community/${ctx.community.slug}`;
 
+  const checkoutMetadata = {
+    unze_subscriber_id: input.userId,
+    unze_community_id: input.communityId,
+    unze_plan_interval: input.interval,
+    unze_checkout_type: "community_subscription",
+  };
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer_email: input.userEmail,
     line_items: [{ price: priceId, quantity: 1 }],
-    subscription_data: connectSubscriptionData(ctx.connectAccountId),
-    success_url: `${base}/profile/billing?success=1`,
-    cancel_url: `${base}${returnPath}?checkout=cancel`,
-    metadata: {
-      unze_subscriber_id: input.userId,
-      unze_community_id: input.communityId,
-      unze_plan_interval: input.interval,
-      unze_checkout_type: "community_subscription",
+    subscription_data: {
+      ...connectSubscriptionData(ctx.connectAccountId),
+      metadata: checkoutMetadata,
     },
+    success_url: `${base}/profile/billing?success=1&community=${ctx.community.slug}`,
+    cancel_url: `${base}${returnPath}?checkout=cancel`,
+    metadata: checkoutMetadata,
   });
 
   return { url: session.url, error: null };

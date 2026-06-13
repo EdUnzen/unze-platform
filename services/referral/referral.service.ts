@@ -13,7 +13,7 @@ import {
   insertSandboxLedgerEntry,
 } from "./referral.repository";
 
-async function enrichReferral(row: {
+type ReferralRow = {
   id: string;
   referred_user_id: string;
   referrer_user_id: string;
@@ -21,41 +21,50 @@ async function enrichReferral(row: {
   conflict_note: string | null;
   created_at: string;
   updated_at: string;
-}): Promise<CreatorReferral> {
+};
+
+async function enrichReferrals(rows: ReferralRow[]): Promise<CreatorReferral[]> {
+  if (rows.length === 0) return [];
+
   const supabase = await createClient();
-  let referrerDisplayName: string | null = null;
-  let referrerUsername: string | null = null;
-  let referredDisplayName: string | null = null;
+  const profileMap = new Map<
+    string,
+    { display_name: string | null; username: string | null }
+  >();
 
   if (supabase) {
+    const userIds = [
+      ...new Set(rows.flatMap((row) => [row.referrer_user_id, row.referred_user_id])),
+    ];
     const { data: profiles } = await supabase
       .from("profiles")
       .select("id, display_name, username")
-      .in("id", [row.referrer_user_id, row.referred_user_id]);
+      .in("id", userIds);
 
     for (const profile of profiles ?? []) {
-      if (profile.id === row.referrer_user_id) {
-        referrerDisplayName = (profile.display_name as string) ?? null;
-        referrerUsername = (profile.username as string) ?? null;
-      }
-      if (profile.id === row.referred_user_id) {
-        referredDisplayName = (profile.display_name as string) ?? null;
-      }
+      profileMap.set(profile.id as string, {
+        display_name: (profile.display_name as string) ?? null,
+        username: (profile.username as string) ?? null,
+      });
     }
   }
 
-  return {
-    id: row.id,
-    referredUserId: row.referred_user_id,
-    referrerUserId: row.referrer_user_id,
-    status: row.status,
-    conflictNote: row.conflict_note,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    referrerDisplayName,
-    referrerUsername,
-    referredDisplayName,
-  };
+  return rows.map((row) => {
+    const referrer = profileMap.get(row.referrer_user_id);
+    const referred = profileMap.get(row.referred_user_id);
+    return {
+      id: row.id,
+      referredUserId: row.referred_user_id,
+      referrerUserId: row.referrer_user_id,
+      status: row.status,
+      conflictNote: row.conflict_note,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+      referrerDisplayName: referrer?.display_name ?? null,
+      referrerUsername: referrer?.username ?? null,
+      referredDisplayName: referred?.display_name ?? null,
+    };
+  });
 }
 
 export async function claimCreatorReferral(
@@ -129,8 +138,8 @@ export async function getReferralSummary(userId: string): Promise<ReferralSummar
     fetchReferralsByReferrer(userId),
   ]);
 
-  const myReferral = myRow ? await enrichReferral(myRow) : null;
-  const referralsMade = await Promise.all(madeRows.map(enrichReferral));
+  const myReferral = myRow ? (await enrichReferrals([myRow]))[0] ?? null : null;
+  const referralsMade = await enrichReferrals(madeRows);
 
   return {
     myReferral,

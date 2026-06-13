@@ -96,6 +96,7 @@ export async function removeMemberAction(slug: string, memberId: string) {
     memberId,
     check.ctx.community.viewerRole,
     target?.role,
+    check.ctx.user.id,
   );
 
   if (result.error) return { error: result.error };

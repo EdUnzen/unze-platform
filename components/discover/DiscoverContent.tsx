@@ -67,8 +67,10 @@ async function DiscoverContentInner({
         </section>
       );
     }
-    const user = await getCurrentUser();
-    const events = await getDiscoverEvents(24);
+    const [events, user] = await Promise.all([
+      getDiscoverEvents(24),
+      getCurrentUser(),
+    ]);
     const filtered = filterDiscoverEvents(events, query);
     const followedEventIds =
       user && filtered.length > 0

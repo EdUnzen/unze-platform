@@ -75,6 +75,7 @@ export function CommunityEventsSection({
               fallbackImageUrl={DEFAULT_EVENT_COVER_URL}
               className="h-24"
               overlay="card"
+              imageVariant="list"
             />
             <div className="p-3">
             <div className="flex items-start justify-between gap-2">
@@ -181,8 +182,18 @@ export function DiscoverEventList({
         {events.map((event) => (
           <li
             key={event.id}
-            className="rounded-3xl border border-unze-border/80 bg-white p-4 shadow-card"
+            className="overflow-hidden rounded-3xl border border-unze-border/80 bg-white shadow-card"
           >
+            <CommunityCoverVisual
+              seed={event.id}
+              bannerGradient={DEFAULT_EVENT_COVER_GRADIENT}
+              imageUrl={event.coverUrl}
+              fallbackImageUrl={DEFAULT_EVENT_COVER_URL}
+              className="h-28"
+              overlay="card"
+              imageVariant="list"
+            />
+            <div className="p-4">
             <div className="mb-2 flex items-center justify-between gap-2">
               {event.isFeatured ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
@@ -243,6 +254,7 @@ export function DiscoverEventList({
                 />
               </div>
             )}
+            </div>
           </li>
         ))}
       </ul>

@@ -15,6 +15,7 @@ interface DashboardQuickNavProps {
   viewerRole: CommunityRole;
   pendingApplications?: number;
   pendingReports?: number;
+  pendingRemovals?: number;
 }
 
 const NAV_ITEMS = [
@@ -60,6 +61,7 @@ export function DashboardQuickNav({
   viewerRole,
   pendingApplications = 0,
   pendingReports = 0,
+  pendingRemovals = 0,
 }: DashboardQuickNavProps) {
   const items = NAV_ITEMS.filter((item) => item.minCheck(viewerRole));
 
@@ -75,7 +77,9 @@ export function DashboardQuickNav({
             ? pendingApplications
             : item.id === "moderation"
               ? pendingReports
-              : 0;
+              : item.id === "members"
+                ? pendingRemovals
+                : 0;
 
         return (
           <Link

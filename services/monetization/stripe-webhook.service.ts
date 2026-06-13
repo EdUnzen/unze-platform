@@ -1,8 +1,14 @@
 import { calculateRevenueSplit } from "@/lib/revenue/calculate-split";
 import { getStripeClient } from "@/lib/stripe/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { syncMembershipForSubscription } from "@/services/monetization/membership-sync.service";
+import { queueMemberRemovalTask } from "@/services/lifecycle/removal-task.service";
+import { softRemoveMemberByUserInDb } from "@/services/lifecycle/removal-task.repository";
 import {
+  fetchPaymentByPaymentIntentId,
   insertPaymentRecord,
+  paymentExistsForInvoice,
+  updatePaymentByPaymentIntentId,
   updatePaymentBySessionId,
 } from "@/services/monetization/payment.repository";
 import {
@@ -14,6 +20,7 @@ import {
 } from "@/services/monetization/subscription.repository";
 import { fetchReferralByReferredUser } from "@/services/referral/referral.repository";
 import { insertSandboxLedgerEntry } from "@/services/referral/referral.repository";
+import type { SubscriptionStatus } from "@/types/database";
 import type Stripe from "stripe";
 
 function subscriptionPeriodUnix(subscription: Stripe.Subscription): {
@@ -33,17 +40,21 @@ function subscriptionPeriodUnix(subscription: Stripe.Subscription): {
   };
 }
 
-async function upsertFromStripeSubscription(
+async function upsertAndSyncSubscription(
   subscription: Stripe.Subscription,
   metadata?: Record<string, string>,
-) {
+): Promise<{ userId: string; communityId: string; status: SubscriptionStatus }> {
   const meta = { ...subscription.metadata, ...metadata };
   let userId = meta.unze_subscriber_id;
   let communityId = meta.unze_community_id;
 
   if (!userId || !communityId) {
     const existing = await findSubscriptionByStripeId(subscription.id);
-    if (!existing) return;
+    if (!existing) {
+      throw new Error(
+        `Subscription ${subscription.id} ohne Metadaten und ohne DB-Zeile`,
+      );
+    }
     userId = existing.user_id as string;
     communityId = existing.community_id as string;
   }
@@ -51,12 +62,13 @@ async function upsertFromStripeSubscription(
   const item = subscription.items.data[0];
   const price = item?.price;
   const period = subscriptionPeriodUnix(subscription);
+  const status = mapStripeSubscriptionStatus(subscription.status);
 
-  await upsertSubscriptionFromStripe({
+  const { error } = await upsertSubscriptionFromStripe({
     userId,
     communityId,
     groupId: meta.unze_group_id || null,
-    status: mapStripeSubscriptionStatus(subscription.status),
+    status,
     stripeCustomerId:
       typeof subscription.customer === "string"
         ? subscription.customer
@@ -77,6 +89,22 @@ async function upsertFromStripeSubscription(
       : null,
     cancelAtPeriodEnd: subscription.cancel_at_period_end,
   });
+
+  if (error) {
+    throw new Error(`Subscription-Upsert fehlgeschlagen: ${error}`);
+  }
+
+  await syncMembershipForSubscription({
+    userId,
+    communityId,
+    status,
+    cancelAtPeriodEnd: subscription.cancel_at_period_end,
+    currentPeriodEnd: period.end
+      ? new Date(period.end * 1000).toISOString()
+      : null,
+  });
+
+  return { userId, communityId, status };
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -87,7 +115,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   if (session.mode === "subscription" && session.subscription && userId && communityId) {
     const stripe = await getStripeClient();
-    if (!stripe) return;
+    if (!stripe) throw new Error("Stripe nicht konfiguriert");
 
     const subId =
       typeof session.subscription === "string"
@@ -95,7 +123,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         : session.subscription.id;
 
     const subscription = await stripe.subscriptions.retrieve(subId);
-    await upsertFromStripeSubscription(subscription, meta);
+    await upsertAndSyncSubscription(subscription, meta);
 
     if (session.amount_total && session.amount_total > 0) {
       await recordLedgerFromSession(session, userId, communityId);
@@ -119,7 +147,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
-  // Legacy sandbox checkout (creator test)
   const creatorUserId = meta.unze_user_id;
   const grossCents = session.amount_total ?? 0;
   if (creatorUserId && grossCents > 0 && meta.sandbox === "true") {
@@ -162,56 +189,85 @@ function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
 }
 
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
+  if (await paymentExistsForInvoice(invoice.id)) return;
+
   const subId = invoiceSubscriptionId(invoice);
   if (!subId) return;
 
   const stripe = await getStripeClient();
-  if (!stripe) return;
+  if (!stripe) throw new Error("Stripe nicht konfiguriert");
 
   const subscription = await stripe.subscriptions.retrieve(subId);
-  await upsertFromStripeSubscription(subscription);
-
-  const customerId =
-    typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
+  const { userId, communityId } = await upsertAndSyncSubscription(subscription);
 
   const supabase = createAdminClient();
-  if (!supabase || !customerId) return;
+  if (!supabase) return;
 
   const { data: subRow } = await supabase
     .from("subscriptions")
-    .select("user_id, community_id, group_id")
+    .select("group_id")
     .eq("stripe_subscription_id", subId)
     .maybeSingle();
 
-  if (subRow && invoice.amount_paid) {
-    await insertPaymentRecord({
-      userId: subRow.user_id as string,
-      communityId: subRow.community_id as string,
-      groupId: (subRow.group_id as string) ?? null,
+  if (invoice.amount_paid) {
+    const { error } = await insertPaymentRecord({
+      userId,
+      communityId,
+      groupId: (subRow?.group_id as string) ?? null,
       stripeInvoiceId: invoice.id,
       amountCents: invoice.amount_paid,
       paymentKind: "subscription_invoice",
       status: "succeeded",
       description: invoice.description ?? "Abo-Zahlung",
     });
+    if (error) {
+      throw new Error(`Invoice-Zahlung speichern fehlgeschlagen: ${error}`);
+    }
   }
 }
 
-export async function handleStripeWebhookEvent(
-  event: Stripe.Event,
-): Promise<void> {
-  if (await isWebhookEventProcessed(event.id)) return;
+async function handleChargeRefunded(charge: Stripe.Charge) {
+  const paymentIntent = charge.payment_intent;
+  if (!paymentIntent) return;
 
+  const paymentIntentId =
+    typeof paymentIntent === "string" ? paymentIntent : paymentIntent.id;
+
+  const payment = await fetchPaymentByPaymentIntentId(paymentIntentId);
+
+  const { error } = await updatePaymentByPaymentIntentId(
+    paymentIntentId,
+    "refunded",
+  );
+  if (error) {
+    throw new Error(`Refund-Update fehlgeschlagen: ${error}`);
+  }
+
+  if (payment?.user_id && payment?.community_id) {
+    await softRemoveMemberByUserInDb(
+      payment.community_id as string,
+      payment.user_id as string,
+      payment.user_id as string,
+    );
+    await queueMemberRemovalTask({
+      communityId: payment.community_id as string,
+      userId: payment.user_id as string,
+      reason: "subscription_ended",
+      metadata: { source: "charge.refunded" },
+      notifyManagers: true,
+    });
+  }
+}
+
+async function processWebhookEvent(event: Stripe.Event): Promise<void> {
   switch (event.type) {
     case "checkout.session.completed":
       await handleCheckoutCompleted(event.data.object as Stripe.Checkout.Session);
       break;
     case "customer.subscription.created":
     case "customer.subscription.updated":
-      await upsertFromStripeSubscription(event.data.object as Stripe.Subscription);
-      break;
     case "customer.subscription.deleted":
-      await upsertFromStripeSubscription(event.data.object as Stripe.Subscription);
+      await upsertAndSyncSubscription(event.data.object as Stripe.Subscription);
       break;
     case "invoice.paid":
       await handleInvoicePaid(event.data.object as Stripe.Invoice);
@@ -221,29 +277,47 @@ export async function handleStripeWebhookEvent(
       const subId = invoiceSubscriptionId(invoice);
       if (subId) {
         const stripe = await getStripeClient();
-        if (stripe) {
-          const subscription = await stripe.subscriptions.retrieve(subId);
-          await upsertFromStripeSubscription(subscription);
-        }
+        if (!stripe) throw new Error("Stripe nicht konfiguriert");
+        const subscription = await stripe.subscriptions.retrieve(subId);
+        await upsertAndSyncSubscription(subscription);
       }
       break;
     }
+    case "charge.refunded":
+      await handleChargeRefunded(event.data.object as Stripe.Charge);
+      break;
     case "account.updated": {
       const account = event.data.object as Stripe.Account;
       const userId = account.metadata?.unze_user_id;
       if (userId && account.details_submitted && account.charges_enabled) {
         const supabase = createAdminClient();
         if (supabase) {
-          await supabase
+          const { error } = await supabase
             .from("creator_profiles")
             .update({ stripe_connect_onboarding_complete: true })
             .eq("user_id", userId);
+          if (error) {
+            throw new Error(`Connect-Update fehlgeschlagen: ${error.message}`);
+          }
         }
       }
       break;
     }
     default:
       break;
+  }
+}
+
+export async function handleStripeWebhookEvent(
+  event: Stripe.Event,
+): Promise<void> {
+  if (await isWebhookEventProcessed(event.id)) return;
+
+  try {
+    await processWebhookEvent(event);
+  } catch (err) {
+    console.error("[stripe-webhook]", event.type, event.id, err);
+    throw err;
   }
 
   await markWebhookEventProcessed(event.id, event.type);

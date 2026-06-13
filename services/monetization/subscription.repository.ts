@@ -86,6 +86,28 @@ export function mapStripeSubscriptionStatus(
   }
 }
 
+export function isActiveSubscriptionStatus(status: SubscriptionStatus): boolean {
+  return status === "active" || status === "trialing";
+}
+
+export async function hasActiveCommunitySubscription(
+  userId: string,
+  communityId: string,
+): Promise<boolean> {
+  const supabase = await createClient();
+  if (!supabase) return false;
+
+  const { data, error } = await supabase
+    .from("subscriptions")
+    .select("status")
+    .eq("user_id", userId)
+    .eq("community_id", communityId)
+    .maybeSingle();
+
+  if (error || !data) return false;
+  return isActiveSubscriptionStatus(data.status as SubscriptionStatus);
+}
+
 export async function getUserSubscriptions(userId: string) {
   const supabase = await createClient();
   if (!supabase) return [];

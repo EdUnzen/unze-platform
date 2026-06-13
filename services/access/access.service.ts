@@ -44,6 +44,7 @@ import {
   updateApplicationStatusInDb,
 } from "./access.repository";
 import { fetchInvitePreviewFromDb } from "./invite.repository";
+import { hasActiveCommunitySubscription } from "@/services/monetization/subscription.repository";
 
 export async function getCommunityAccessConfig(communityId: string) {
   return fetchAccessConfigFromDb(communityId);
@@ -86,6 +87,16 @@ export async function getJoinAccessState(
     restrictionReason = await checkUserJoinRestriction(communityId, userId);
   }
 
+  const needsSubscriptionCheck =
+    Boolean(userId) &&
+    !isMember &&
+    row.visibility === "premium" &&
+    row.monetization_enabled;
+
+  const hasActiveSubscription = needsSubscriptionCheck && userId
+    ? await hasActiveCommunitySubscription(userId, communityId)
+    : false;
+
   const blockReason =
     restrictionReason ??
     resolveJoinBlockReason({
@@ -98,6 +109,7 @@ export async function getJoinAccessState(
       monetizationEnabled: row.monetization_enabled,
       isMember,
       hasValidInvite,
+      hasActiveSubscription,
       waitlistEnabled: row.waitlist_enabled ?? false,
       autoRejectAtLimit: row.auto_reject_at_limit ?? true,
     });

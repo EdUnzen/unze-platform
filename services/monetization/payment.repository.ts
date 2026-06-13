@@ -66,6 +66,49 @@ export async function updatePaymentBySessionId(
     .eq("stripe_checkout_session_id", sessionId);
 }
 
+export async function fetchPaymentByPaymentIntentId(paymentIntentId: string) {
+  const supabase = getDb();
+  if (!supabase) return null;
+
+  const { data } = await supabase
+    .from("community_payments")
+    .select("user_id, community_id, payment_kind, status")
+    .eq("stripe_payment_intent_id", paymentIntentId)
+    .maybeSingle();
+
+  return data;
+}
+
+export async function updatePaymentByPaymentIntentId(
+  paymentIntentId: string,
+  status: "refunded" | "failed" | "succeeded",
+) {
+  const supabase = getDb();
+  if (!supabase) return { error: "Service Role nicht konfiguriert" };
+
+  const { error } = await supabase
+    .from("community_payments")
+    .update({ status })
+    .eq("stripe_payment_intent_id", paymentIntentId);
+
+  return { error: error?.message ?? null };
+}
+
+export async function paymentExistsForInvoice(
+  stripeInvoiceId: string,
+): Promise<boolean> {
+  const supabase = getDb();
+  if (!supabase) return false;
+
+  const { data } = await supabase
+    .from("community_payments")
+    .select("id")
+    .eq("stripe_invoice_id", stripeInvoiceId)
+    .maybeSingle();
+
+  return Boolean(data);
+}
+
 export async function getUserPayments(userId: string) {
   const supabase = await createClient();
   if (!supabase) return [];

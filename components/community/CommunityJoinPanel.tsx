@@ -36,6 +36,7 @@ interface CommunityJoinPanelProps {
   questions?: JoinQuestion[];
   inviteCode?: string;
   activityFeedEnabled?: boolean;
+  checkoutCancelled?: boolean;
 }
 
 export function CommunityJoinPanel({
@@ -45,6 +46,7 @@ export function CommunityJoinPanel({
   questions = [],
   inviteCode,
   activityFeedEnabled = true,
+  checkoutCancelled = false,
 }: CommunityJoinPanelProps) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -198,6 +200,7 @@ export function CommunityJoinPanel({
             hasMonthly={community.subscriptionPlans?.monthly}
             hasSemiannual={community.subscriptionPlans?.semiannual}
             hasYearly={community.subscriptionPlans?.yearly}
+            checkoutCancelled={checkoutCancelled}
           />
         )}
 

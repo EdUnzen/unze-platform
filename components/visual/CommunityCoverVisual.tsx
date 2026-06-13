@@ -2,6 +2,7 @@
 
 import { AbstractNetworkPattern } from "@/components/visual/AbstractNetworkPattern";
 import { patternVariantForSeed } from "@/lib/visual/seed-from-string";
+import { getListThumbnailUrl, getHeroImageUrl } from "@/lib/visual/optimized-image-url";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import { useState } from "react";
@@ -15,6 +16,8 @@ interface CommunityCoverVisualProps {
   fallbackImageUrl: string;
   className?: string;
   overlay?: "card" | "hero" | "subtle";
+  /** Listen-Thumbnails statt Vollbild-URLs */
+  imageVariant?: "card" | "list" | "hero";
 }
 
 function isNextImageUrl(url: string): boolean {
@@ -33,16 +36,21 @@ export function CommunityCoverVisual({
   fallbackImageUrl,
   className,
   overlay = "card",
+  imageVariant = "card",
 }: CommunityCoverVisualProps) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
 
   const primary = imageUrl?.trim() || null;
   const useFallback = !primary || failedUrl === primary;
-  const activeUrl = useFallback ? fallbackImageUrl : primary!;
+  const rawUrl = useFallback ? fallbackImageUrl : primary!;
+  const activeUrl =
+    imageVariant === "hero"
+      ? getHeroImageUrl(rawUrl) ?? rawUrl
+      : getListThumbnailUrl(rawUrl) ?? rawUrl;
   const showImage = Boolean(activeUrl) && failedUrl !== activeUrl;
 
   const useNextImage = showImage && isNextImageUrl(activeUrl);
-  const variant = patternVariantForSeed(seed);
+  const patternVariant = patternVariantForSeed(seed);
   const isHero = overlay === "hero";
 
   const overlayClass =
@@ -52,9 +60,12 @@ export function CommunityCoverVisual({
         ? "from-black/25 to-transparent"
         : "from-black/40 via-black/10 to-transparent";
 
-  const imageSizes = isHero
-    ? "100vw"
-    : "(max-width: 512px) 100vw, 480px";
+  const imageSizes =
+    imageVariant === "hero" || overlay === "hero"
+      ? "100vw"
+      : imageVariant === "list"
+        ? "(max-width: 512px) 50vw, 240px"
+        : "(max-width: 512px) 100vw, 480px";
 
   const handleError = (url: string) => {
     setFailedUrl(url);
@@ -98,7 +109,7 @@ export function CommunityCoverVisual({
       ) : null}
 
       {!showImage && (
-        <AbstractNetworkPattern variant={variant} opacity={0.35} />
+        <AbstractNetworkPattern variant={patternVariant} opacity={0.35} />
       )}
 
       <div

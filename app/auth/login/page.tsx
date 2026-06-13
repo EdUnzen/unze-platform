@@ -17,6 +17,7 @@ interface LoginPageProps {
 const ERROR_MESSAGES: Record<string, string> = {
   auth_callback_failed: "Anmeldung nach E-Mail-Bestätigung fehlgeschlagen.",
   email_verification_failed: "E-Mail-Verifizierung fehlgeschlagen.",
+  password_reset_failed: "Passwort-Reset-Link ungültig oder abgelaufen.",
   supabase_not_configured: "Supabase ist nicht konfiguriert.",
 };
 

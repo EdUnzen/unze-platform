@@ -468,6 +468,7 @@ export function resolveJoinBlockReason(input: {
   monetizationEnabled: boolean;
   isMember: boolean;
   hasValidInvite?: boolean;
+  hasActiveSubscription?: boolean;
   waitlistEnabled?: boolean;
   autoRejectAtLimit?: boolean;
 }): string | null {
@@ -504,7 +505,11 @@ export function resolveJoinBlockReason(input: {
     return "Mitgliederlimit erreicht";
   }
 
-  if (input.visibility === "premium" && input.monetizationEnabled) {
+  if (
+    input.visibility === "premium" &&
+    input.monetizationEnabled &&
+    !input.hasActiveSubscription
+  ) {
     return "Kostenpflichtiger Zugang — Abo erforderlich";
   }
 

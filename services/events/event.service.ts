@@ -1,12 +1,14 @@
 export {
   fetchCommunityEventsFromDb as getCommunityEvents,
-  fetchDiscoverEventsFromDb as getDiscoverEvents,
+  fetchDiscoverEventsFromDb as getDiscoverEventsUncached,
   fetchUpcomingEventsForCommunitiesFromDb as getUpcomingEventsForCommunities,
   countEventsByCommunityIdsFromDb as countWeeklyEventsByCommunity,
   createCommunityEventInDb as createCommunityEvent,
   fetchCommunityEventsAdminFromDb as getCommunityEventsAdmin,
   fetchEventsByIdsFromDb as getEventsByIds,
 } from "./event.repository";
+
+export { getDiscoverEventsCached as getDiscoverEvents } from "@/lib/cache/discover-events-cache";
 
 export {
   getCommunityEventByIdOrSlug,

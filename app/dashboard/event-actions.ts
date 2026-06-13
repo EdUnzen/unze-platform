@@ -4,6 +4,7 @@ import { createCommunityEvent } from "@/services/events/event.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { canEditCommunity } from "@/services/community/member.service";
 import { fetchMembership } from "@/services/community/member.repository";
+import { revalidateDiscover } from "@/lib/cache/revalidate-discover";
 import { isValidCommunitySlug, slugifyTitle } from "@/lib/utils/slug";
 import { revalidatePath } from "next/cache";
 
@@ -87,6 +88,6 @@ export async function createEventAction(
 
   revalidatePath(`/community/${slug}`);
   revalidatePath(`/dashboard/community/${slug}/events`);
-  revalidatePath("/discover");
+  revalidateDiscover();
   return { success: true as const };
 }

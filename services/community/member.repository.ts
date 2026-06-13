@@ -185,19 +185,28 @@ export async function joinCommunityInDb(
 export async function leaveCommunityInDb(
   communityId: string,
   userId: string,
-): Promise<{ error: string | null }> {
+): Promise<{ error: string | null; memberId?: string }> {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase nicht konfiguriert" };
 
-  const { error } = await supabase
+  const { data: member } = await supabase
     .from("community_members")
-    .delete()
+    .select("id")
     .eq("community_id", communityId)
     .eq("user_id", userId)
-    .neq("role", "creator");
+    .is("deleted_at", null)
+    .neq("role", "creator")
+    .maybeSingle();
+
+  if (!member) return { error: "Du bist kein Mitglied." };
+
+  const { error } = await supabase.rpc("soft_remove_community_member", {
+    p_member_id: member.id,
+    p_actor_id: userId,
+  });
 
   if (error) return { error: error.message };
-  return { error: null };
+  return { error: null, memberId: member.id as string };
 }
 
 const SHOWCASE_ROLES: CommunityRole[] = [

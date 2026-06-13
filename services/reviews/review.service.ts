@@ -1,7 +1,7 @@
 import {
   fetchCommunityReviewsFromDb,
   fetchGroupReviewsFromDb,
-  fetchReviewCommentsFromDb,
+  fetchReviewCommentsBatchFromDb,
 } from "./review.repository";
 import type { ReviewCommentView, ReviewTarget } from "@/types/review";
 import type { ReviewWithComments } from "@/types/review";
@@ -20,12 +20,15 @@ async function enrichReviewsWithComments(
   reviews: Awaited<ReturnType<typeof fetchCommunityReviewsFromDb>>,
   target: ReviewTarget,
 ) {
-  return Promise.all(
-    reviews.map(async (review) => ({
-      review,
-      comments: await fetchReviewCommentsFromDb(review.id, target),
-    })),
+  const commentMap = await fetchReviewCommentsBatchFromDb(
+    reviews.map((review) => review.id),
+    target,
   );
+
+  return reviews.map((review) => ({
+    review,
+    comments: commentMap.get(review.id) ?? [],
+  }));
 }
 
 export type { ReviewWithComments };

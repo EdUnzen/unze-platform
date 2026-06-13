@@ -1,9 +1,11 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
+import { EventBookTicketButton } from "@/components/events/EventBookTicketButton";
 import { FollowEventButton } from "@/components/events/FollowEventButton";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import type { Community } from "@/types/community";
 import type { CommunityEvent } from "@/types/event";
+import type { EventTicketView } from "@/types/event-ticket";
 import type { PlatformType } from "@/types/database";
 import {
   Calendar,
@@ -19,6 +21,7 @@ interface EventDetailViewProps {
   event: CommunityEvent;
   isLoggedIn: boolean;
   initialFollowing: boolean;
+  userTicket: EventTicketView | null;
 }
 
 function formatEventRange(startsAt: string, endsAt: string | null): string {
@@ -42,6 +45,7 @@ export function EventDetailView({
   event,
   isLoggedIn,
   initialFollowing,
+  userTicket,
 }: EventDetailViewProps) {
   const slug = community.slug;
 
@@ -65,6 +69,7 @@ export function EventDetailView({
           fallbackImageUrl={resolveCommunityBannerDisplay(community).imageUrl}
           className="h-44"
           overlay="hero"
+          imageVariant="hero"
         />
         <div className="p-4">
           <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -105,7 +110,14 @@ export function EventDetailView({
         </div>
 
         {isLoggedIn && (
-          <div className="mt-4 border-t border-unze-border/60 pt-4">
+          <div className="mt-4 space-y-4 border-t border-unze-border/60 pt-4">
+            <EventBookTicketButton
+              slug={slug}
+              eventId={event.id}
+              communityId={community.id}
+              existingTicket={userTicket}
+              isLoggedIn={isLoggedIn}
+            />
             <FollowEventButton
               eventId={event.id}
               communitySlug={slug}

@@ -1,6 +1,6 @@
 # UNZE Stabilisierungs-Status
 
-**Datum:** 2026-06-04  
+**Datum:** 2026-06-13  
 **Production:** https://unze-platform.vercel.app  
 **Supabase:** https://zzbjvcwmdrnuzzlepfja.supabase.co
 

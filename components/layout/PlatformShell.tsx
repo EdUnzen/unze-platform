@@ -3,6 +3,7 @@ import { PlatformTopBarActions } from "@/components/layout/PlatformTopBarActions
 import { UnzeLogo } from "@/components/brand/UnzeLogo";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
 import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
+import { RoutePrefetch } from "@/components/pwa/RoutePrefetch";
 import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
 
 interface PlatformShellProps {
@@ -39,6 +40,7 @@ export async function PlatformShell({ children }: PlatformShellProps) {
         showCreatorMenu={showDashboard}
       />
       <InstallPrompt />
+      <RoutePrefetch />
       <PwaBootstrap userId={user?.id ?? null} />
     </div>
   );

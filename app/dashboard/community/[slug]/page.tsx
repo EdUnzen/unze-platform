@@ -7,6 +7,7 @@ import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
 import { DashboardQuickNav } from "@/components/dashboard/DashboardQuickNav";
 import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
+import { countPendingRemovalTasks } from "@/services/lifecycle/removal-task.service";
 import { countPendingReportsFromDb } from "@/services/governance/report.repository";
 import { getCommunityActivity } from "@/services/platform/activity.service";
 import { ExternalLink, Pencil } from "lucide-react";
@@ -37,6 +38,7 @@ export default async function DashboardOverviewPage({
     community.id,
   );
   const pendingReportCount = await countPendingReportsFromDb(community.id);
+  const pendingRemovalCount = await countPendingRemovalTasks(community.id);
   const accessLabel =
     ACCESS_STATUS_OPTIONS.find(
       (o) => o.value === community.access?.accessStatus,
@@ -48,6 +50,7 @@ export default async function DashboardOverviewPage({
         slug={slug}
         pendingApplications={pendingApplicationCount}
         pendingReports={pendingReportCount}
+        pendingRemovals={pendingRemovalCount}
         accessStatusLabel={accessLabel}
         viewerRole={community.viewerRole}
       />
@@ -57,6 +60,7 @@ export default async function DashboardOverviewPage({
         viewerRole={community.viewerRole}
         pendingApplications={pendingApplicationCount}
         pendingReports={pendingReportCount}
+        pendingRemovals={pendingRemovalCount}
       />
 
       <DashboardGrowthPanel

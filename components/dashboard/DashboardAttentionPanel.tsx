@@ -3,13 +3,14 @@ import { canReviewApplications } from "@/lib/permissions/community.permissions";
 import { hasCommunityPermission } from "@/lib/permissions/community.permissions";
 import type { CommunityRole } from "@/types/database";
 import { cn } from "@/lib/utils/cn";
-import { AlertCircle, ClipboardList, Settings, Shield } from "lucide-react";
+import { AlertCircle, ClipboardList, Settings, Shield, UserMinus } from "lucide-react";
 import Link from "next/link";
 
 interface DashboardAttentionPanelProps {
   slug: string;
   pendingApplications: number;
   pendingReports: number;
+  pendingRemovals: number;
   accessStatusLabel: string;
   viewerRole: CommunityRole;
 }
@@ -18,13 +19,17 @@ export function DashboardAttentionPanel({
   slug,
   pendingApplications,
   pendingReports,
+  pendingRemovals,
   accessStatusLabel,
   viewerRole,
 }: DashboardAttentionPanelProps) {
   const canReview = canReviewApplications(viewerRole);
   const canModerate = hasCommunityPermission(viewerRole, "moderate");
+  const canManageMembers = hasCommunityPermission(viewerRole, "manage_members");
   const urgentCount =
-    (canReview ? pendingApplications : 0) + (canModerate ? pendingReports : 0);
+    (canReview ? pendingApplications : 0) +
+    (canModerate ? pendingReports : 0) +
+    (canManageMembers ? pendingRemovals : 0);
   const hasUrgent = urgentCount > 0;
 
   return (
@@ -59,7 +64,7 @@ export function DashboardAttentionPanel({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
         {canReview && (
           <Link
             href={`/dashboard/community/${slug}/requests`}
@@ -107,6 +112,32 @@ export function DashboardAttentionPanel({
               </p>
             </div>
             {pendingReports > 0 && <AttentionBadge count={pendingReports} />}
+          </Link>
+        )}
+
+        {canManageMembers && (
+          <Link
+            href={`/dashboard/community/${slug}/members`}
+            data-testid="dashboard-link-removals"
+            className={cn(
+              "flex items-center gap-3 rounded-2xl border px-3 py-3 active:scale-[0.98]",
+              pendingRemovals > 0
+                ? "border-amber-200 bg-amber-50/80"
+                : "border-unze-border bg-unze-surface-muted/40",
+            )}
+          >
+            <UserMinus className="h-5 w-5 text-unze-green" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-unze-ink">Zu entfernen</p>
+              <p className="text-xs text-unze-ink-secondary">
+                {pendingRemovals > 0
+                  ? `${pendingRemovals} aus externen Kanälen entfernen`
+                  : "Keine offenen Entfernungen"}
+              </p>
+            </div>
+            {pendingRemovals > 0 && (
+              <AttentionBadge count={pendingRemovals} />
+            )}
           </Link>
         )}
 

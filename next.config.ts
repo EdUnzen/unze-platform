@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
   images: {
+    formats: ["image/webp", "image/avif"],
+    deviceSizes: [320, 480, 640, 960],
+    imageSizes: [64, 128, 256, 384],
     remotePatterns: [
       {
         protocol: "https",

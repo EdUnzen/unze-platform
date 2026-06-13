@@ -93,50 +93,72 @@ export async function fetchGroupReviewsFromDb(
   );
 }
 
+function mapReviewCommentRow(row: Record<string, unknown>): ReviewCommentView {
+  const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
+  return {
+    id: row.id as string,
+    reviewId: row.review_id as string,
+    reviewTarget: row.review_target as ReviewTarget,
+    authorId: row.author_id as string,
+    authorName:
+      (profile?.display_name as string) ??
+      (profile?.username as string) ??
+      "Mitglied",
+    body: row.body as string,
+    createdAt: row.created_at as string,
+  };
+}
+
+const REVIEW_COMMENT_SELECT = `
+  id,
+  review_id,
+  review_target,
+  author_id,
+  body,
+  created_at,
+  profile:profiles!author_id (display_name, username)
+`;
+
 export async function fetchReviewCommentsFromDb(
   reviewId: string,
   reviewTarget: ReviewTarget,
 ): Promise<ReviewCommentView[]> {
+  const map = await fetchReviewCommentsBatchFromDb([reviewId], reviewTarget);
+  return map.get(reviewId) ?? [];
+}
+
+/** Ein Query für alle Kommentare mehrerer Reviews (kein N+1). */
+export async function fetchReviewCommentsBatchFromDb(
+  reviewIds: string[],
+  reviewTarget: ReviewTarget,
+): Promise<Map<string, ReviewCommentView[]>> {
+  const result = new Map<string, ReviewCommentView[]>();
+  for (const id of reviewIds) result.set(id, []);
+
+  if (reviewIds.length === 0) return result;
+
   const supabase = await createClient();
-  if (!supabase) return [];
+  if (!supabase) return result;
 
   const { data, error } = await supabase
     .from("review_comments")
-    .select(
-      `
-      id,
-      review_id,
-      review_target,
-      author_id,
-      body,
-      created_at,
-      profile:profiles!author_id (display_name, username)
-    `,
-    )
-    .eq("review_id", reviewId)
+    .select(REVIEW_COMMENT_SELECT)
+    .in("review_id", reviewIds)
     .eq("review_target", reviewTarget)
     .order("created_at", { ascending: true });
 
   if (error) {
-    if (error.code === "42P01") return [];
-    return [];
+    if (error.code === "42P01") return result;
+    return result;
   }
 
-  return (data ?? []).map((row) => {
-    const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
-    return {
-      id: row.id as string,
-      reviewId: row.review_id as string,
-      reviewTarget: row.review_target as ReviewTarget,
-      authorId: row.author_id as string,
-      authorName:
-        (profile?.display_name as string) ??
-        (profile?.username as string) ??
-        "Mitglied",
-      body: row.body as string,
-      createdAt: row.created_at as string,
-    };
-  });
+  for (const row of data ?? []) {
+    const comment = mapReviewCommentRow(row as Record<string, unknown>);
+    const list = result.get(comment.reviewId);
+    if (list) list.push(comment);
+  }
+
+  return result;
 }
 
 export async function insertCommunityReviewInDb(input: {

@@ -7,15 +7,6 @@ import {
 } from "@/lib/pwa/client-cache";
 import { useEffect } from "react";
 
-function isStandalonePwa(): boolean {
-  if (typeof window === "undefined") return false;
-  return (
-    window.matchMedia("(display-mode: standalone)").matches ||
-    ("standalone" in navigator &&
-      (navigator as Navigator & { standalone?: boolean }).standalone === true)
-  );
-}
-
 async function warmPrefetch(userId: string | null): Promise<void> {
   if (!userId) return;
   try {
@@ -58,9 +49,12 @@ export function PwaBootstrap({ userId }: PwaBootstrapProps) {
       slugs.slice(0, 3).forEach((slug) => {
         fetch(`/community/${slug}`, { priority: "low" }).catch(() => {});
       });
+      ["/discover", "/discover?tab=events", "/profile", "/favorites"].forEach(
+        (path) => {
+          fetch(path, { priority: "low", credentials: "include" }).catch(() => {});
+        },
+      );
     };
-
-    if (!isStandalonePwa()) return;
 
     if ("requestIdleCallback" in window) {
       const id = window.requestIdleCallback(run, { timeout: 4000 });

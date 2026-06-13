@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidateDiscover } from "@/lib/cache/revalidate-discover";
 import {
   recordCommunityShare,
   recordGroupShare,
@@ -22,7 +23,7 @@ export async function recordShareAction(input: {
     await recordCommunityShare(input.communityId);
   }
 
-  revalidatePath("/discover");
+  revalidateDiscover();
   revalidatePath("/");
   if (input.postId) revalidatePath(`/post/${input.postId}`);
 

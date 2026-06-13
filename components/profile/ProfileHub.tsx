@@ -9,6 +9,7 @@ import {
   LayoutDashboard,
   Settings,
   Sparkles,
+  Ticket,
 } from "lucide-react";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
@@ -151,7 +152,7 @@ export function ProfileHub({
         </Link>
       )}
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         <Link
           href="/profile/settings"
           className="flex flex-col items-start gap-3 rounded-2xl bg-white p-4 shadow-card transition active:scale-[0.98]"
@@ -162,6 +163,18 @@ export function ProfileHub({
           <span>
             <span className="block text-sm font-semibold text-unze-ink">Profil</span>
             <span className="mt-0.5 block text-xs text-unze-ink-secondary">Name, Bild, Bio</span>
+          </span>
+        </Link>
+        <Link
+          href="/profile/tickets"
+          className="flex flex-col items-start gap-3 rounded-2xl bg-white p-4 shadow-card transition active:scale-[0.98]"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-unze-surface-muted text-unze-green">
+            <Ticket className="h-5 w-5" aria-hidden />
+          </span>
+          <span>
+            <span className="block text-sm font-semibold text-unze-ink">Tickets</span>
+            <span className="mt-0.5 block text-xs text-unze-ink-secondary">Events &amp; QR</span>
           </span>
         </Link>
         <Link

@@ -1,4 +1,5 @@
 import { EventManager } from "@/components/events/EventManager";
+import { EventDashboardCheckIns } from "@/components/events/EventDashboardCheckIns";
 import { CommunityEventsSection } from "@/components/events/CommunityEventsSection";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
@@ -29,6 +30,8 @@ export default async function DashboardEventsPage({ params }: DashboardEventsPag
           communityBannerUrl={community.bannerUrl}
         />
       </section>
+
+      <EventDashboardCheckIns slug={slug} events={events} />
 
       <CommunityEventsSection
         communitySlug={slug}

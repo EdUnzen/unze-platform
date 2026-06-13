@@ -25,6 +25,7 @@ import {
 } from "@/services/follow/follow.service";
 import type { CommunityFormInput } from "@/types/community";
 import { resolveBannerFromPresetOrUrl } from "@/lib/constants/category-banners";
+import { revalidateDiscover } from "@/lib/cache/revalidate-discover";
 import { discoverEnabledForVisibility } from "@/lib/community/visibility-rules";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -100,7 +101,7 @@ export async function createCommunityAction(
     return { error: error ?? "Die Community konnte aktuell nicht erstellt werden. Bitte erneut versuchen." };
   }
 
-  revalidatePath("/discover");
+  revalidateDiscover();
   revalidatePath("/");
   revalidatePath("/dashboard");
   revalidatePath(`/community/${community.slug}`);
@@ -134,7 +135,7 @@ export async function updateCommunityAction(
 
   revalidatePath(`/community/${slug}`);
   revalidatePath(`/community/${slug}/edit`);
-  revalidatePath("/discover");
+  revalidateDiscover();
   redirect(`/community/${slug}`);
 }
 
@@ -190,7 +191,7 @@ export async function toggleFollowEvent(
 
   revalidatePath(`/community/${communitySlug}`);
   revalidatePath("/favorites");
-  revalidatePath("/discover");
+  revalidateDiscover();
   return { success: true };
 }
 
