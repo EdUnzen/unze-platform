@@ -3,6 +3,7 @@
 import { ONBOARDING_COPY, ONBOARDING_STORAGE_KEY } from "@/lib/constants/onboarding-copy";
 import { cn } from "@/lib/utils/cn";
 import {
+  BadgeCheck,
   Calendar,
   Compass,
   Download,
@@ -18,7 +19,7 @@ import { useCallback, useEffect, useState } from "react";
 
 export type OnboardingMode = "full" | "intro" | "install";
 
-const PILLAR_ICONS = [Users, FolderOpen, Calendar, Wrench] as const;
+const PILLAR_ICONS = [Users, FolderOpen, Calendar, Wrench, BadgeCheck] as const;
 const INSTALL_DISMISS_KEY = "unze-pwa-install-dismissed";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -146,7 +147,7 @@ export function UnzeOnboardingDialog({
         )}
 
         {current === 1 && (
-          <ul className="grid grid-cols-2 gap-2">
+          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-2">
             {ONBOARDING_COPY.pillars.map((pillar, i) => {
               const Icon = PILLAR_ICONS[i] ?? Users;
               return (

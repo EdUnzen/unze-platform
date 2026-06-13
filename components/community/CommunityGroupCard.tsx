@@ -35,6 +35,7 @@ function CommunityGroupCardInner({
     coverUrl: group.coverUrl,
     bannerGradient: group.bannerGradient,
     category: group.category,
+    groupType: group.groupType === "service" ? "service" : "group",
   });
 
   return (
@@ -52,13 +53,14 @@ function CommunityGroupCardInner({
           className="group block touch-target outline-none transition-transform active:scale-[0.99]"
         >
           <div className="relative">
-            <GroupCoverVisual
-              seed={visualSeed}
-              bannerGradient={cover.gradient}
-              imageUrl={cover.imageUrl}
-              className={compact ? "h-24" : "h-28"}
-              compact={compact}
-            />
+              <GroupCoverVisual
+                seed={visualSeed}
+                bannerGradient={cover.gradient}
+                cover={cover.cover}
+                groupType={group.groupType === "service" ? "service" : "group"}
+                className={compact ? "h-24" : "h-28"}
+                compact={compact}
+              />
             <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 pr-10">
               <PlatformBadge platform={group.platformType} variant="overlay" />
               {group.isTrending && (

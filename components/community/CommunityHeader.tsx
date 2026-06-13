@@ -5,8 +5,7 @@ import { CommunityStatusBadges } from "@/components/community/CommunityStatusBad
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
-import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
-import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
+import { resolveCommunityCover } from "@/lib/visual/auto-cover";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { Community } from "@/types/community";
 import { getAppUrl } from "@/lib/env";
@@ -20,16 +19,14 @@ interface CommunityHeaderProps {
 
 export function CommunityHeader({ community, displayScore }: CommunityHeaderProps) {
   const score = displayScore ?? community.levelScore ?? 0;
-  const banner = resolveCommunityBannerDisplay(community);
-  const categoryFallback = getDefaultBannerPresetForCategory(community.category);
+  const cover = resolveCommunityCover(community);
   return (
     <header className="overflow-hidden rounded-3xl bg-white shadow-card">
       <div className="relative h-44 sm:h-52">
         <CommunityCoverVisual
           seed={community.slug}
-          bannerGradient={banner.gradient}
-          imageUrl={community.bannerUrl ?? banner.imageUrl}
-          fallbackImageUrl={categoryFallback.imageUrl}
+          bannerGradient={cover.gradient}
+          cover={cover}
           className="h-full"
           overlay="hero"
         />

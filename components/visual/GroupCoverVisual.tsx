@@ -1,5 +1,6 @@
 "use client";
 
+import { coverImageCandidates, type ResolvedCover } from "@/lib/visual/auto-cover";
 import { AbstractNetworkPattern } from "@/components/visual/AbstractNetworkPattern";
 import { patternVariantForSeed } from "@/lib/visual/seed-from-string";
 import { isUsableImageUrl } from "@/lib/visual/image-url";
@@ -12,6 +13,7 @@ interface GroupCoverVisualProps {
   seed: string;
   bannerGradient: string;
   imageUrl?: string | null;
+  cover?: ResolvedCover;
   className?: string;
   compact?: boolean;
   groupType?: "group" | "service";
@@ -30,16 +32,27 @@ export function GroupCoverVisual({
   seed,
   bannerGradient,
   imageUrl,
+  cover,
   className,
   compact = false,
   groupType = "group",
 }: GroupCoverVisualProps) {
   const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
-  const url = isUsableImageUrl(imageUrl) ? imageUrl!.trim() : null;
+
+  const candidates = useMemo(() => {
+    if (cover) return coverImageCandidates(cover);
+    const url = isUsableImageUrl(imageUrl) ? imageUrl!.trim() : null;
+    return url ? [url] : [];
+  }, [cover, imageUrl]);
+
+  const gradient = cover?.gradient ?? bannerGradient;
+
   const activeUrl = useMemo(() => {
-    if (!url) return null;
-    return failedUrls.has(url) ? null : url;
-  }, [url, failedUrls]);
+    for (const raw of candidates) {
+      if (!failedUrls.has(raw)) return raw;
+    }
+    return null;
+  }, [candidates, failedUrls]);
 
   const showImage = Boolean(activeUrl);
   const useNextImage = showImage && isNextImageUrl(activeUrl!);
@@ -49,7 +62,7 @@ export function GroupCoverVisual({
   return (
     <div className={cn("relative overflow-hidden bg-unze-green-dark/15", className)}>
       <div
-        className={cn("absolute inset-0 bg-gradient-to-br", bannerGradient)}
+        className={cn("absolute inset-0 bg-gradient-to-br", gradient)}
         aria-hidden
       />
 
@@ -63,9 +76,7 @@ export function GroupCoverVisual({
           sizes={compact ? "280px" : "(max-width: 512px) 100vw, 384px"}
           className="object-cover"
           loading="lazy"
-          onError={() =>
-            setFailedUrls((prev) => new Set(prev).add(activeUrl!))
-          }
+          onError={() => setFailedUrls((prev) => new Set(prev).add(activeUrl!))}
         />
       ) : null}
 
@@ -77,9 +88,7 @@ export function GroupCoverVisual({
           loading="lazy"
           decoding="async"
           className="absolute inset-0 h-full w-full object-cover"
-          onError={() =>
-            setFailedUrls((prev) => new Set(prev).add(activeUrl!))
-          }
+          onError={() => setFailedUrls((prev) => new Set(prev).add(activeUrl!))}
         />
       ) : null}
 

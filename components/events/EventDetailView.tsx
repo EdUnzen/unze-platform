@@ -3,7 +3,7 @@ import { EventBookTicketButton } from "@/components/events/EventBookTicketButton
 import { FollowEventButton } from "@/components/events/FollowEventButton";
 import { ReportDialog } from "@/components/governance/ReportDialog";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
-import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
+import { resolveEventCoverDisplay } from "@/lib/visual/resolve-banner";
 import type { Community } from "@/types/community";
 import type { CommunityEvent } from "@/types/event";
 import type { EventTicketView } from "@/types/event-ticket";
@@ -50,6 +50,13 @@ export function EventDetailView({
 }: EventDetailViewProps) {
   const slug = community.slug;
 
+  const eventCover = resolveEventCoverDisplay({
+    coverUrl: event.coverUrl,
+    communityCategory: community.category,
+    communityBannerUrl: community.bannerUrl,
+    communityGradient: community.bannerGradient,
+  });
+
   return (
     <div className="page-padding">
       <div className="mb-4">
@@ -65,9 +72,8 @@ export function EventDetailView({
       <header className="mb-4 overflow-hidden rounded-3xl bg-white shadow-card">
         <CommunityCoverVisual
           seed={`event-${event.id}`}
-          bannerGradient={community.bannerGradient}
-          imageUrl={event.coverUrl}
-          fallbackImageUrl={resolveCommunityBannerDisplay(community).imageUrl}
+          bannerGradient={eventCover.gradient}
+          cover={eventCover.cover}
           className="h-44"
           overlay="hero"
           imageVariant="hero"

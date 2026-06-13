@@ -37,6 +37,8 @@ export default async function DashboardEventsPage({ params }: DashboardEventsPag
         communitySlug={slug}
         events={events}
         communityBannerUrl={community.bannerUrl}
+        communityCategory={community.category}
+        communityBannerGradient={community.bannerGradient}
       />
     </div>
   );

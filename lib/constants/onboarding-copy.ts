@@ -22,6 +22,10 @@ export const ONBOARDING_COPY = {
       title: "Services",
       description: "Buche Coaching, Beratung und Angebote aus Communities.",
     },
+    {
+      title: "Verifizierung",
+      description: "Vertrauen durch geprüfte Communities, Creator und Angebote.",
+    },
   ],
   discoverCta: "Communities entdecken",
   installTitle: "UNZE installieren",

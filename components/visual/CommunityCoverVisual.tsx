@@ -1,6 +1,7 @@
 "use client";
 
 import { AbstractNetworkPattern } from "@/components/visual/AbstractNetworkPattern";
+import { coverImageCandidates, type ResolvedCover } from "@/lib/visual/auto-cover";
 import { patternVariantForSeed } from "@/lib/visual/seed-from-string";
 import { getListThumbnailUrl, getHeroImageUrl } from "@/lib/visual/optimized-image-url";
 import { cn } from "@/lib/utils/cn";
@@ -10,8 +11,12 @@ import { useMemo, useState } from "react";
 interface CommunityCoverVisualProps {
   seed: string;
   bannerGradient: string;
+  /** Nur Nutzer-Upload */
   imageUrl?: string | null;
-  fallbackImageUrl: string;
+  /** Auto-Cover / Standard-Fallback (Legacy) */
+  fallbackImageUrl?: string;
+  /** Einheitliches 3-Stufen-Cover (empfohlen) */
+  cover?: ResolvedCover;
   className?: string;
   overlay?: "card" | "hero" | "subtle";
   imageVariant?: "card" | "list" | "hero";
@@ -38,6 +43,7 @@ export function CommunityCoverVisual({
   bannerGradient,
   imageUrl,
   fallbackImageUrl,
+  cover,
   className,
   overlay = "card",
   imageVariant = "card",
@@ -45,6 +51,7 @@ export function CommunityCoverVisual({
   const [failedUrls, setFailedUrls] = useState<Set<string>>(() => new Set());
 
   const candidates = useMemo(() => {
+    if (cover) return coverImageCandidates(cover);
     const list: string[] = [];
     const primary = imageUrl?.trim();
     if (primary) list.push(primary);
@@ -52,7 +59,9 @@ export function CommunityCoverVisual({
       list.push(fallbackImageUrl.trim());
     }
     return list;
-  }, [imageUrl, fallbackImageUrl]);
+  }, [cover, imageUrl, fallbackImageUrl]);
+
+  const gradient = cover?.gradient ?? bannerGradient;
 
   const activeUrl = useMemo(() => {
     for (const raw of candidates) {
@@ -84,17 +93,13 @@ export function CommunityCoverVisual({
         : "(max-width: 512px) 100vw, 480px";
 
   const markFailed = (url: string) => {
-    setFailedUrls((prev) => {
-      const next = new Set(prev);
-      next.add(url);
-      return next;
-    });
+    setFailedUrls((prev) => new Set(prev).add(url));
   };
 
   return (
     <div className={cn("relative overflow-hidden bg-unze-green-dark/20", className)}>
       <div
-        className={cn("absolute inset-0 bg-gradient-to-br", bannerGradient)}
+        className={cn("absolute inset-0 bg-gradient-to-br", gradient)}
         aria-hidden
       />
 

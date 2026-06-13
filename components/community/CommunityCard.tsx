@@ -10,9 +10,8 @@ import { CardEngagementStrip } from "@/components/share/CardEngagementStrip";
 import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
-import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
 import { getFocusTagStyle } from "@/lib/constants/focus-tag-styles";
-import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
+import { resolveCommunityCover } from "@/lib/visual/auto-cover";
 import { BadgeCheck, FolderOpen, Heart, Lock, TrendingUp, UserCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
@@ -36,8 +35,7 @@ function CommunityCardInner({
     : null;
   const applicationStatus = community.joinAccess?.existingApplication?.status;
   const shareUrl = `${getAppUrl()}/community/${community.slug}`;
-  const banner = resolveCommunityBannerDisplay(community);
-  const categoryFallback = getDefaultBannerPresetForCategory(community.category);
+  const cover = resolveCommunityCover(community);
 
   return (
     <article
@@ -56,9 +54,8 @@ function CommunityCardInner({
           <div className="relative">
             <CommunityCoverVisual
               seed={community.slug}
-              bannerGradient={banner.gradient}
-              imageUrl={community.bannerUrl ?? banner.imageUrl}
-              fallbackImageUrl={categoryFallback.imageUrl}
+              bannerGradient={cover.gradient}
+              cover={cover}
               className="h-48 sm:h-[13rem]"
               overlay="card"
             />

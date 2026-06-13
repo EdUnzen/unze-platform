@@ -1,39 +1,51 @@
 import {
-  getDefaultBannerPresetForCategory,
-  resolveBannerFromPresetOrUrl,
-} from "@/lib/constants/category-banners";
-import { isUsableImageUrl } from "@/lib/visual/image-url";
-import { normalizeBannerGradient } from "@/lib/visual/normalize-cover";
+  resolveCommunityCover,
+  resolveEventCover,
+  resolveGroupOrServiceCover,
+  type ResolvedCover,
+} from "@/lib/visual/auto-cover";
 
+export type { ResolvedCover };
+
+/** @deprecated Nutze `resolveCommunityCover` + `cover`-Prop */
 export function resolveCommunityBannerDisplay(community: {
   bannerUrl?: string | null;
   bannerGradient: string;
   category: string;
 }) {
-  return resolveBannerFromPresetOrUrl({
-    bannerUrl: community.bannerUrl,
-    category: community.category,
-    bannerGradient: community.bannerGradient,
-  });
+  const cover = resolveCommunityCover(community);
+  return {
+    imageUrl: cover.primaryImageUrl ?? cover.autoCoverUrl,
+    gradient: cover.gradient,
+    cover,
+  };
 }
 
 export function resolveGroupCoverDisplay(group: {
   coverUrl?: string | null;
   bannerGradient: string;
   category: string;
+  groupType?: "group" | "service";
 }) {
-  const preset = getDefaultBannerPresetForCategory(group.category);
-  const gradient = normalizeBannerGradient(group.bannerGradient, group.category);
-
-  if (isUsableImageUrl(group.coverUrl)) {
-    return {
-      imageUrl: group.coverUrl!.trim(),
-      gradient,
-    };
-  }
-
+  const cover = resolveGroupOrServiceCover(group);
   return {
-    imageUrl: preset.imageUrl,
-    gradient,
+    imageUrl: cover.primaryImageUrl ?? cover.autoCoverUrl,
+    gradient: cover.gradient,
+    cover,
+  };
+}
+
+export function resolveEventCoverDisplay(input: {
+  coverUrl?: string | null;
+  communityCategory: string;
+  communityBannerUrl?: string | null;
+  communityGradient?: string;
+}) {
+  const cover = resolveEventCover(input);
+  return {
+    imageUrl:
+      cover.primaryImageUrl ?? cover.autoCoverUrl ?? cover.standardCoverUrl,
+    gradient: cover.gradient,
+    cover,
   };
 }

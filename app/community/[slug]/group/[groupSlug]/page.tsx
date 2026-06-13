@@ -52,6 +52,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
     coverUrl: group.coverUrl,
     bannerGradient: group.bannerGradient,
     category: group.category,
+    groupType: group.groupType === "service" ? "service" : "group",
   });
 
   return (
@@ -69,7 +70,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
         <GroupCoverVisual
           seed={getGroupVisualSeed(slug, groupSlug)}
           bannerGradient={cover.gradient}
-          imageUrl={cover.imageUrl}
+          cover={cover.cover}
+          groupType={isService ? "service" : "group"}
           className="h-40"
         />
         <div className="p-4">
@@ -120,6 +122,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
             events={groupEvents}
             followedEventIds={followedEventIds}
             showFollowButtons={Boolean(user)}
+            communityCategory={group.category}
+            communityBannerGradient={group.bannerGradient}
           />
 
           <EntityReviewsSection

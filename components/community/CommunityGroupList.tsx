@@ -40,7 +40,7 @@ export function CommunityGroupList({
               <GroupCoverVisual
                 seed={getGroupVisualSeed(communitySlug, group.slug)}
                 bannerGradient={cover.gradient}
-                imageUrl={cover.imageUrl}
+                cover={cover.cover}
                 groupType={group.groupType === "service" ? "service" : "group"}
                 className="h-14 w-14 shrink-0 rounded-xl"
                 compact

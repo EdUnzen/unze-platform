@@ -1,5 +1,5 @@
 import { ProfileSettingsForm } from "@/components/profile/ProfileSettingsForm";
-import { getDefaultBannerPresetForCategory } from "@/lib/constants/category-banners";
+import { resolveAutoCover } from "@/lib/visual/auto-cover";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentProfile, getCurrentUser } from "@/services/auth/auth.service";
@@ -14,6 +14,11 @@ export default async function ProfileSettingsPage() {
   const profile = await getCurrentProfile();
   const displayName =
     profile?.display_name ?? user.email?.split("@")[0] ?? "Nutzer";
+
+  const profileCover = resolveAutoCover({
+    category: "Allgemein",
+    bannerGradient: "from-unze-green-light via-unze-green to-unze-green-dark",
+  });
 
   return (
     <div className="page-padding">
@@ -46,8 +51,8 @@ export default async function ProfileSettingsPage() {
       <div className="overflow-hidden rounded-3xl bg-white shadow-card">
         <CommunityCoverVisual
           seed={user.id}
-          bannerGradient="from-unze-green-light via-unze-green to-unze-green-dark"
-          fallbackImageUrl={getDefaultBannerPresetForCategory("Allgemein").imageUrl}
+          bannerGradient={profileCover.gradient}
+          cover={profileCover}
           className="h-20"
           overlay="subtle"
         />

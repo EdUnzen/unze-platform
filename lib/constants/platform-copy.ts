@@ -29,3 +29,6 @@ export const HOME_VALUE_PROPS = [
 ] as const;
 
 export const HOME_HERO_IMAGE = "/brand/unze-home-hero.png";
+
+/** Gast-Startseite — reines Motiv ohne Text/Buttons (UI liefert Copy) */
+export const GUEST_HERO_IMAGE = "/brand/unze-guest-hero.png";

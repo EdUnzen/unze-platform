@@ -1,4 +1,4 @@
-import { HOME_HERO_IMAGE, PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
+import { GUEST_HERO_IMAGE, HOME_HERO_IMAGE, PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export function HomeHero({ variant }: HomeHeroProps) {
         )}
       >
         <Image
-          src={HOME_HERO_IMAGE}
+          src={isGuest ? GUEST_HERO_IMAGE : HOME_HERO_IMAGE}
           alt="UNZE — Communities, Gruppen, Events und Services vernetzt auf einer Plattform"
           fill
           priority

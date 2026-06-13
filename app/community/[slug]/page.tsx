@@ -491,6 +491,8 @@ export default async function CommunityPage({
                 followedEventIds={followedEventIds}
                 showFollowButtons={Boolean(user)}
                 communityBannerUrl={communityWithLevel.bannerUrl}
+                communityCategory={communityWithLevel.category}
+                communityBannerGradient={communityWithLevel.bannerGradient}
                 embedded
               />
             )}

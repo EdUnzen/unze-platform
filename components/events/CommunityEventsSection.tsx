@@ -1,10 +1,7 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { FollowEventButton } from "@/components/events/FollowEventButton";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
-import {
-  DEFAULT_EVENT_COVER_GRADIENT,
-  DEFAULT_EVENT_COVER_URL,
-} from "@/lib/constants/event-banners";
+import { resolveEventCoverDisplay } from "@/lib/visual/resolve-banner";
 import type { CommunityEvent } from "@/types/event";
 import { Calendar, ExternalLink, MapPin, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -17,6 +14,8 @@ interface CommunityEventsSectionProps {
   /** Kein äußerer Karten-Header (z. B. Community-Events-Tab) */
   embedded?: boolean;
   communityBannerUrl?: string | null;
+  communityCategory?: string;
+  communityBannerGradient?: string;
 }
 
 function formatEventDate(iso: string): string {
@@ -36,6 +35,8 @@ export function CommunityEventsSection({
   showFollowButtons = false,
   embedded = false,
   communityBannerUrl,
+  communityCategory = "Allgemein",
+  communityBannerGradient,
 }: CommunityEventsSectionProps) {
   const followedSet = new Set(followedEventIds);
   if (events.length === 0) return null;
@@ -61,8 +62,12 @@ export function CommunityEventsSection({
 
       <ul className="space-y-3">
         {events.slice(0, 5).map((event) => {
-          const cover =
-            event.coverUrl ?? communityBannerUrl ?? DEFAULT_EVENT_COVER_URL;
+          const eventCover = resolveEventCoverDisplay({
+            coverUrl: event.coverUrl,
+            communityCategory,
+            communityBannerUrl,
+            communityGradient: communityBannerGradient,
+          });
           return (
           <li
             key={event.id}
@@ -70,9 +75,8 @@ export function CommunityEventsSection({
           >
             <CommunityCoverVisual
               seed={event.id}
-              bannerGradient={DEFAULT_EVENT_COVER_GRADIENT}
-              imageUrl={cover}
-              fallbackImageUrl={DEFAULT_EVENT_COVER_URL}
+              bannerGradient={eventCover.gradient}
+              cover={eventCover.cover}
               className="h-24"
               overlay="card"
               imageVariant="list"
@@ -179,16 +183,20 @@ export function DiscoverEventList({
         <p className="mt-0.5 text-sm text-unze-ink-secondary">{subtitle}</p>
       </header>
       <ul className="grid gap-3 sm:grid-cols-2">
-        {events.map((event) => (
+        {events.map((event) => {
+          const eventCover = resolveEventCoverDisplay({
+            coverUrl: event.coverUrl,
+            communityCategory: "Allgemein",
+          });
+          return (
           <li
             key={event.id}
             className="overflow-hidden rounded-3xl border border-unze-border/80 bg-white shadow-card"
           >
             <CommunityCoverVisual
               seed={event.id}
-              bannerGradient={DEFAULT_EVENT_COVER_GRADIENT}
-              imageUrl={event.coverUrl}
-              fallbackImageUrl={DEFAULT_EVENT_COVER_URL}
+              bannerGradient={eventCover.gradient}
+              cover={eventCover.cover}
               className="h-28"
               overlay="card"
               imageVariant="list"
@@ -256,7 +264,8 @@ export function DiscoverEventList({
             )}
             </div>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </section>
   );
