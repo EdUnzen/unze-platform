@@ -128,7 +128,7 @@ Die Closed-Beta wurde um ein professionelles Startseiten-Erlebnis, einheitliche 
 ## 8. Deployment
 
 **Production:** https://unze-platform.vercel.app  
-**Commit:** siehe Git-Tag nach Push
+**Commit:** `c1620d2`
 
 ---
 

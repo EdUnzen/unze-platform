@@ -1,8 +1,9 @@
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { VISIBILITY_OPTIONS } from "@/lib/constants/community";
+import { VerificationInfoTrigger } from "@/components/verification/VerificationInfoTrigger";
 import type { Community } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
-import { BadgeCheck, Crown, Lock, PauseCircle } from "lucide-react";
+import { Crown, Lock, PauseCircle } from "lucide-react";
 
 interface CommunityStatusBadgesProps {
   community: Community;
@@ -45,10 +46,17 @@ export function CommunityStatusBadges({
       )}
 
       {community.isVerified && (
-        <span className={cn("inline-flex items-center gap-1 rounded-lg px-2 py-0.5 text-[11px] font-semibold", pill)}>
-          <BadgeCheck className="h-3 w-3" aria-hidden />
-          Verifiziert
-        </span>
+        <VerificationInfoTrigger
+          kind="community"
+          variant="pill"
+          className={cn(
+            "rounded-lg px-2 py-0.5 text-[11px] font-semibold",
+            variant === "dark"
+              ? "bg-black/35 text-white backdrop-blur-md"
+              : "bg-unze-green-muted text-unze-green-dark",
+          )}
+          iconClassName={variant === "dark" ? "text-white" : undefined}
+        />
       )}
 
       {(community.monetizationEnabled || community.priceLabel) && (

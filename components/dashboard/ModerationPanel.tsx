@@ -6,6 +6,7 @@ import {
   strikeMemberAction,
   warnMemberAction,
 } from "@/app/dashboard/governance-actions";
+import { REPORT_TARGET_LABELS } from "@/lib/constants/report-labels";
 import type { ModerationAction, PlatformReport, ReportStatus } from "@/types/governance";
 import { cn } from "@/lib/utils/cn";
 import { AlertTriangle, Ban, MessageSquareOff, Shield } from "lucide-react";
@@ -151,7 +152,7 @@ export function ModerationPanel({ slug, reports, history }: ModerationPanelProps
                       {report.reason}
                     </p>
                     <p className="text-xs text-unze-ink-muted">
-                      Ziel: {report.targetType} · Melder:{" "}
+                      Ziel: {REPORT_TARGET_LABELS[report.targetType] ?? report.targetType} · Melder:{" "}
                       {report.reporterDisplayName ??
                         report.reporterUsername ??
                         "Anonym"}

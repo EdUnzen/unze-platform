@@ -45,7 +45,9 @@ export type ReportTargetType =
   | "community"
   | "creator"
   | "post"
-  | "comment";
+  | "comment"
+  | "group"
+  | "event";
 
 export type ReportStatus = "pending" | "reviewing" | "resolved" | "dismissed";
 

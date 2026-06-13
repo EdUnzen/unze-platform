@@ -29,7 +29,7 @@ export async function insertReportInDb(input: {
     .select("id")
     .single();
 
-  if (error) return { error: error.message };
+  if (error) return { error: "Meldung konnte nicht gesendet werden. Bitte erneut versuchen." };
   return { error: null, id: data.id as string };
 }
 

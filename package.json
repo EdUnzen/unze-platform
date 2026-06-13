@@ -35,6 +35,7 @@
     "db:migrate:029": "node scripts/apply-migration-029.mjs",
     "db:migrate:030": "node scripts/apply-migration-030.mjs",
     "db:migrate:031": "node scripts/apply-migration-031.mjs",
+    "db:migrate:032": "node scripts/apply-migration-032.mjs",
     "verify:community-create": "node scripts/verify-community-create.mjs",
     "backfill:banners": "node scripts/backfill-category-banners.mjs",
     "check:migration:025": "node scripts/check-migration-025.mjs",

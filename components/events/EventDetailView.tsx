@@ -1,6 +1,7 @@
 import { PlatformBadge } from "@/components/community/PlatformBadge";
 import { EventBookTicketButton } from "@/components/events/EventBookTicketButton";
 import { FollowEventButton } from "@/components/events/FollowEventButton";
+import { ReportDialog } from "@/components/governance/ReportDialog";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { resolveCommunityBannerDisplay } from "@/lib/visual/resolve-banner";
 import type { Community } from "@/types/community";
@@ -146,6 +147,18 @@ export function EventDetailView({
             Auf externer Plattform öffnen
           </a>
         </section>
+      )}
+
+      {isLoggedIn && (
+        <div className="mt-4 flex justify-end">
+          <ReportDialog
+            targetType="event"
+            targetId={event.id}
+            communityId={community.id}
+            label="Event melden"
+            returnPath={`/community/${slug}/event/${event.slug ?? event.id}`}
+          />
+        </div>
       )}
 
       {!isLoggedIn && (

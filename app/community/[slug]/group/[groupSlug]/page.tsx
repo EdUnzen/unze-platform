@@ -1,4 +1,5 @@
 import { ServiceBookingPanel } from "@/components/services/ServiceBookingPanel";
+import { ReportDialog } from "@/components/governance/ReportDialog";
 import { RatingSummary } from "@/components/ui/RatingSummary";
 import { FollowGroupButton } from "@/components/community/FollowGroupButton";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
@@ -179,6 +180,18 @@ export default async function GroupPage({ params }: GroupPageProps) {
               {group.communityTitle} ansehen →
             </Link>
           </section>
+
+          {user && (
+            <div className="flex justify-end">
+              <ReportDialog
+                targetType="group"
+                targetId={group.id}
+                communityId={group.communityId}
+                label={isService ? "Service melden" : "Gruppe melden"}
+                returnPath={returnPath}
+              />
+            </div>
+          )}
         </aside>
       </div>
     </div>

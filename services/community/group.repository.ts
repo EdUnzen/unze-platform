@@ -131,6 +131,7 @@ export async function updateGroupInDb(
     description: string;
     isPublic: boolean;
     sortOrder: number;
+    priceCents: number | null;
   }>,
 ): Promise<CommunityGroup | null> {
   const supabase = await createClient();
@@ -141,6 +142,7 @@ export async function updateGroupInDb(
   if (input.description !== undefined) payload.description = input.description;
   if (input.isPublic !== undefined) payload.is_public = input.isPublic;
   if (input.sortOrder !== undefined) payload.sort_order = input.sortOrder;
+  if (input.priceCents !== undefined) payload.price_cents = input.priceCents;
 
   const { data, error } = await supabase
     .from("community_groups")

@@ -15,6 +15,11 @@ export const ACTION_MESSAGES = {
   group: {
     joined: "Gruppe erfolgreich beigetreten",
     left: "Gruppe erfolgreich verlassen",
+    created: "Gruppe erfolgreich erstellt",
+    updated: "Änderungen gespeichert",
+    deactivated: "Gruppe deaktiviert — nicht mehr öffentlich sichtbar",
+    activated: "Gruppe wieder aktiviert",
+    deleted: "Gruppe gelöscht",
   },
   event: {
     ticketBooked: "Ticket erfolgreich gebucht",

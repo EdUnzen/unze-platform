@@ -34,12 +34,14 @@ export function CommunityLevelPanel({ levelResult, className }: CommunityLevelPa
         </div>
         <div className="flex items-baseline gap-1 self-start sm:self-auto">
           <span
-            className="text-5xl font-bold tabular-nums tracking-tight text-unze-ink"
+            className="text-4xl font-bold tabular-nums tracking-tight text-unze-ink sm:text-5xl"
             aria-label={`Community Score ${score} von 100`}
           >
             {score}
           </span>
-          <span className="pb-1 text-lg font-medium text-unze-ink-muted">/ 100</span>
+          <span className="pb-0.5 text-base font-medium text-unze-ink-muted sm:pb-1 sm:text-lg">
+            / 100
+          </span>
         </div>
       </div>
 
@@ -74,10 +76,10 @@ export function CommunityLevelPanel({ levelResult, className }: CommunityLevelPa
           ([key, value]) => (
             <li
               key={key}
-              className="flex items-center justify-between px-3.5 py-3 text-sm first:rounded-t-2xl last:rounded-b-2xl"
+              className="flex items-center justify-between gap-3 px-3.5 py-3 text-sm first:rounded-t-2xl last:rounded-b-2xl"
             >
-              <span className="text-unze-ink-secondary">{BREAKDOWN_LABELS[key]}</span>
-              <span className="font-semibold tabular-nums text-unze-ink">{value} Pkt</span>
+              <span className="min-w-0 text-unze-ink-secondary">{BREAKDOWN_LABELS[key]}</span>
+              <span className="shrink-0 font-semibold tabular-nums text-unze-ink">{value} Pkt</span>
             </li>
           ),
         )}

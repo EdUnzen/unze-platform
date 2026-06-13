@@ -42,10 +42,10 @@ export function CommunityHeader({ community, displayScore }: CommunityHeaderProp
             communityId: community.id,
           }}
         />
-        <div className="absolute bottom-4 left-4 right-16 z-10 space-y-2">
-          <div className="flex flex-wrap gap-1.5">
+        <div className="absolute bottom-3 left-3 right-14 z-10 space-y-2 sm:bottom-4 sm:left-4">
+          <div className="flex max-w-full flex-wrap gap-1.5">
             <CommunityStatusBadges community={community} />
-            <span className="inline-flex items-center rounded-lg bg-black/30 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm">
+            <span className="inline-flex shrink-0 items-center rounded-lg bg-black/30 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm sm:text-[11px]">
               Score {score}
             </span>
           </div>

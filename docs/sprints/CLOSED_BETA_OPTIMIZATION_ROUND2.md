@@ -1,8 +1,8 @@
 # Closed Beta — Test- & Optimierungsrunde (Änderungsbericht)
 
 **Datum:** 2026-06-13  
-**Commit:** _(nach Deploy)_  
-**Production:** https://unze-platform.vercel.app
+**Commit:** `2e25bf6`  
+**Deployment:** `dpl_Aej6Wt4R38emBq5TeV1H5ykxgb2N`
 
 ---
 

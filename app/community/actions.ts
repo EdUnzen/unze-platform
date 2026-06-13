@@ -11,6 +11,7 @@ import {
 import {
   createCommunityGroup,
   deleteCommunityGroup,
+  updateCommunityGroup,
 } from "@/services/community/group.service";
 import { fetchCommunityBySlugFromDb } from "@/services/community/community.repository";
 import {
@@ -119,7 +120,7 @@ export async function updateCommunityAction(
   slug: string,
   _prev: { error?: string } | null,
   formData: FormData,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; success?: boolean; message?: string }> {
   const user = await getCurrentUser();
   if (!user) return { error: "Nicht angemeldet" };
 
@@ -232,7 +233,7 @@ export async function createGroupAction(
   slug: string,
   _prev: { error?: string } | null,
   formData: FormData,
-): Promise<{ error?: string }> {
+): Promise<{ error?: string; success?: boolean; message?: string }> {
   const user = await getCurrentUser();
   if (!user) return { error: "Nicht angemeldet" };
 
@@ -268,14 +269,77 @@ export async function createGroupAction(
 
   revalidatePath(`/community/${slug}`);
   revalidatePath(`/community/${slug}/edit`);
-  return {};
+  revalidateDiscover();
+  return { success: true, message: ACTION_MESSAGES.group.created };
+}
+
+export async function updateGroupAction(
+  groupId: string,
+  communityId: string,
+  slug: string,
+  _prev: { error?: string; success?: string } | null,
+  formData: FormData,
+): Promise<{ error?: string; success?: boolean; message?: string }> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Nicht angemeldet" };
+
+  const community = await fetchCommunityBySlugFromDb(slug, user.id);
+  if (!community || !canEditCommunity(community.membership?.role ?? null)) {
+    return { error: "Keine Berechtigung" };
+  }
+
+  const title = String(formData.get("groupTitle") ?? "").trim();
+  const description = String(formData.get("groupDescription") ?? "").trim();
+  const priceRaw = String(formData.get("groupPriceCents") ?? "").trim();
+  const priceCents = priceRaw ? Math.max(0, Math.round(Number(priceRaw) * 100)) : null;
+
+  if (!title) return { error: "Titel erforderlich" };
+
+  const updated = await updateCommunityGroup(groupId, {
+    title,
+    description,
+    priceCents: Number.isFinite(priceCents as number) ? priceCents : null,
+  });
+
+  if (!updated) return { error: "Speichern fehlgeschlagen" };
+
+  revalidatePath(`/community/${slug}`);
+  revalidatePath(`/community/${slug}/edit`);
+  revalidatePath(`/community/${slug}/group/${updated.slug}`);
+  revalidateDiscover();
+  return { success: true, message: ACTION_MESSAGES.group.updated };
+}
+
+export async function toggleGroupPublicAction(
+  groupId: string,
+  slug: string,
+  isPublic: boolean,
+): Promise<{ error?: string; success?: boolean; message?: string }> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Nicht angemeldet" };
+
+  const community = await fetchCommunityBySlugFromDb(slug, user.id);
+  if (!community || !canEditCommunity(community.membership?.role ?? null)) {
+    return { error: "Keine Berechtigung" };
+  }
+
+  const updated = await updateCommunityGroup(groupId, { isPublic });
+  if (!updated) return { error: "Status konnte nicht geändert werden" };
+
+  revalidatePath(`/community/${slug}`);
+  revalidatePath(`/community/${slug}/edit`);
+  revalidateDiscover();
+  return {
+    success: true,
+    message: isPublic ? ACTION_MESSAGES.group.activated : ACTION_MESSAGES.group.deactivated,
+  };
 }
 
 export async function deleteGroupAction(
   groupId: string,
   communityId: string,
   slug: string,
-) {
+): Promise<{ error?: string; success?: boolean; message?: string }> {
   const user = await getCurrentUser();
   if (!user) return { error: "Nicht angemeldet" };
 
@@ -289,7 +353,8 @@ export async function deleteGroupAction(
 
   revalidatePath(`/community/${slug}`);
   revalidatePath(`/community/${slug}/edit`);
-  return {};
+  revalidateDiscover();
+  return { success: true, message: ACTION_MESSAGES.group.deleted };
 }
 
 export async function suggestSlugAction(title: string) {

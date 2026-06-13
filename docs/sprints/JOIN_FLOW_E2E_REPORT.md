@@ -11,6 +11,6 @@
 | Fall C — Verlassen | ✅ | Soft-Remove erfolgreich |
 | Fall C — Status | ✅ | deleted_at gesetzt |
 | Rejoin nach Leave | ✅ | Reaktivierung statt Duplicate-Key |
-| Cleanup | ✅ | member_count vor Test: 3 |
+| Cleanup | ✅ | member_count vor Test: 4 |
 
 _UI-Feedback (Success-Meldungen) manuell im Browser prüfen._

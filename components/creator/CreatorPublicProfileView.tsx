@@ -1,11 +1,13 @@
 import { CommunityCardList } from "@/components/community/CommunityCardList";
 import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
 import { CreatorReviewsSection } from "@/components/creator/CreatorReviewsSection";
+import { ReportDialog } from "@/components/governance/ReportDialog";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { VerificationInfoTrigger } from "@/components/verification/VerificationInfoTrigger";
 import { formatMemberCount } from "@/services/community/community.service";
 import type { CreatorPublicProfile } from "@/services/creator/creator.service";
-import { BadgeCheck, Users } from "lucide-react";
+import { Users } from "lucide-react";
 
 interface CreatorPublicProfileViewProps {
   profile: CreatorPublicProfile;
@@ -33,10 +35,7 @@ export function CreatorPublicProfileView({ profile }: CreatorPublicProfileViewPr
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-bold text-unze-ink">{creator.name}</h1>
               {creator.isVerified && (
-                <BadgeCheck
-                  className="h-5 w-5 text-unze-green"
-                  aria-label="Verifizierter Creator"
-                />
+                <VerificationInfoTrigger kind="creator" iconClassName="h-5 w-5" />
               )}
             </div>
             {creator.username && (
@@ -60,6 +59,13 @@ export function CreatorPublicProfileView({ profile }: CreatorPublicProfileViewPr
               </span>
             )}
           </div>
+        </div>
+        <div className="mt-4 flex justify-end border-t border-unze-border/60 pt-3">
+          <ReportDialog
+            targetType="creator"
+            targetId={creator.id}
+            label="Melden"
+          />
         </div>
       </section>
 
