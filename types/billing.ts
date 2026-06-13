@@ -24,6 +24,9 @@ export interface UserSubscriptionView {
   canceledAt: string | null;
   cancelAtPeriodEnd: boolean;
   stripeCustomerId: string | null;
+  updatedAt: string | null;
+  lastSuccessfulPaymentAt: string | null;
+  lastFailedPaymentAt: string | null;
 }
 
 export interface UserPaymentView {
@@ -48,6 +51,7 @@ export interface CreatorFinanceStats {
   activeSubscriptions: number;
   canceledSubscriptions: number;
   expiringSubscriptions: number;
+  paymentIssues: number;
   oneTimePayments: number;
   serviceBookings: number;
   pendingApplications: number;
@@ -63,7 +67,11 @@ export interface CreatorSubscriptionRow {
   planInterval: string | null;
   amountCents: number | null;
   currentPeriodEnd: string | null;
+  currentPeriodStart: string | null;
   canceledAt: string | null;
   cancelAtPeriodEnd: boolean;
   groupTitle: string | null;
+  updatedAt: string | null;
+  lastSuccessfulPaymentAt: string | null;
+  lastFailedPaymentAt: string | null;
 }

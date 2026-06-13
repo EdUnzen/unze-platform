@@ -109,6 +109,48 @@ export async function paymentExistsForInvoice(
   return Boolean(data);
 }
 
+export type SubscriptionPaymentTimestamps = {
+  lastSuccessfulPaymentAt: string | null;
+  lastFailedPaymentAt: string | null;
+};
+
+/** Letzte erfolgreiche / fehlgeschlagene Abo-Zahlung je Nutzer in einer Community */
+export async function getSubscriptionPaymentTimestampsByCommunity(
+  communityId: string,
+): Promise<Map<string, SubscriptionPaymentTimestamps>> {
+  const supabase = getDb();
+  const map = new Map<string, SubscriptionPaymentTimestamps>();
+  if (!supabase) return map;
+
+  const { data, error } = await supabase
+    .from("community_payments")
+    .select("user_id, status, created_at")
+    .eq("community_id", communityId)
+    .eq("payment_kind", "subscription_invoice")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[payment.repository] payment timestamps:", error.message);
+    return map;
+  }
+
+  for (const row of data ?? []) {
+    const userId = row.user_id as string;
+    if (!map.has(userId)) {
+      map.set(userId, { lastSuccessfulPaymentAt: null, lastFailedPaymentAt: null });
+    }
+    const entry = map.get(userId)!;
+    if (row.status === "succeeded" && !entry.lastSuccessfulPaymentAt) {
+      entry.lastSuccessfulPaymentAt = row.created_at as string;
+    }
+    if (row.status === "failed" && !entry.lastFailedPaymentAt) {
+      entry.lastFailedPaymentAt = row.created_at as string;
+    }
+  }
+
+  return map;
+}
+
 export async function getUserPayments(userId: string) {
   const supabase = await createClient();
   if (!supabase) return [];

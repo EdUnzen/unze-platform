@@ -9,6 +9,7 @@ import { DashboardQuickNav } from "@/components/dashboard/DashboardQuickNav";
 import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
 import { countPendingRemovalTasks } from "@/services/lifecycle/removal-task.service";
 import { countPendingReportsFromDb } from "@/services/governance/report.repository";
+import { countCommunityPaymentIssues } from "@/services/monetization/subscription.repository";
 import { getCommunityActivity } from "@/services/platform/activity.service";
 import { ExternalLink, Pencil } from "lucide-react";
 import Link from "next/link";
@@ -39,6 +40,10 @@ export default async function DashboardOverviewPage({
   );
   const pendingReportCount = await countPendingReportsFromDb(community.id);
   const pendingRemovalCount = await countPendingRemovalTasks(community.id);
+  const pendingPaymentIssues =
+    community.monetizationEnabled && community.viewerRole === "creator"
+      ? await countCommunityPaymentIssues(community.id)
+      : 0;
   const accessLabel =
     ACCESS_STATUS_OPTIONS.find(
       (o) => o.value === community.access?.accessStatus,
@@ -51,6 +56,8 @@ export default async function DashboardOverviewPage({
         pendingApplications={pendingApplicationCount}
         pendingReports={pendingReportCount}
         pendingRemovals={pendingRemovalCount}
+        pendingPaymentIssues={pendingPaymentIssues}
+        monetizationEnabled={community.monetizationEnabled ?? false}
         accessStatusLabel={accessLabel}
         viewerRole={community.viewerRole}
       />

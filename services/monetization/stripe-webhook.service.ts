@@ -188,6 +188,50 @@ function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
   return typeof lineSub === "string" ? lineSub : lineSub.id;
 }
 
+async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
+  const subId = invoiceSubscriptionId(invoice);
+  if (!subId) return;
+
+  const stripe = await getStripeClient();
+  if (!stripe) throw new Error("Stripe nicht konfiguriert");
+
+  const subscription = await stripe.subscriptions.retrieve(subId);
+  const { userId, communityId } = await upsertAndSyncSubscription(subscription);
+
+  if (await paymentExistsForInvoice(invoice.id)) return;
+
+  const supabase = createAdminClient();
+  if (!supabase) return;
+
+  const { data: subRow } = await supabase
+    .from("subscriptions")
+    .select("group_id")
+    .eq("stripe_subscription_id", subId)
+    .maybeSingle();
+
+  const amountCents = invoice.amount_due ?? invoice.amount_remaining ?? 0;
+  if (amountCents <= 0) return;
+
+  const { error } = await insertPaymentRecord({
+    userId,
+    communityId,
+    groupId: (subRow?.group_id as string) ?? null,
+    stripeInvoiceId: invoice.id,
+    amountCents,
+    paymentKind: "subscription_invoice",
+    status: "failed",
+    description: "Abo-Zahlung fehlgeschlagen",
+    metadata: {
+      attempt_count: invoice.attempt_count ?? 1,
+      billing_reason: invoice.billing_reason ?? null,
+    },
+  });
+
+  if (error) {
+    throw new Error(`Fehlgeschlagene Invoice speichern: ${error}`);
+  }
+}
+
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
   if (await paymentExistsForInvoice(invoice.id)) return;
 
@@ -272,17 +316,9 @@ async function processWebhookEvent(event: Stripe.Event): Promise<void> {
     case "invoice.paid":
       await handleInvoicePaid(event.data.object as Stripe.Invoice);
       break;
-    case "invoice.payment_failed": {
-      const invoice = event.data.object as Stripe.Invoice;
-      const subId = invoiceSubscriptionId(invoice);
-      if (subId) {
-        const stripe = await getStripeClient();
-        if (!stripe) throw new Error("Stripe nicht konfiguriert");
-        const subscription = await stripe.subscriptions.retrieve(subId);
-        await upsertAndSyncSubscription(subscription);
-      }
+    case "invoice.payment_failed":
+      await handleInvoicePaymentFailed(event.data.object as Stripe.Invoice);
       break;
-    }
     case "charge.refunded":
       await handleChargeRefunded(event.data.object as Stripe.Charge);
       break;

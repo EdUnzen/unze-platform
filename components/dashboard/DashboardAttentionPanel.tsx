@@ -3,7 +3,7 @@ import { canReviewApplications } from "@/lib/permissions/community.permissions";
 import { hasCommunityPermission } from "@/lib/permissions/community.permissions";
 import type { CommunityRole } from "@/types/database";
 import { cn } from "@/lib/utils/cn";
-import { AlertCircle, ClipboardList, Settings, Shield, UserMinus } from "lucide-react";
+import { AlertCircle, ClipboardList, CreditCard, Settings, Shield, UserMinus } from "lucide-react";
 import Link from "next/link";
 
 interface DashboardAttentionPanelProps {
@@ -11,6 +11,8 @@ interface DashboardAttentionPanelProps {
   pendingApplications: number;
   pendingReports: number;
   pendingRemovals: number;
+  pendingPaymentIssues?: number;
+  monetizationEnabled?: boolean;
   accessStatusLabel: string;
   viewerRole: CommunityRole;
 }
@@ -20,16 +22,21 @@ export function DashboardAttentionPanel({
   pendingApplications,
   pendingReports,
   pendingRemovals,
+  pendingPaymentIssues = 0,
+  monetizationEnabled = false,
   accessStatusLabel,
   viewerRole,
 }: DashboardAttentionPanelProps) {
   const canReview = canReviewApplications(viewerRole);
   const canModerate = hasCommunityPermission(viewerRole, "moderate");
   const canManageMembers = hasCommunityPermission(viewerRole, "manage_members");
+  const showPaymentIssues =
+    monetizationEnabled && viewerRole === "creator" && pendingPaymentIssues > 0;
   const urgentCount =
     (canReview ? pendingApplications : 0) +
     (canModerate ? pendingReports : 0) +
-    (canManageMembers ? pendingRemovals : 0);
+    (canManageMembers ? pendingRemovals : 0) +
+    (showPaymentIssues ? pendingPaymentIssues : 0);
   const hasUrgent = urgentCount > 0;
 
   return (
@@ -138,6 +145,24 @@ export function DashboardAttentionPanel({
             {pendingRemovals > 0 && (
               <AttentionBadge count={pendingRemovals} />
             )}
+          </Link>
+        )}
+
+        {showPaymentIssues && (
+          <Link
+            href={`/dashboard/community/${slug}/monetization#payment-issues`}
+            data-testid="dashboard-link-payment-issues"
+            className="flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50/80 px-3 py-3 active:scale-[0.98]"
+          >
+            <CreditCard className="h-5 w-5 text-amber-700" aria-hidden />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-unze-ink">Offene Zahlungen</p>
+              <p className="text-xs text-unze-ink-secondary">
+                {pendingPaymentIssues} Mitglied
+                {pendingPaymentIssues === 1 ? "" : "er"} mit Zahlungsproblem
+              </p>
+            </div>
+            <AttentionBadge count={pendingPaymentIssues} />
           </Link>
         )}
 

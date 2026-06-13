@@ -13,6 +13,7 @@ import {
 } from "@/services/monetization/subscription.repository";
 import {
   getCommunityPaymentsForCreator,
+  getSubscriptionPaymentTimestampsByCommunity,
   getUserPayments,
   sumMonthlyRevenueCents,
 } from "@/services/monetization/payment.repository";
@@ -37,6 +38,9 @@ function mapUserSubscription(row: Record<string, unknown>): UserSubscriptionView
     canceledAt: (row.canceled_at as string) ?? null,
     cancelAtPeriodEnd: Boolean(row.cancel_at_period_end),
     stripeCustomerId: (row.stripe_customer_id as string) ?? null,
+    updatedAt: (row.updated_at as string) ?? null,
+    lastSuccessfulPaymentAt: null,
+    lastFailedPaymentAt: null,
   };
 }
 
@@ -67,8 +71,39 @@ export async function getUserBillingOverview(userId: string) {
     getUserPayments(userId),
   ]);
 
+  const paymentTimestamps = new Map<
+    string,
+    { lastSuccessfulPaymentAt: string | null; lastFailedPaymentAt: string | null }
+  >();
+  for (const payment of payments) {
+    if (payment.payment_kind !== "subscription_invoice") continue;
+    const communityId = payment.community_id as string;
+    if (!paymentTimestamps.has(communityId)) {
+      paymentTimestamps.set(communityId, {
+        lastSuccessfulPaymentAt: null,
+        lastFailedPaymentAt: null,
+      });
+    }
+    const entry = paymentTimestamps.get(communityId)!;
+    const createdAt = payment.created_at as string;
+    if (payment.status === "succeeded" && !entry.lastSuccessfulPaymentAt) {
+      entry.lastSuccessfulPaymentAt = createdAt;
+    }
+    if (payment.status === "failed" && !entry.lastFailedPaymentAt) {
+      entry.lastFailedPaymentAt = createdAt;
+    }
+  }
+
   return {
-    subscriptions: subs.map((r) => mapUserSubscription(r as Record<string, unknown>)),
+    subscriptions: subs.map((r) => {
+      const mapped = mapUserSubscription(r as Record<string, unknown>);
+      const timestamps = paymentTimestamps.get(mapped.communityId);
+      return {
+        ...mapped,
+        lastSuccessfulPaymentAt: timestamps?.lastSuccessfulPaymentAt ?? null,
+        lastFailedPaymentAt: timestamps?.lastFailedPaymentAt ?? null,
+      };
+    }),
     payments: payments.map((r) => mapUserPayment(r as Record<string, unknown>)),
   };
 }
@@ -80,13 +115,14 @@ export async function getCreatorFinanceOverview(
   subscriptions: CreatorSubscriptionRow[];
 }> {
   const supabase = await createClient();
-  const [monthlyRevenueCents, subCounts, payments, pendingApplications, subRows] =
+  const [monthlyRevenueCents, subCounts, payments, pendingApplications, subRows, paymentTimestamps] =
     await Promise.all([
       sumMonthlyRevenueCents(communityId),
       countSubscriptionsByStatus(communityId),
       getCommunityPaymentsForCreator(communityId),
       countPendingApplicationsFromDb(communityId),
       getCommunitySubscriptionsForCreator(communityId),
+      getSubscriptionPaymentTimestampsByCommunity(communityId),
     ]);
 
   let activeMembers = 0;
@@ -105,18 +141,24 @@ export async function getCreatorFinanceOverview(
   const subscriptions: CreatorSubscriptionRow[] = subRows.map((row) => {
     const profile = Array.isArray(row.profile) ? row.profile[0] : row.profile;
     const group = Array.isArray(row.group) ? row.group[0] : row.group;
+    const userId = row.user_id as string;
+    const timestamps = paymentTimestamps.get(userId);
     return {
       id: row.id as string,
-      userId: row.user_id as string,
+      userId,
       displayName: (profile?.display_name as string) ?? null,
       username: (profile?.username as string) ?? null,
       status: row.status as SubscriptionStatus,
       planInterval: (row.plan_interval as string) ?? null,
       amountCents: (row.amount_cents as number) ?? null,
       currentPeriodEnd: (row.current_period_end as string) ?? null,
+      currentPeriodStart: (row.current_period_start as string) ?? null,
       canceledAt: (row.canceled_at as string) ?? null,
       cancelAtPeriodEnd: Boolean(row.cancel_at_period_end),
       groupTitle: (group?.title as string) ?? null,
+      updatedAt: (row.updated_at as string) ?? null,
+      lastSuccessfulPaymentAt: timestamps?.lastSuccessfulPaymentAt ?? null,
+      lastFailedPaymentAt: timestamps?.lastFailedPaymentAt ?? null,
     };
   });
 
@@ -127,6 +169,7 @@ export async function getCreatorFinanceOverview(
       activeSubscriptions: subCounts.active,
       canceledSubscriptions: subCounts.canceled,
       expiringSubscriptions: subCounts.expiring,
+      paymentIssues: subCounts.paymentIssues,
       oneTimePayments,
       serviceBookings,
       pendingApplications,

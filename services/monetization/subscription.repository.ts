@@ -146,8 +146,10 @@ export async function getCommunitySubscriptionsForCreator(communityId: string) {
       plan_interval,
       amount_cents,
       current_period_end,
+      current_period_start,
       canceled_at,
       cancel_at_period_end,
+      updated_at,
       group:community_groups (title),
       profile:profiles!subscriptions_user_id_fkey (display_name, username)
     `,
@@ -166,7 +168,7 @@ export async function getCommunitySubscriptionsForCreator(communityId: string) {
 export async function countSubscriptionsByStatus(communityId: string) {
   const supabase = await createClient();
   if (!supabase) {
-    return { active: 0, canceled: 0, expiring: 0 };
+    return { active: 0, canceled: 0, expiring: 0, paymentIssues: 0 };
   }
 
   const { data } = await supabase
@@ -177,6 +179,7 @@ export async function countSubscriptionsByStatus(communityId: string) {
   let active = 0;
   let canceled = 0;
   let expiring = 0;
+  let paymentIssues = 0;
 
   for (const row of data ?? []) {
     if (row.status === "active" || row.status === "trialing") {
@@ -184,9 +187,15 @@ export async function countSubscriptionsByStatus(communityId: string) {
       if (row.cancel_at_period_end) expiring += 1;
     }
     if (row.status === "canceled") canceled += 1;
+    if (row.status === "past_due" || row.status === "unpaid") paymentIssues += 1;
   }
 
-  return { active, canceled, expiring };
+  return { active, canceled, expiring, paymentIssues };
+}
+
+export async function countCommunityPaymentIssues(communityId: string): Promise<number> {
+  const counts = await countSubscriptionsByStatus(communityId);
+  return counts.paymentIssues;
 }
 
 export async function isWebhookEventProcessed(eventId: string): Promise<boolean> {

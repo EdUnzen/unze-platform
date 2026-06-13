@@ -1,6 +1,8 @@
 "use client";
 
 import { openStripeCustomerPortalAction } from "@/app/billing/actions";
+import { MembershipStatusBadge } from "@/components/billing/MembershipStatusBadge";
+import { resolveMembershipDisplayStatus } from "@/lib/monetization/membership-status";
 import { formatCentsEUR } from "@/lib/monetization/plans";
 import { BILLING_PLAN_LABELS } from "@/types/billing";
 import type { UserPaymentView, UserSubscriptionView } from "@/types/billing";
@@ -12,17 +14,21 @@ interface UserBillingOverviewProps {
   payments: UserPaymentView[];
 }
 
-function statusLabel(status: string, cancelAtPeriodEnd: boolean) {
-  if (cancelAtPeriodEnd && status === "active") return "Kündigt zum Periodenende";
+function formatDate(iso: string | null): string {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleDateString("de-DE");
+}
+
+function paymentStatusLabel(status: string): string {
   switch (status) {
-    case "active":
-      return "Aktiv";
-    case "trialing":
-      return "Testphase";
-    case "canceled":
-      return "Gekündigt";
-    case "past_due":
-      return "Zahlung ausstehend";
+    case "succeeded":
+      return "Erfolgreich";
+    case "failed":
+      return "Fehlgeschlagen";
+    case "refunded":
+      return "Erstattet";
+    case "pending":
+      return "Ausstehend";
     default:
       return status;
   }
@@ -73,15 +79,33 @@ export function UserBillingOverview({
                       <p className="text-xs text-unze-ink-muted">{sub.groupTitle}</p>
                     )}
                   </div>
-                  <span className="text-xs font-medium text-unze-ink-secondary">
-                    {statusLabel(sub.status, sub.cancelAtPeriodEnd)}
-                  </span>
+                  <MembershipStatusBadge
+                    input={{
+                      status: sub.status,
+                      cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+                      updatedAt: sub.updatedAt,
+                      lastFailedPaymentAt: sub.lastFailedPaymentAt,
+                    }}
+                  />
                 </div>
-                <p className="mt-1 text-xs text-unze-ink-secondary">
-                  {sub.planInterval && BILLING_PLAN_LABELS[sub.planInterval as keyof typeof BILLING_PLAN_LABELS]}
+                <p className="mt-2 text-xs text-unze-ink-secondary">
+                  {sub.planInterval &&
+                    BILLING_PLAN_LABELS[sub.planInterval as keyof typeof BILLING_PLAN_LABELS]}
                   {sub.amountCents != null && ` · ${formatCentsEUR(sub.amountCents)}`}
-                  {sub.currentPeriodEnd &&
-                    ` · bis ${new Date(sub.currentPeriodEnd).toLocaleDateString("de-DE")}`}
+                </p>
+                <p className="mt-1 text-xs text-unze-ink-muted">
+                  Letzte Zahlung: {formatDate(sub.lastSuccessfulPaymentAt)}
+                  {resolveMembershipDisplayStatus({
+                    status: sub.status,
+                    cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+                  }) === "active" &&
+                    sub.currentPeriodEnd &&
+                    !sub.cancelAtPeriodEnd &&
+                    ` · Nächste Zahlung: ${formatDate(sub.currentPeriodEnd)}`}
+                  {sub.cancelAtPeriodEnd &&
+                    sub.currentPeriodEnd &&
+                    ` · Läuft aus am: ${formatDate(sub.currentPeriodEnd)}`}
+                  {sub.updatedAt && ` · Status geändert: ${formatDate(sub.updatedAt)}`}
                 </p>
               </li>
             ))}
@@ -106,7 +130,8 @@ export function UserBillingOverview({
                   </p>
                   <p className="text-xs text-unze-ink-muted">
                     {new Date(payment.createdAt).toLocaleDateString("de-DE")} ·{" "}
-                    {payment.paymentKind === "one_time" ? "Einmalzahlung" : "Abo-Rechnung"}
+                    {payment.paymentKind === "one_time" ? "Einmalzahlung" : "Abo-Rechnung"} ·{" "}
+                    {paymentStatusLabel(payment.status)}
                   </p>
                 </div>
                 <span className="font-semibold text-unze-ink">
