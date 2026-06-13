@@ -66,11 +66,11 @@ export function EventTicketCardClient({ ticket: initialTicket }: EventTicketCard
         </div>
       </div>
 
-      <div className="flex gap-4 p-4">
+      <div className="flex flex-col items-center gap-4 p-4 sm:flex-row sm:items-start">
         <div className="shrink-0">
-          <EventTicketQr ticketCode={ticket.ticketCode} />
+          <EventTicketQr ticketCode={ticket.ticketCode} size={200} />
         </div>
-        <div className="min-w-0 flex-1 space-y-2 text-xs text-unze-ink-secondary">
+        <div className="min-w-0 flex-1 space-y-2 text-sm text-unze-ink-secondary sm:text-xs">
           <p className="inline-flex items-center gap-1.5">
             <Calendar className="h-3.5 w-3.5 text-unze-green" aria-hidden />
             {startLabel}

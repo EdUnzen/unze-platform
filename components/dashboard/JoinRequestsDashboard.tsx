@@ -7,6 +7,7 @@ import {
 import { ApplicationAnswersPanel } from "@/components/dashboard/ApplicationAnswersPanel";
 import { ApplicationProofViewer } from "@/components/dashboard/ApplicationProofViewer";
 import { ApplicationStatusBadge } from "@/components/dashboard/StatusBadge";
+import { ActionFeedback } from "@/components/ui/ActionFeedback";
 import {
   APPLICATION_SOURCE_LABELS,
   APPLICATION_STATUS_LABELS,
@@ -320,18 +321,11 @@ export function JoinRequestsDashboard({
       )}
 
       {success && (
-        <p
-          className="rounded-xl bg-unze-green-muted px-3 py-2 text-center text-xs font-medium text-unze-green-dark"
-          role="status"
-        >
-          {success}
-        </p>
+        <ActionFeedback variant="success">{success}</ActionFeedback>
       )}
 
       {error && (
-        <p className="text-center text-xs text-red-600" role="alert">
-          {error}
-        </p>
+        <ActionFeedback variant="error">{error}</ActionFeedback>
       )}
     </div>
   );

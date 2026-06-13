@@ -36,39 +36,56 @@ interface CommunityPageTabsProps {
 
 export function CommunityPageTabs({ slug, activeTab }: CommunityPageTabsProps) {
   return (
-    <nav
-      className="-mx-1 overflow-x-auto px-1 pb-0.5 sm:overflow-visible"
-      aria-label="Community-Bereiche"
-    >
-      <div className="grid min-w-[min(100%,22.5rem)] grid-cols-6 gap-1 sm:min-w-0 sm:gap-1.5">
+    <nav aria-label="Community-Bereiche">
+      {/* Mobile: 3×2 — größere Touch-Flächen, keine gequetschten Labels */}
+      <div className="grid grid-cols-3 gap-2 sm:hidden">
         {COMMUNITY_TAB_IDS.map((tab) => {
           const active = tab === activeTab;
           const Icon = TAB_ICONS[tab];
           return (
             <Link
               key={tab}
-              href={tab === "overview" ? `/community/${slug}` : `/community/${slug}?tab=${tab}`}
+              href={
+                tab === "overview" ? `/community/${slug}` : `/community/${slug}?tab=${tab}`
+              }
               className={cn(
-                "flex min-h-[3.25rem] min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2.5 text-center transition-all active:scale-[0.98] sm:min-h-[2.75rem] sm:rounded-2xl sm:px-2 sm:py-2",
+                "flex min-h-[3.5rem] flex-col items-center justify-center gap-1.5 rounded-2xl px-2 py-3 text-center transition-all active:scale-[0.98]",
+                active
+                  ? "bg-unze-green text-white shadow-md ring-2 ring-unze-green/30 ring-offset-2"
+                  : "bg-white text-unze-ink-secondary shadow-sm",
+              )}
+              aria-current={active ? "page" : undefined}
+            >
+              <Icon className="h-5 w-5 shrink-0" aria-hidden />
+              <span className={cn("text-xs font-semibold leading-tight", active && "font-bold")}>
+                {COMMUNITY_TAB_LABELS[tab]}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Desktop / Tablet: eine Zeile */}
+      <div className="hidden grid-cols-6 gap-1.5 sm:grid">
+        {COMMUNITY_TAB_IDS.map((tab) => {
+          const active = tab === activeTab;
+          const Icon = TAB_ICONS[tab];
+          return (
+            <Link
+              key={tab}
+              href={
+                tab === "overview" ? `/community/${slug}` : `/community/${slug}?tab=${tab}`
+              }
+              className={cn(
+                "flex min-h-[2.75rem] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-center transition-all active:scale-[0.98]",
                 active
                   ? "bg-unze-green text-white shadow-md ring-2 ring-unze-green/25 ring-offset-1"
                   : "bg-white text-unze-ink-secondary shadow-sm hover:bg-unze-surface-muted/60",
               )}
               aria-current={active ? "page" : undefined}
             >
-              <Icon
-                className={cn(
-                  "h-4 w-4 shrink-0 sm:h-4 sm:w-4",
-                  active ? "opacity-100" : "opacity-80",
-                )}
-                aria-hidden
-              />
-              <span
-                className={cn(
-                  "max-w-full px-0.5 text-center text-[10px] font-semibold leading-snug sm:text-xs sm:leading-tight",
-                  active && "font-bold",
-                )}
-              >
+              <Icon className="h-4 w-4 shrink-0" aria-hidden />
+              <span className={cn("text-xs font-semibold", active && "font-bold")}>
                 {COMMUNITY_TAB_LABELS[tab]}
               </span>
             </Link>

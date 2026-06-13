@@ -184,6 +184,13 @@ export function CommunityJoinPanel({
 
   return (
     <div className="mt-6 space-y-4">
+      {(success || error) && (
+        <div className="space-y-2">
+          {success && <ActionFeedback variant="success">{success}</ActionFeedback>}
+          {error && <ActionFeedback variant="error">{error}</ActionFeedback>}
+        </div>
+      )}
+
       {isMember ? (
         <div className="rounded-xl bg-unze-green-muted px-3 py-2.5 text-center text-xs font-semibold text-unze-green-dark">
           {isCreator ? ROLE_LABELS.creator : `Mitglied · ${ROLE_LABELS[role ?? "member"]}`}
@@ -313,8 +320,6 @@ export function CommunityJoinPanel({
           </div>
         </div>
       )}
-
-      {success && <ActionFeedback variant="success">{success}</ActionFeedback>}
 
       {!showApplication ? (
         <div className="grid grid-cols-2 gap-2">
@@ -530,8 +535,6 @@ export function CommunityJoinPanel({
           initialEnabled={activityFeedEnabled}
         />
       )}
-
-      {error && <ActionFeedback variant="error">{error}</ActionFeedback>}
     </div>
   );
 }

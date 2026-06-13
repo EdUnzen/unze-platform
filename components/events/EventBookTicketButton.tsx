@@ -25,6 +25,7 @@ export function EventBookTicketButton({
   isLoggedIn,
 }: EventBookTicketButtonProps) {
   const [ticket, setTicket] = useState(existingTicket);
+  const [justBooked, setJustBooked] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -44,6 +45,9 @@ export function EventBookTicketButton({
   if (ticket) {
     return (
       <div className="space-y-2">
+        {justBooked && (
+          <ActionFeedback variant="success">{ACTION_MESSAGES.event.ticketBooked}</ActionFeedback>
+        )}
         <p className="inline-flex items-center gap-2 text-sm font-semibold text-unze-green-dark">
           <Ticket className="h-4 w-4" aria-hidden />
           Ticket gebucht
@@ -79,6 +83,7 @@ export function EventBookTicketButton({
             }
             if (result.ticket) {
               setTicket(result.ticket);
+              setJustBooked(true);
               setSuccess(ACTION_MESSAGES.event.ticketBooked);
               router.refresh();
             }

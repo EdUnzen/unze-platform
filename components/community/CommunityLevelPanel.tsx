@@ -25,24 +25,27 @@ export function CommunityLevelPanel({ levelResult, className }: CommunityLevelPa
       className={cn("rounded-3xl bg-white p-5 shadow-card sm:p-6", className)}
       data-testid="community-score-panel"
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-unze-ink-muted">
-            Plattform-Metrik
+          <h2 className="text-base font-semibold text-unze-ink">Community Score</h2>
+          <p className="mt-0.5 text-sm text-unze-ink-secondary">
+            Aktivität und Qualität dieser Community
           </p>
-          <h2 className="mt-0.5 text-base font-semibold text-unze-ink">Community Score</h2>
         </div>
-        <p
-          className="text-4xl font-bold tabular-nums tracking-tight text-unze-ink sm:text-3xl"
-          aria-label={`Community Score ${score}`}
-        >
-          {score}
-        </p>
+        <div className="flex items-baseline gap-1 self-start sm:self-auto">
+          <span
+            className="text-5xl font-bold tabular-nums tracking-tight text-unze-ink"
+            aria-label={`Community Score ${score} von 100`}
+          >
+            {score}
+          </span>
+          <span className="pb-1 text-lg font-medium text-unze-ink-muted">/ 100</span>
+        </div>
       </div>
 
-      <div className="mb-3 h-3.5 overflow-hidden rounded-full bg-unze-surface-muted sm:h-4">
+      <div className="mb-3 h-4 overflow-hidden rounded-full bg-unze-surface-muted">
         <div
-          className="h-full rounded-full bg-unze-green transition-all duration-500"
+          className="h-full rounded-full bg-gradient-to-r from-unze-green/90 to-unze-green transition-all duration-500"
           style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
           role="progressbar"
           aria-valuenow={score}
@@ -52,21 +55,15 @@ export function CommunityLevelPanel({ levelResult, className }: CommunityLevelPa
         />
       </div>
 
-      <p className="mb-5 text-sm text-unze-ink-secondary">
-        <span className="font-semibold text-unze-ink">{score}</span>
-        {" / "}
-        100 Punkte
-        {nextTarget != null && (
-          <>
-            {" · "}
-            Nächstes Ziel:{" "}
-            <span className="font-semibold text-unze-ink">{nextTarget} Punkte</span>
-            {pointsToNext > 0 && (
-              <span className="text-unze-ink-muted"> ({pointsToNext} fehlen)</span>
-            )}
-          </>
-        )}
-      </p>
+      {nextTarget != null && (
+        <p className="mb-5 text-sm text-unze-ink-secondary">
+          Nächstes Ziel:{" "}
+          <span className="font-semibold text-unze-ink">{nextTarget} Punkte</span>
+          {pointsToNext > 0 && (
+            <span className="text-unze-ink-muted"> · noch {pointsToNext} fehlen</span>
+          )}
+        </p>
+      )}
 
       <p className="mb-3 text-[11px] font-medium text-unze-ink-muted">
         Automatisch berechnet — nicht manuell einstellbar
@@ -77,7 +74,7 @@ export function CommunityLevelPanel({ levelResult, className }: CommunityLevelPa
           ([key, value]) => (
             <li
               key={key}
-              className="flex items-center justify-between px-3.5 py-2.5 text-sm first:rounded-t-2xl last:rounded-b-2xl"
+              className="flex items-center justify-between px-3.5 py-3 text-sm first:rounded-t-2xl last:rounded-b-2xl"
             >
               <span className="text-unze-ink-secondary">{BREAKDOWN_LABELS[key]}</span>
               <span className="font-semibold tabular-nums text-unze-ink">{value} Pkt</span>
