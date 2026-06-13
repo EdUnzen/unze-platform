@@ -2,9 +2,10 @@
 
 import { reviewApplicationAction } from "@/app/dashboard/access-actions";
 import { ActionFeedback } from "@/components/ui/ActionFeedback";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { APPLICATION_STATUS_LABELS } from "@/lib/constants/access";
 import type { JoinApplication } from "@/types/access";
-import { Check, Clock, User, X } from "lucide-react";
+import { Check, Clock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition, useState } from "react";
 
@@ -76,18 +77,12 @@ export function ApplicationReviewList({
               className="rounded-2xl bg-white p-3 shadow-card"
             >
               <div className="mb-2 flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-unze-surface-muted">
-                  {app.applicant?.avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={app.applicant.avatarUrl}
-                      alt=""
-                      className="h-full w-full rounded-full object-cover"
-                    />
-                  ) : (
-                    <User className="h-4 w-4 text-unze-ink-muted" />
-                  )}
-                </div>
+                <UserAvatar
+                  name={name}
+                  seed={app.userId}
+                  avatarUrl={app.applicant?.avatarUrl}
+                  size="md"
+                />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium text-unze-ink">
                     {name}

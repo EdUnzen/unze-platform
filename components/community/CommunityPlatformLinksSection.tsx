@@ -1,4 +1,5 @@
 import { OfficialPlatformsGrid } from "@/components/community/OfficialPlatformsGrid";
+import { VerificationInfoTrigger } from "@/components/verification/VerificationInfoTrigger";
 import { ExternalLinkTrustNotice } from "@/components/trust/ExternalLinkTrustNotice";
 import type { CommunityPlatformLink } from "@/services/community/platform-links.repository";
 import type { Community } from "@/types/community";
@@ -15,9 +16,16 @@ export function CommunityPlatformLinksSection({
 }: CommunityPlatformLinksSectionProps) {
   return (
     <section className="rounded-3xl bg-white p-4 shadow-card">
-      <header className="mb-3 flex items-center gap-2">
+      <header className="mb-3 flex flex-wrap items-center gap-2">
         <Link2 className="h-4 w-4 text-unze-green" aria-hidden />
         <h2 className="text-sm font-semibold text-unze-ink">Plattformen</h2>
+        {community.isVerified && (
+          <VerificationInfoTrigger
+            kind="community"
+            verifiedAt={community.verifiedAt}
+            variant="pill"
+          />
+        )}
       </header>
       <p className="mb-4 text-xs text-unze-ink-secondary">
         Kommunikation läuft über verbundene Kanäle — UNZE organisiert Community,
@@ -29,6 +37,7 @@ export function CommunityPlatformLinksSection({
         primaryPlatform={community.platformType}
         primaryUrl={community.externalUrl}
         communityVerified={community.isVerified}
+        communityVerifiedAt={community.verifiedAt}
       />
 
       <div className="mt-4 flex items-start gap-2 rounded-2xl border border-unze-green/20 bg-unze-green-muted/40 px-3 py-2.5">

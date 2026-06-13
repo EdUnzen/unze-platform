@@ -1,4 +1,5 @@
 import { HOME_HERO_IMAGE, PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
+import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,20 +12,43 @@ export function HomeHero({ variant }: HomeHeroProps) {
 
   return (
     <section className="relative overflow-hidden rounded-3xl shadow-card">
-      <div className="relative min-h-[220px] sm:min-h-[260px] md:min-h-[300px]">
+      <div
+        className={cn(
+          "relative",
+          isGuest
+            ? "min-h-[280px] sm:min-h-[320px] md:min-h-[360px]"
+            : "min-h-[220px] sm:min-h-[260px] md:min-h-[300px]",
+        )}
+      >
         <Image
           src={HOME_HERO_IMAGE}
           alt="UNZE — Communities, Gruppen, Events und Services vernetzt auf einer Plattform"
           fill
           priority
           sizes="(max-width: 640px) 100vw, 768px"
-          className="object-cover object-center"
+          className={cn(
+            "object-cover",
+            isGuest ? "object-[center_22%]" : "object-[center_30%]",
+          )}
         />
+        {/* Nur unterer Bereich abdunkeln — Motiv oben bleibt frei */}
         <div
-          className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/15"
+          className={cn(
+            "absolute inset-x-0 bottom-0 bg-gradient-to-t to-transparent",
+            isGuest
+              ? "h-[48%] from-black/88 via-black/35"
+              : "h-[55%] from-black/80 via-black/25",
+          )}
           aria-hidden
         />
-        <div className="relative z-10 flex min-h-[220px] flex-col justify-end p-4 sm:min-h-[260px] sm:p-5 md:min-h-[300px]">
+        <div
+          className={cn(
+            "relative z-10 flex flex-col justify-end",
+            isGuest
+              ? "min-h-[280px] px-4 pb-3 pt-[38%] sm:min-h-[320px] sm:px-5 sm:pb-4 sm:pt-[40%] md:min-h-[360px]"
+              : "min-h-[220px] p-4 sm:min-h-[260px] sm:p-5 md:min-h-[300px]",
+          )}
+        >
           <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-200/90">
             {isGuest ? "Willkommen bei UNZE" : "Dein Netzwerk auf UNZE"}
           </p>

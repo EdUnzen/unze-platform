@@ -48,6 +48,7 @@ export function CommunityStatusBadges({
       {community.isVerified && (
         <VerificationInfoTrigger
           kind="community"
+          verifiedAt={community.verifiedAt}
           variant="pill"
           className={cn(
             "rounded-lg px-2 py-0.5 text-[11px] font-semibold",

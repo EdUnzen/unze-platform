@@ -79,6 +79,10 @@ export function mapCommunityRow(
     rating: Number(row.rating_avg) || 0,
     reviewCount: row.review_count,
     isVerified: row.is_verified,
+    verifiedAt:
+      ((row as { verified_community_at?: string | null }).verified_community_at as
+        | string
+        | null) ?? null,
     isTrending: row.is_trending,
     visibility: row.visibility as CommunityVisibility,
     creatorName,

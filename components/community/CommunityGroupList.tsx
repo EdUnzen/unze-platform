@@ -1,6 +1,7 @@
 import type { CommunityGroup } from "@/types/community";
 import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
 import { getGroupVisualSeed } from "@/lib/demo/group-visuals";
+import { resolveGroupCoverDisplay } from "@/lib/visual/resolve-banner";
 import Link from "next/link";
 
 interface CommunityGroupListProps {
@@ -8,6 +9,7 @@ interface CommunityGroupListProps {
   communitySlug: string;
   bannerGradient?: string;
   title?: string;
+  category?: string;
 }
 
 export function CommunityGroupList({
@@ -15,6 +17,7 @@ export function CommunityGroupList({
   communitySlug,
   bannerGradient = "from-unze-green/80 via-emerald-600/70 to-teal-800/80",
   title = "Gruppen",
+  category = "general",
 }: CommunityGroupListProps) {
   if (groups.length === 0) return null;
 
@@ -22,7 +25,13 @@ export function CommunityGroupList({
     <section className="mt-6">
       <h2 className="mb-3 text-base font-semibold text-unze-ink">{title}</h2>
       <ul className="flex flex-col gap-2">
-        {groups.map((group) => (
+        {groups.map((group) => {
+          const cover = resolveGroupCoverDisplay({
+            coverUrl: group.coverUrl,
+            bannerGradient,
+            category,
+          });
+          return (
           <li key={group.id}>
             <Link
               href={`/community/${communitySlug}?group=${group.slug}`}
@@ -30,7 +39,9 @@ export function CommunityGroupList({
             >
               <GroupCoverVisual
                 seed={getGroupVisualSeed(communitySlug, group.slug)}
-                bannerGradient={bannerGradient}
+                bannerGradient={cover.gradient}
+                imageUrl={cover.imageUrl}
+                groupType={group.groupType === "service" ? "service" : "group"}
                 className="h-14 w-14 shrink-0 rounded-xl"
                 compact
               />
@@ -49,7 +60,8 @@ export function CommunityGroupList({
               </div>
             </Link>
           </li>
-        ))}
+          );
+        })}
       </ul>
     </section>
   );

@@ -4,7 +4,7 @@ import { AbstractNetworkPattern } from "@/components/visual/AbstractNetworkPatte
 import { patternVariantForSeed } from "@/lib/visual/seed-from-string";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
-import { Users } from "lucide-react";
+import { Users, Wrench } from "lucide-react";
 import { useState } from "react";
 
 interface GroupCoverVisualProps {
@@ -13,6 +13,7 @@ interface GroupCoverVisualProps {
   imageUrl?: string | null;
   className?: string;
   compact?: boolean;
+  groupType?: "group" | "service";
 }
 
 function isNextImageUrl(url: string): boolean {
@@ -30,11 +31,13 @@ export function GroupCoverVisual({
   imageUrl,
   className,
   compact = false,
+  groupType = "group",
 }: GroupCoverVisualProps) {
   const [imageFailed, setImageFailed] = useState(false);
   const showImage = Boolean(imageUrl) && !imageFailed;
   const useNextImage = showImage && isNextImageUrl(imageUrl!);
   const variant = patternVariantForSeed(`${seed}-group`);
+  const Icon = groupType === "service" ? Wrench : Users;
 
   return (
     <div className={cn("relative overflow-hidden", className)}>
@@ -75,7 +78,7 @@ export function GroupCoverVisual({
         )}
         aria-hidden
       >
-        <Users className="h-4 w-4 text-white/90" />
+        <Icon className="h-4 w-4 text-white/90" />
       </div>
       <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
     </div>

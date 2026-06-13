@@ -35,6 +35,13 @@ function mapProfileRowToCreator(
     username: profile.username as string | null,
     bio: headline ?? null,
     isVerified: Boolean(profile.is_verified),
+    verificationTier:
+      profile.creator_verification_tier === "business"
+        ? "business"
+        : profile.creator_verification_tier === "identity"
+          ? "identity"
+          : null,
+    verifiedAt: (profile.verified_creator_at as string) ?? null,
     avatarUrl: profile.avatar_url as string | null,
     communityCount: communities?.length ?? 0,
     totalMembers,
@@ -48,6 +55,8 @@ const CREATOR_PROFILE_SELECT = `
   username,
   avatar_url,
   is_verified,
+  creator_verification_tier,
+  verified_creator_at,
   creator_profiles (headline)
 `;
 

@@ -13,6 +13,7 @@ interface OfficialPlatformsGridProps {
   primaryPlatform?: PlatformType;
   primaryUrl?: string | null;
   communityVerified?: boolean;
+  communityVerifiedAt?: string | null;
 }
 
 function findLink(
@@ -22,11 +23,21 @@ function findLink(
   primaryUrl?: string | null,
 ) {
   if (primaryPlatform === platform && primaryUrl) {
-    return { url: primaryUrl, label: PLATFORM_LABELS[platform] };
+    return {
+      url: primaryUrl,
+      label: PLATFORM_LABELS[platform],
+      isVerified: false,
+      verifiedAt: null as string | null,
+    };
   }
   const match = links.find((l) => l.platformType === platform);
   if (!match) return null;
-  return { url: match.url, label: match.label ?? PLATFORM_LABELS[platform] };
+  return {
+    url: match.url,
+    label: match.label ?? PLATFORM_LABELS[platform],
+    isVerified: match.isVerified ?? false,
+    verifiedAt: match.verifiedAt ?? null,
+  };
 }
 
 export function OfficialPlatformsGrid({
@@ -34,12 +45,16 @@ export function OfficialPlatformsGrid({
   primaryPlatform,
   primaryUrl,
   communityVerified = false,
+  communityVerifiedAt: _communityVerifiedAt = null,
 }: OfficialPlatformsGridProps) {
+  void _communityVerifiedAt;
   return (
     <div className="grid grid-cols-4 gap-2.5 sm:grid-cols-4">
       {OFFICIAL_EXTERNAL_PLATFORMS.map((platform) => {
         const entry = findLink(links, platform, primaryPlatform, primaryUrl);
         const connected = Boolean(entry?.url);
+        const linkVerified =
+          entry?.isVerified || (communityVerified && connected);
 
         const inner = (
           <>
@@ -66,13 +81,13 @@ export function OfficialPlatformsGrid({
             >
               {PLATFORM_LABELS[platform]}
             </span>
-            {connected && communityVerified && (
+            {connected && linkVerified && (
               <span className="mt-0.5 inline-flex items-center justify-center gap-0.5 text-[9px] font-semibold text-unze-green-dark">
                 <BadgeCheck className="h-3 w-3" aria-hidden />
                 Verifiziert
               </span>
             )}
-            {connected && !communityVerified && (
+            {connected && !linkVerified && (
               <span className="mt-0.5 block text-center text-[9px] text-unze-ink-muted">
                 Verbunden
               </span>

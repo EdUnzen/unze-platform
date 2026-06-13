@@ -4,13 +4,14 @@ import { cn } from "@/lib/utils/cn";
 import { BadgeCheck, X } from "lucide-react";
 import { useState } from "react";
 
-export type VerificationKind = "profile" | "creator" | "business" | "community";
+export type VerificationKind = "profile" | "creator" | "business" | "community" | "platform";
 
 const TYPE_LABELS: Record<VerificationKind, string> = {
   profile: "Profil verifiziert",
   creator: "Creator verifiziert",
   business: "Gewerbe verifiziert",
   community: "Community verifiziert",
+  platform: "Plattform-Kanal verifiziert",
 };
 
 interface VerificationInfoTriggerProps {
@@ -61,11 +62,16 @@ export function VerificationInfoTrigger({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center">
+        <div
+          className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 sm:items-center"
+          onClick={() => setOpen(false)}
+          role="presentation"
+        >
           <div
             className="w-full max-w-sm rounded-3xl bg-white p-5 shadow-xl"
             role="dialog"
             aria-labelledby="verification-info-title"
+            onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-4 flex items-start justify-between gap-3">
               <div className="flex items-center gap-2">

@@ -7,6 +7,9 @@ export type CommunityPlatformLink = {
   url: string;
   label: string | null;
   sortOrder: number;
+  /** Kanalweise Verifizierung (post-Pilot); sonst Community-Fallback */
+  isVerified?: boolean;
+  verifiedAt?: string | null;
 };
 
 export async function fetchCommunityPlatformLinksFromDb(
@@ -26,11 +29,19 @@ export async function fetchCommunityPlatformLinksFromDb(
     return [];
   }
 
-  return (data ?? []).map((row) => ({
-    id: row.id as string,
-    platformType: row.platform_type as PlatformType,
-    url: row.url as string,
-    label: (row.label as string) ?? null,
-    sortOrder: row.sort_order as number,
-  }));
+  return (data ?? []).map((row) => {
+    const ext = row as {
+      is_verified?: boolean;
+      verified_at?: string | null;
+    };
+    return {
+      id: row.id as string,
+      platformType: row.platform_type as PlatformType,
+      url: row.url as string,
+      label: (row.label as string) ?? null,
+      sortOrder: row.sort_order as number,
+      isVerified: Boolean(ext.is_verified),
+      verifiedAt: ext.verified_at ?? null,
+    };
+  });
 }

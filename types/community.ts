@@ -81,6 +81,7 @@ export interface Community {
   rating: number;
   reviewCount: number;
   isVerified: boolean;
+  verifiedAt?: string | null;
   isTrending?: boolean;
   visibility: CommunityVisibility;
   creatorName: string;

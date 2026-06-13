@@ -35,7 +35,11 @@ export function CreatorPublicProfileView({ profile }: CreatorPublicProfileViewPr
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-xl font-bold text-unze-ink">{creator.name}</h1>
               {creator.isVerified && (
-                <VerificationInfoTrigger kind="creator" iconClassName="h-5 w-5" />
+                <VerificationInfoTrigger
+                  kind={creator.verificationTier === "business" ? "business" : "creator"}
+                  verifiedAt={creator.verifiedAt}
+                  iconClassName="h-5 w-5"
+                />
               )}
             </div>
             {creator.username && (

@@ -5,6 +5,8 @@ export interface PlatformCreator {
   username: string | null;
   bio: string | null;
   isVerified: boolean;
+  verificationTier?: "identity" | "business" | null;
+  verifiedAt?: string | null;
   avatarUrl: string | null;
   communityCount: number;
   totalMembers: number;
