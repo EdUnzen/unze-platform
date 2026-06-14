@@ -118,9 +118,9 @@ export function UnzeOnboardingDialog({
             <div>
               <h2 id="unze-onboarding-title" className="text-base font-semibold text-unze-ink">
                 {current === 0
-                  ? ONBOARDING_COPY.title
+                  ? "Was ist UNZE?"
                   : current === 1
-                    ? "Alles an einem Ort"
+                    ? "Wie funktioniert UNZE?"
                     : ONBOARDING_COPY.installTitle}
               </h2>
               <p className="text-xs text-unze-ink-secondary">{ONBOARDING_COPY.subtitle}</p>
@@ -147,7 +147,11 @@ export function UnzeOnboardingDialog({
         )}
 
         {current === 1 && (
-          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-2">
+          <div className="space-y-3">
+            <p className="text-sm leading-relaxed text-unze-ink-secondary">
+              {ONBOARDING_COPY.howItWorks}
+            </p>
+            <ul className="grid grid-cols-2 gap-2 sm:grid-cols-2">
             {ONBOARDING_COPY.pillars.map((pillar, i) => {
               const Icon = PILLAR_ICONS[i] ?? Users;
               return (
@@ -164,18 +168,22 @@ export function UnzeOnboardingDialog({
               );
             })}
           </ul>
+          </div>
         )}
 
         {current === 2 && (
           <div className="space-y-3 text-sm text-unze-ink-secondary">
             {ios ? (
               <>
-                <p>UNZE funktioniert wie eine App auf dem Home-Bildschirm:</p>
-                <ol className="list-inside list-decimal space-y-1.5 text-xs">
+                <p className="font-semibold text-unze-ink">
+                  {ONBOARDING_COPY.installIosTitle}
+                </p>
+                <p>{ONBOARDING_COPY.installIosIntro}</p>
+                <ol className="list-inside list-decimal space-y-2 text-sm">
                   {ONBOARDING_COPY.installIosSteps.map((line) => (
-                    <li key={line} className="flex items-center gap-1.5">
+                    <li key={line} className="flex items-center gap-2">
                       {line.startsWith("Teilen") && (
-                        <Share className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                        <Share className="h-4 w-4 shrink-0 text-unze-green" aria-hidden />
                       )}
                       {line}
                     </li>
@@ -184,6 +192,9 @@ export function UnzeOnboardingDialog({
               </>
             ) : (
               <>
+                <p className="font-semibold text-unze-ink">
+                  {ONBOARDING_COPY.installAndroidTitle}
+                </p>
                 <p>{ONBOARDING_COPY.installAndroid}</p>
                 {deferredPrompt ? (
                   <button

@@ -1,5 +1,5 @@
 import { DashboardTabs } from "@/components/dashboard/DashboardTabs";
-import { ROLE_LABELS } from "@/lib/constants/dashboard";
+import { RoleBadge } from "@/components/ui/RoleBadge";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
 import { countPendingReportsFromDb } from "@/services/governance/report.repository";
@@ -61,9 +61,13 @@ export default async function DashboardCommunityLayout({
         <h1 className="text-xl font-bold tracking-tight text-unze-ink">
           {community.title}
         </h1>
-        <p className="text-sm text-unze-ink-secondary">
-          Verwaltung · {ROLE_LABELS[community.viewerRole]} · {accessLabel}
-        </p>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <span className="text-sm text-unze-ink-secondary">Verwaltung</span>
+          <RoleBadge role={community.viewerRole} />
+          <span className="rounded-full bg-unze-surface-muted px-2.5 py-0.5 text-xs font-medium text-unze-ink-secondary">
+            {accessLabel}
+          </span>
+        </div>
       </header>
 
       <DashboardTabs

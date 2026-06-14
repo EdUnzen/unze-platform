@@ -41,6 +41,10 @@
     @apply min-h-[44px] min-w-[44px];
   }
 
+  .interactive-pill {
+    @apply min-h-[44px] rounded-xl border-2 border-unze-border bg-white px-4 py-2.5 text-sm font-semibold text-unze-ink shadow-sm transition-all hover:border-unze-green/40 hover:bg-unze-green-muted/20 active:scale-[0.98];
+  }
+
   .page-padding {
     @apply px-4 pb-[calc(var(--nav-height)+env(safe-area-inset-bottom,0px)+1rem)] pt-4;
   }

@@ -45,6 +45,7 @@ export interface DiscoverGroup extends CommunityGroup {
   platformType: PlatformType;
   memberCount: number;
   bannerGradient: string;
+  communityBannerUrl?: string | null;
   isVerified: boolean;
   isTrending: boolean;
   category: string;

@@ -5,6 +5,8 @@ export const ONBOARDING_COPY = {
   subtitle: "Dein Netzwerk für Communities, Gruppen, Events und Services",
   whatIsUnze:
     "UNZE bündelt alles an einem Ort: Communities organisieren, Gruppen verwalten, Events planen und Services anbieten — mit Verifizierung und klaren Strukturen.",
+  howItWorks:
+    "So funktioniert UNZE: Entdecke Communities, tritt Gruppen bei, nimm an Events teil und buche Services — alles vernetzt auf einer Plattform.",
   pillars: [
     {
       title: "Communities",
@@ -29,8 +31,12 @@ export const ONBOARDING_COPY = {
   ],
   discoverCta: "Communities entdecken",
   installTitle: "UNZE installieren",
+  installAndroidTitle: "Installation auf Android",
+  installIosTitle: "Installation auf iPhone",
   installAndroid:
-    "Tippe auf „App installieren“, um UNZE wie eine native App zu nutzen.",
+    "Tippe auf „App installieren“, um UNZE wie eine native App zu nutzen. Alternativ: Browser-Menü → „App installieren“ oder „Zum Startbildschirm hinzufügen“.",
+  installIosIntro:
+    "Auf dem iPhone funktioniert UNZE wie eine App über den Home-Bildschirm:",
   installIosSteps: [
     "Teilen-Symbol in Safari antippen",
     "„Zum Home-Bildschirm“ wählen",

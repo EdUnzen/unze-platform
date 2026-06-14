@@ -8,6 +8,7 @@ interface CommunityGroupListProps {
   groups: CommunityGroup[];
   communitySlug: string;
   bannerGradient?: string;
+  communityBannerUrl?: string | null;
   title?: string;
   category?: string;
 }
@@ -16,6 +17,7 @@ export function CommunityGroupList({
   groups,
   communitySlug,
   bannerGradient = "from-unze-green/80 via-emerald-600/70 to-teal-800/80",
+  communityBannerUrl,
   title = "Gruppen",
   category = "general",
 }: CommunityGroupListProps) {
@@ -28,6 +30,7 @@ export function CommunityGroupList({
         {groups.map((group) => {
           const cover = resolveGroupCoverDisplay({
             coverUrl: group.coverUrl,
+            communityBannerUrl,
             bannerGradient,
             category,
           });

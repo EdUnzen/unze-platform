@@ -9,14 +9,14 @@ import { cn } from "@/lib/utils/cn";
 interface PlatformIconProps {
   platform: PlatformType;
   className?: string;
-  size?: "xs" | "sm" | "md";
+  size?: "xs" | "sm" | "md" | "lg";
   /** Auf dunklen Bannern: Icon in Weiß */
   onDark?: boolean;
   /** false = ausgegraut (Plattform nicht verknüpft) */
   active?: boolean;
 }
 
-const SIZE = { xs: 12, sm: 14, md: 18 } as const;
+const SIZE = { xs: 16, sm: 20, md: 26, lg: 32 } as const;
 
 export function PlatformIcon({
   platform,

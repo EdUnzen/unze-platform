@@ -154,6 +154,7 @@ type DiscoverGroupCommunityRow = {
   platform_type: DiscoverGroup["platformType"];
   member_count: number;
   banner_gradient: string;
+  banner_url?: string | null;
   is_verified: boolean;
   is_trending: boolean;
   discover_enabled: boolean;
@@ -192,6 +193,9 @@ export function mapDiscoverGroupRow(row: {
     platformType: community.platform_type,
     memberCount: base.memberCount ?? community.member_count,
     bannerGradient: community.banner_gradient,
+    communityBannerUrl: isUsableImageUrl(community.banner_url)
+      ? community.banner_url
+      : null,
     isVerified: community.is_verified,
     isTrending: community.is_trending,
     category: community.category,

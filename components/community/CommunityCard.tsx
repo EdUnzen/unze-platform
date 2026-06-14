@@ -12,7 +12,16 @@ import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { getFocusTagStyle } from "@/lib/constants/focus-tag-styles";
 import { resolveCommunityCover } from "@/lib/visual/auto-cover";
-import { BadgeCheck, FolderOpen, Heart, Lock, TrendingUp, UserCheck, Users } from "lucide-react";
+import {
+  BadgeCheck,
+  FolderOpen,
+  Heart,
+  Lock,
+  Tag,
+  TrendingUp,
+  UserCheck,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
@@ -56,30 +65,19 @@ function CommunityCardInner({
               seed={community.slug}
               bannerGradient={cover.gradient}
               cover={cover}
-              className="h-48 sm:h-[13rem]"
+              className="h-52 sm:h-56"
               overlay="card"
             />
-            <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 pr-12">
+            <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-2 pr-12">
               <PlatformBadge platform={community.platformType} variant="overlay" />
-              {community.visibility !== "public" && (
-                <span className="inline-flex items-center gap-0.5 rounded-lg bg-black/35 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
-                  <Lock className="h-3 w-3" aria-hidden />
-                  {visibilityLabel}
-                </span>
-              )}
-              {accessLabel && accessLabel !== "Offen" && (
-                <span className="rounded-lg bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
-                  {accessLabel}
-                </span>
-              )}
               {community.isTrending && (
-                <span className="inline-flex items-center gap-0.5 rounded-lg bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
-                  <TrendingUp className="h-3 w-3" aria-hidden />
+                <span className="inline-flex items-center gap-1 rounded-xl bg-white/25 px-2.5 py-1.5 text-xs font-bold text-white backdrop-blur-md">
+                  <TrendingUp className="h-3.5 w-3.5" aria-hidden />
                   Trending
                 </span>
               )}
               {isDemoCommunitySlug(community.slug) && (
-                <span className="rounded-lg bg-amber-400/90 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-950 backdrop-blur-md">
+                <span className="rounded-xl bg-amber-400/95 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-amber-950">
                   Demo
                 </span>
               )}
@@ -87,7 +85,7 @@ function CommunityCardInner({
 
             {community.isVerified && (
               <div
-                className="absolute bottom-3 right-3 z-10 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm"
+                className="absolute bottom-3 right-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md"
                 title="Verifiziert"
               >
                 <BadgeCheck
@@ -98,9 +96,35 @@ function CommunityCardInner({
             )}
           </div>
 
-          <div className="p-4 pb-3">
+          <div className="p-4">
+            {/* Meta-Zeile: Plattform, Kategorie, Status */}
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <PlatformBadge platform={community.platformType} variant="card" />
+              <span className="inline-flex items-center gap-1 rounded-xl bg-unze-surface-muted px-2.5 py-1.5 text-xs font-semibold text-unze-ink-secondary">
+                <Tag className="h-3.5 w-3.5 text-unze-green" aria-hidden />
+                {community.category}
+              </span>
+              {community.visibility !== "public" && (
+                <span className="inline-flex items-center gap-1 rounded-xl bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
+                  <Lock className="h-3.5 w-3.5" aria-hidden />
+                  {visibilityLabel}
+                </span>
+              )}
+              {accessLabel && accessLabel !== "Offen" && (
+                <span className="rounded-xl bg-blue-50 px-2.5 py-1.5 text-xs font-semibold text-blue-800 ring-1 ring-blue-200">
+                  {accessLabel}
+                </span>
+              )}
+              {community.membership?.isMember && (
+                <span className="inline-flex items-center gap-1 rounded-xl bg-unze-green-muted px-2.5 py-1.5 text-xs font-semibold text-unze-green-dark">
+                  <UserCheck className="h-3.5 w-3.5" aria-hidden />
+                  Mitglied
+                </span>
+              )}
+            </div>
+
             <div className="mb-1 flex items-start justify-between gap-2">
-              <h3 className="line-clamp-1 text-[1.05rem] font-bold tracking-tight text-unze-ink sm:text-lg">
+              <h3 className="line-clamp-1 text-lg font-bold tracking-tight text-unze-ink">
                 {community.title}
               </h3>
               <RatingSummary
@@ -116,20 +140,20 @@ function CommunityCardInner({
               {community.description}
             </p>
 
-            <CardEngagementStrip metrics={community.engagement} className="mb-2" />
-
             {community.priceLabel && (
               <div className="mb-3">
                 <PriceBadge label={community.priceLabel} variant="prominent" />
               </div>
             )}
 
+            <CardEngagementStrip metrics={community.engagement} className="mb-3" />
+
             <div className="mb-3 flex flex-wrap gap-1.5">
               {community.tags.slice(0, 3).map((tag) => (
                 <span
                   key={tag}
                   className={cn(
-                    "rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+                    "rounded-full border px-2 py-0.5 text-xs font-semibold",
                     getFocusTagStyle(tag),
                   )}
                 >
@@ -138,50 +162,33 @@ function CommunityCardInner({
               ))}
             </div>
 
-            <div className="flex items-center justify-between border-t border-unze-border/80 pt-3">
-              <div className="flex flex-wrap items-center gap-2 text-xs text-unze-ink-secondary">
-                <PlatformBadge platform={community.platformType} variant="footer" />
-                <span className="flex items-center gap-1">
-                  <Users className="h-3.5 w-3.5" aria-hidden />
-                  {formatMemberCount(community.memberCount)}
+            {/* Mitglieder & Gruppen — immer sichtbar */}
+            <div className="flex flex-wrap items-center gap-3 border-t border-unze-border/80 pt-3 text-sm font-medium text-unze-ink-secondary">
+              <span className="inline-flex items-center gap-1.5">
+                <Users className="h-4 w-4 text-unze-green" aria-hidden />
+                {formatMemberCount(community.memberCount)}
+              </span>
+              {(community.groupCount ?? 0) > 0 && (
+                <span className="inline-flex items-center gap-1.5">
+                  <FolderOpen className="h-4 w-4 text-unze-green" aria-hidden />
+                  {community.groupCount} Gruppen
                 </span>
-                {(community.groupCount ?? 0) > 0 && (
-                  <span className="flex items-center gap-1">
-                    <FolderOpen className="h-3.5 w-3.5" aria-hidden />
-                    {community.groupCount} Gruppen
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-1.5">
-                {applicationStatus && !community.membership?.isMember && (
-                  <span
-                    className={cn(
-                      "rounded-full px-2 py-0.5 text-[10px] font-semibold",
-                      applicationStatus === "pending" && "bg-amber-100 text-amber-800",
-                      applicationStatus === "waitlisted" && "bg-blue-100 text-blue-800",
-                      applicationStatus === "accepted" && "bg-unze-green-muted text-unze-green-dark",
-                      applicationStatus === "rejected" && "bg-red-100 text-red-700",
-                      applicationStatus === "withdrawn" && "bg-unze-surface-muted text-unze-ink-muted",
-                    )}
-                  >
-                    {applicationStatus === "pending" && "Antrag offen"}
-                    {applicationStatus === "waitlisted" && "Warteliste"}
-                    {applicationStatus === "accepted" && "Angenommen"}
-                    {applicationStatus === "rejected" && "Abgelehnt"}
-                    {applicationStatus === "withdrawn" && "Zurückgezogen"}
-                  </span>
-                )}
-                {community.membership?.isMember && (
-                  <span className="flex items-center gap-0.5 rounded-full bg-unze-green-muted px-2 py-0.5 text-[10px] font-semibold text-unze-green-dark">
-                    <UserCheck className="h-3 w-3" aria-hidden />
-                    Mitglied
-                  </span>
-                )}
-                {community.isFollowing && !community.membership?.isMember && (
-                  <Heart className="h-3.5 w-3.5 fill-unze-green text-unze-green" aria-label="Gefolgt" />
-                )}
-                <span className="text-[11px] text-unze-ink-muted">{community.category}</span>
-              </div>
+              )}
+              {applicationStatus && !community.membership?.isMember && (
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-xs font-semibold",
+                    applicationStatus === "pending" && "bg-amber-100 text-amber-800",
+                    applicationStatus === "waitlisted" && "bg-blue-100 text-blue-800",
+                  )}
+                >
+                  {applicationStatus === "pending" && "Antrag offen"}
+                  {applicationStatus === "waitlisted" && "Warteliste"}
+                </span>
+              )}
+              {community.isFollowing && !community.membership?.isMember && (
+                <Heart className="h-4 w-4 fill-unze-green text-unze-green" aria-label="Gefolgt" />
+              )}
             </div>
           </div>
         </Link>

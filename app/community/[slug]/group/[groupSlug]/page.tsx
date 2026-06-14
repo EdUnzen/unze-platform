@@ -50,6 +50,7 @@ export default async function GroupPage({ params }: GroupPageProps) {
   const priceLabel = formatPrice(group.priceCents, group.currency);
   const cover = resolveGroupCoverDisplay({
     coverUrl: group.coverUrl,
+    communityBannerUrl: group.communityBannerUrl,
     bannerGradient: group.bannerGradient,
     category: group.category,
     groupType: group.groupType === "service" ? "service" : "group",

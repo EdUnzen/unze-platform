@@ -100,13 +100,13 @@ export function OwnerCenter({
             key={id}
             href={`/owner?tab=${id}`}
             className={cn(
-              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-semibold transition",
+              "inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition active:scale-[0.98]",
               tab === id
-                ? "bg-unze-green text-white"
-                : "bg-white text-unze-ink-secondary shadow-card",
+                ? "bg-unze-green text-white shadow-md"
+                : "border-2 border-unze-border bg-white text-unze-ink shadow-sm hover:border-unze-green/40",
             )}
           >
-            <Icon className="h-3.5 w-3.5" aria-hidden />
+            <Icon className="h-4 w-4" aria-hidden />
             {label}
           </Link>
         ))}

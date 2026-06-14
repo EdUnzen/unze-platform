@@ -3,6 +3,8 @@ import { ProfileHub } from "@/components/profile/ProfileHub";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { isSupabaseConfigured } from "@/lib/env";
 import { getCurrentProfile, getCurrentUser } from "@/services/auth/auth.service";
+import { getUserEventTickets } from "@/services/events/event-ticket.service";
+import { getMyMemberCommunities } from "@/services/home/home.service";
 import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
 import Link from "next/link";
 
@@ -12,6 +14,13 @@ export default async function ProfilePage() {
 
   const shell = user ? await getPlatformShellContext() : null;
   const profile = user ? await getCurrentProfile() : null;
+
+  const [memberCommunities, eventTicketResult] = user
+    ? await Promise.all([
+        getMyMemberCommunities(user.id),
+        getUserEventTickets(user.id),
+      ])
+    : [[], { tickets: [] as Awaited<ReturnType<typeof getUserEventTickets>>["tickets"] }];
 
   const showCreatorHub =
     Boolean(user) &&
@@ -63,6 +72,13 @@ export default async function ProfilePage() {
         profile={profile}
         unreadCount={shell?.unreadCount ?? 0}
         showCreatorHub={showCreatorHub}
+        stats={{
+          memberSince: profile?.created_at ?? new Date().toISOString(),
+          communityCount: memberCommunities.length,
+          eventCount: eventTicketResult.tickets.length,
+          isVerified: Boolean(profile?.is_verified),
+          isCreator: Boolean(profile?.is_creator),
+        }}
       />
     </div>
   );

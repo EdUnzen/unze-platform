@@ -23,13 +23,18 @@ export function resolveCommunityBannerDisplay(community: {
 
 export function resolveGroupCoverDisplay(group: {
   coverUrl?: string | null;
+  communityBannerUrl?: string | null;
   bannerGradient: string;
   category: string;
   groupType?: "group" | "service";
 }) {
   const cover = resolveGroupOrServiceCover(group);
   return {
-    imageUrl: cover.primaryImageUrl ?? cover.autoCoverUrl,
+    imageUrl:
+      cover.primaryImageUrl ??
+      cover.communityCoverUrl ??
+      cover.autoCoverUrl ??
+      cover.standardCoverUrl,
     gradient: cover.gradient,
     cover,
   };
@@ -44,7 +49,10 @@ export function resolveEventCoverDisplay(input: {
   const cover = resolveEventCover(input);
   return {
     imageUrl:
-      cover.primaryImageUrl ?? cover.autoCoverUrl ?? cover.standardCoverUrl,
+      cover.primaryImageUrl ??
+      cover.communityCoverUrl ??
+      cover.autoCoverUrl ??
+      cover.standardCoverUrl,
     gradient: cover.gradient,
     cover,
   };

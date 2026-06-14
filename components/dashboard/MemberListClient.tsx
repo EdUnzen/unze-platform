@@ -7,7 +7,9 @@ import {
 } from "@/app/dashboard/actions";
 import { BanMemberButton } from "@/components/dashboard/RestrictionsPanel";
 import { UserAvatar } from "@/components/ui/UserAvatar";
-import { ASSIGNABLE_ROLES, ROLE_LABELS } from "@/lib/constants/dashboard";
+import { RoleBadge } from "@/components/ui/RoleBadge";
+import { ASSIGNABLE_ROLES } from "@/lib/constants/dashboard";
+import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import type { CommunityMemberView } from "@/types/dashboard";
 import type { CommunityRole } from "@/types/database";
 import { Trash2 } from "lucide-react";
@@ -87,10 +89,14 @@ export function MemberListClient({
 
               <div className="min-w-0 flex-1">
                 <p className="truncate font-medium text-unze-ink">{name}</p>
-                <p className="text-xs text-unze-ink-muted">
-                  {member.roleTitle ?? ROLE_LABELS[member.role]}
-                  {member.isVerified && " · Verifiziert"}
-                </p>
+                <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                  <RoleBadge role={member.role} active size="sm" />
+                  {member.roleTitle?.trim() && (
+                    <span className="text-xs text-unze-ink-muted">
+                      · {member.roleTitle.trim()}
+                    </span>
+                  )}
+                </div>
                 {canManageRoles &&
                   !isCreator &&
                   ["moderator", "admin", "expert"].includes(member.role) && (

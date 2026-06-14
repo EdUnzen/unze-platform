@@ -1,5 +1,5 @@
 import { ProfileSettingsForm } from "@/components/profile/ProfileSettingsForm";
-import { resolveAutoCover } from "@/lib/visual/auto-cover";
+import { resolveProfileCover } from "@/lib/visual/auto-cover";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentProfile, getCurrentUser } from "@/services/auth/auth.service";
@@ -15,7 +15,8 @@ export default async function ProfileSettingsPage() {
   const displayName =
     profile?.display_name ?? user.email?.split("@")[0] ?? "Nutzer";
 
-  const profileCover = resolveAutoCover({
+  const profileCover = resolveProfileCover({
+    avatarUrl: profile?.avatar_url,
     category: "Allgemein",
     bannerGradient: "from-unze-green-light via-unze-green to-unze-green-dark",
   });

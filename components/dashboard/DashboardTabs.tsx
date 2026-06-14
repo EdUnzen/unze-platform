@@ -6,9 +6,10 @@ import { AttentionBadge } from "@/components/dashboard/StatusBadge";
 import { cn } from "@/lib/utils/cn";
 import type { CommunityRole } from "@/types/database";
 import type { DashboardTabId } from "@/types/dashboard";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface DashboardTabsProps {
   slug: string;
@@ -16,6 +17,15 @@ interface DashboardTabsProps {
   pendingApplicationCount?: number;
   pendingReportCount?: number;
 }
+
+const GROUP_HINTS: Record<string, string> = {
+  general: "Übersicht & Kennzahlen",
+  members: "Mitglieder, Anträge, Zugang, Rollen",
+  content: "Gruppen, Events, Badges",
+  safety: "Moderation, Audit, Verifizierung",
+  business: "Preise & Abonnements",
+  system: "Community-Einstellungen",
+};
 
 function tabAttentionCount(
   tabId: DashboardTabId,
@@ -57,91 +67,169 @@ export function DashboardTabs({
 
   const activeGroupId =
     groups.find((g) => g.tabs.some((t) => t.id === activeTab?.id))?.id ??
-    groups[0]?.id ??
-    "general";
+    null;
 
-  const [selectedGroupId, setSelectedGroupId] = useState(activeGroupId);
-  const effectiveGroupId = groups.some((g) => g.id === selectedGroupId)
-    ? selectedGroupId
-    : activeGroupId;
+  const [expandedGroupId, setExpandedGroupId] = useState<string | null>(
+    activeGroupId,
+  );
 
-  const selectedGroup =
-    groups.find((g) => g.id === effectiveGroupId) ?? groups[0];
+  useEffect(() => {
+    if (activeGroupId) setExpandedGroupId(activeGroupId);
+  }, [activeGroupId]);
+
+  const expandedGroup = groups.find((g) => g.id === expandedGroupId);
+
+  function handleGroupClick(groupId: string, tabCount: number) {
+    if (tabCount === 1) {
+      setExpandedGroupId(groupId);
+      return;
+    }
+    setExpandedGroupId((prev) => (prev === groupId ? null : groupId));
+  }
 
   return (
-    <nav className="mb-6 space-y-3" aria-label="Dashboard-Bereiche">
-      <div
-        className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 scrollbar-none"
-        role="tablist"
-        aria-label="Dashboard-Kategorien"
-      >
-        {groups.map((group) => {
-          const isActive = effectiveGroupId === group.id;
-          const groupAttention = group.tabs.reduce(
-            (sum, tab) =>
-              sum + tabAttentionCount(tab.id, pendingApplicationCount, pendingReportCount),
-            0,
-          );
-
-          return (
-            <button
-              key={group.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => setSelectedGroupId(group.id)}
-              className={cn(
-                "relative shrink-0 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
-                isActive
-                  ? "bg-unze-green text-white shadow-sm"
-                  : "border border-unze-border bg-white text-unze-ink-secondary",
-              )}
-            >
-              {group.label}
-              {groupAttention > 0 && !isActive && (
-                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] font-bold text-white">
-                  {groupAttention > 9 ? "9+" : groupAttention}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {selectedGroup && (
-        <div className="flex flex-wrap gap-1 rounded-2xl bg-unze-surface-muted p-1">
-          {selectedGroup.tabs.map((tab) => {
-            const href = tab.href(slug);
-            const isActive =
-              pathname === href ||
-              (tab.id === "overview" &&
-                pathname === `/dashboard/community/${slug}`);
-            const Icon = tab.icon;
-            const attention = tabAttentionCount(
-              tab.id,
-              pendingApplicationCount,
-              pendingReportCount,
+    <nav className="mb-6 space-y-4" aria-label="Dashboard-Bereiche">
+      {/* Hauptnavigation — 6 Kategorien */}
+      <div>
+        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-unze-ink-muted">
+          Bereich wählen
+        </p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {groups.map((group) => {
+            const isExpanded = expandedGroupId === group.id;
+            const isActiveGroup = activeGroupId === group.id;
+            const groupAttention = group.tabs.reduce(
+              (sum, tab) =>
+                sum +
+                tabAttentionCount(
+                  tab.id,
+                  pendingApplicationCount,
+                  pendingReportCount,
+                ),
+              0,
             );
+            const singleTab = group.tabs.length === 1 ? group.tabs[0] : null;
+
+            if (singleTab) {
+              const href = singleTab.href(slug);
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={group.id}
+                  href={href}
+                  data-testid={`dashboard-group-${group.id}`}
+                  className={cn(
+                    "relative flex min-h-[72px] flex-col justify-between rounded-2xl border-2 p-3.5 transition-all active:scale-[0.98]",
+                    isActive
+                      ? "border-unze-green bg-unze-green text-white shadow-md"
+                      : "border-unze-border bg-white text-unze-ink shadow-sm hover:border-unze-green/40 hover:bg-unze-green-muted/20",
+                  )}
+                >
+                  <span className="text-sm font-bold leading-tight">{group.label}</span>
+                  <span
+                    className={cn(
+                      "text-[11px] leading-snug",
+                      isActive ? "text-white/80" : "text-unze-ink-muted",
+                    )}
+                  >
+                    {GROUP_HINTS[group.id] ?? singleTab.label}
+                  </span>
+                </Link>
+              );
+            }
 
             return (
-              <Link
-                key={tab.id}
-                href={href}
-                data-testid={`dashboard-tab-${tab.id}`}
+              <button
+                key={group.id}
+                type="button"
+                data-testid={`dashboard-group-${group.id}`}
+                onClick={() =>
+                  handleGroupClick(group.id, group.tabs.length)
+                }
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-medium transition-all",
-                  isActive
-                    ? "bg-white text-unze-ink shadow-sm"
-                    : "text-unze-ink-muted",
+                  "relative flex min-h-[72px] flex-col justify-between rounded-2xl border-2 p-3.5 text-left transition-all active:scale-[0.98]",
+                  isExpanded || isActiveGroup
+                    ? "border-unze-green bg-unze-green-muted/40 text-unze-ink shadow-sm"
+                    : "border-unze-border bg-white text-unze-ink shadow-sm hover:border-unze-green/40 hover:bg-unze-green-muted/20",
                 )}
-                aria-current={isActive ? "page" : undefined}
               >
-                <Icon className="h-3.5 w-3.5" aria-hidden />
-                {tab.label}
-                {attention > 0 && <AttentionBadge count={attention} />}
-              </Link>
+                <span className="text-sm font-bold leading-tight">{group.label}</span>
+                <span className="text-[11px] leading-snug text-unze-ink-muted">
+                  {GROUP_HINTS[group.id] ?? `${group.tabs.length} Bereiche`}
+                </span>
+                {groupAttention > 0 && (
+                  <span className="absolute right-2 top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                    {groupAttention > 9 ? "9+" : groupAttention}
+                  </span>
+                )}
+              </button>
             );
           })}
+        </div>
+      </div>
+
+      {/* Unterseiten — nur nach Kategorie-Auswahl */}
+      {expandedGroup && expandedGroup.tabs.length > 1 && (
+        <div className="animate-in fade-in slide-in-from-top-1 duration-200">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-unze-ink-muted">
+            {expandedGroup.label} — Unterseiten
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {expandedGroup.tabs.map((tab) => {
+              const href = tab.href(slug);
+              const isActive =
+                pathname === href ||
+                (tab.id === "overview" &&
+                  pathname === `/dashboard/community/${slug}`);
+              const Icon = tab.icon;
+              const attention = tabAttentionCount(
+                tab.id,
+                pendingApplicationCount,
+                pendingReportCount,
+              );
+
+              return (
+                <Link
+                  key={tab.id}
+                  href={href}
+                  data-testid={`dashboard-tab-${tab.id}`}
+                  className={cn(
+                    "flex min-h-[56px] items-center gap-3 rounded-2xl border-2 px-4 py-3.5 transition-all active:scale-[0.98]",
+                    isActive
+                      ? "border-unze-green bg-unze-green text-white shadow-md"
+                      : "border-unze-border bg-white text-unze-ink shadow-sm hover:border-unze-green/40 hover:bg-unze-green-muted/25",
+                  )}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  <span
+                    className={cn(
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                      isActive ? "bg-white/20" : "bg-unze-green-muted",
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-5 w-5",
+                        isActive ? "text-white" : "text-unze-green",
+                      )}
+                      aria-hidden
+                    />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-bold">{tab.label}</span>
+                  </span>
+                  {attention > 0 && <AttentionBadge count={attention} />}
+                  <ChevronRight
+                    className={cn(
+                      "h-4 w-4 shrink-0",
+                      isActive ? "text-white/70" : "text-unze-ink-muted",
+                    )}
+                    aria-hidden
+                  />
+                </Link>
+              );
+            })}
+          </div>
         </div>
       )}
     </nav>

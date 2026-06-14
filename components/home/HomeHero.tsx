@@ -11,13 +11,13 @@ export function HomeHero({ variant }: HomeHeroProps) {
   const isGuest = variant === "guest";
 
   return (
-    <section className="relative overflow-hidden rounded-3xl shadow-card">
+    <section className="relative overflow-hidden rounded-3xl shadow-card ring-1 ring-black/5">
       <div
         className={cn(
           "relative",
           isGuest
-            ? "min-h-[280px] sm:min-h-[320px] md:min-h-[360px]"
-            : "min-h-[220px] sm:min-h-[260px] md:min-h-[300px]",
+            ? "min-h-[360px] sm:min-h-[400px] md:min-h-[440px]"
+            : "min-h-[300px] sm:min-h-[340px] md:min-h-[380px]",
         )}
       >
         <Image
@@ -28,50 +28,59 @@ export function HomeHero({ variant }: HomeHeroProps) {
           sizes="(max-width: 640px) 100vw, 768px"
           className={cn(
             "object-cover",
-            isGuest ? "object-[center_22%]" : "object-[center_30%]",
+            isGuest ? "object-[center_40%]" : "object-[center_35%]",
           )}
         />
-        {/* Nur unterer Bereich abdunkeln — Motiv oben bleibt frei */}
+
+        {/* Leichter Top-Schutz — Motiv bleibt dominant */}
+        <div
+          className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/25 to-transparent"
+          aria-hidden
+        />
+
+        {/* Nur unterer Textbereich abdunkeln */}
         <div
           className={cn(
             "absolute inset-x-0 bottom-0 bg-gradient-to-t to-transparent",
             isGuest
-              ? "h-[48%] from-black/88 via-black/35"
-              : "h-[55%] from-black/80 via-black/25",
+              ? "h-[42%] from-black/92 via-black/50"
+              : "h-[45%] from-black/88 via-black/40",
           )}
           aria-hidden
         />
+
+        {/* Text + CTA am unteren Rand */}
         <div
           className={cn(
-            "relative z-10 flex flex-col justify-end",
+            "absolute inset-x-0 bottom-0 z-10 flex flex-col",
             isGuest
-              ? "min-h-[280px] px-4 pb-3 pt-[38%] sm:min-h-[320px] sm:px-5 sm:pb-4 sm:pt-[40%] md:min-h-[360px]"
-              : "min-h-[220px] p-4 sm:min-h-[260px] sm:p-5 md:min-h-[300px]",
+              ? "px-4 pb-6 pt-24 sm:px-6 sm:pb-7"
+              : "px-4 pb-5 pt-20 sm:px-5 sm:pb-6",
           )}
         >
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-200/90">
-            {isGuest ? "Willkommen bei UNZE" : "Dein Netzwerk auf UNZE"}
+          <p className="text-xs font-semibold uppercase tracking-widest text-emerald-200/90">
+            {isGuest ? "Willkommen bei UNZE" : "Mein UNZE"}
           </p>
-          <h2 className="mt-1 max-w-lg text-lg font-bold leading-snug text-white sm:text-xl md:text-2xl">
+          <h2 className="mt-2 max-w-lg text-xl font-bold leading-tight text-white sm:text-2xl md:text-[1.75rem]">
             {isGuest
               ? "Communities, Gruppen & Events — alles an einem Ort"
-              : "Communities, Gruppen & Events — dein Verwaltungs-Hub"}
+              : "Dein Netzwerk — Communities, Gruppen & Events"}
           </h2>
-          <p className="mt-2 max-w-md text-xs leading-relaxed text-white/90 sm:text-sm">
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-white/90">
             {PLATFORM_TAGLINE}
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-2.5">
             {isGuest ? (
               <>
                 <Link
                   href="/auth/login"
-                  className="inline-flex rounded-xl bg-unze-green px-4 py-2.5 text-xs font-semibold text-white shadow-lg active:scale-[0.98] sm:text-sm"
+                  className="inline-flex min-h-[48px] items-center rounded-2xl bg-unze-green px-6 py-3 text-sm font-bold text-white shadow-lg shadow-unze-green/30 active:scale-[0.98]"
                 >
                   Anmelden
                 </Link>
                 <Link
                   href="/auth/login?mode=signup"
-                  className="inline-flex rounded-xl border border-white/40 bg-white/10 px-4 py-2.5 text-xs font-semibold text-white backdrop-blur-sm active:scale-[0.98] sm:text-sm"
+                  className="inline-flex min-h-[48px] items-center rounded-2xl border-2 border-white/50 bg-white/15 px-6 py-3 text-sm font-bold text-white backdrop-blur-sm active:scale-[0.98]"
                 >
                   Kostenlos registrieren
                 </Link>
@@ -79,7 +88,7 @@ export function HomeHero({ variant }: HomeHeroProps) {
             ) : (
               <Link
                 href="/discover"
-                className="inline-flex rounded-xl bg-unze-green px-4 py-2.5 text-xs font-semibold text-white shadow-lg active:scale-[0.98] sm:text-sm"
+                className="inline-flex min-h-[48px] items-center rounded-2xl bg-unze-green px-6 py-3 text-sm font-bold text-white shadow-lg shadow-unze-green/30 active:scale-[0.98]"
               >
                 Discover öffnen
               </Link>

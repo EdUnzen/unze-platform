@@ -86,9 +86,11 @@ export function DashboardQuickNav({
             key={item.id}
             href={item.href(slug)}
             data-testid={`dashboard-quick-${item.id}`}
-            className="flex shrink-0 items-center gap-2 rounded-2xl border border-unze-border bg-white px-3 py-2.5 text-xs font-medium text-unze-ink shadow-sm active:scale-[0.98]"
+            className="flex min-h-[44px] shrink-0 items-center gap-2.5 rounded-2xl border-2 border-unze-border bg-white px-4 py-3 text-sm font-semibold text-unze-ink shadow-sm transition-all hover:border-unze-green/40 hover:bg-unze-green-muted/20 active:scale-[0.98]"
           >
-            <Icon className="h-4 w-4 text-unze-green" aria-hidden />
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-unze-green-muted">
+              <Icon className="h-4 w-4 text-unze-green" aria-hidden />
+            </span>
             {item.label}
             {badge > 0 && (
               <span className="rounded-full bg-red-500 px-1.5 py-0.5 text-[10px] font-bold text-white">

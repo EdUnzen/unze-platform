@@ -5,7 +5,6 @@ import { DashboardAttentionPanel } from "@/components/dashboard/DashboardAttenti
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
-import { DashboardQuickNav } from "@/components/dashboard/DashboardQuickNav";
 import { countPendingApplicationsFromDb } from "@/services/access/access.repository";
 import { countPendingRemovalTasks } from "@/services/lifecycle/removal-task.service";
 import { countPendingReportsFromDb } from "@/services/governance/report.repository";
@@ -60,14 +59,6 @@ export default async function DashboardOverviewPage({
         monetizationEnabled={community.monetizationEnabled ?? false}
         accessStatusLabel={accessLabel}
         viewerRole={community.viewerRole}
-      />
-
-      <DashboardQuickNav
-        slug={slug}
-        viewerRole={community.viewerRole}
-        pendingApplications={pendingApplicationCount}
-        pendingReports={pendingReportCount}
-        pendingRemovals={pendingRemovalCount}
       />
 
       <DashboardGrowthPanel

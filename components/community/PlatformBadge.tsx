@@ -1,5 +1,6 @@
 import {
   PLATFORM_COLORS,
+  PLATFORM_ICON_COLORS,
   PLATFORM_LABELS,
 } from "@/lib/constants/platforms";
 import { PlatformIcon } from "@/components/platform/PlatformIcon";
@@ -9,8 +10,8 @@ import { cn } from "@/lib/utils/cn";
 interface PlatformBadgeProps {
   platform: PlatformType;
   className?: string;
-  /** overlay = auf Bannern, icon = nur Icon, footer = unter Cards, default = Pill */
-  variant?: "default" | "overlay" | "icon" | "footer";
+  /** overlay = Banner, card = Community-Karte, icon = nur Icon, footer = unter Cards, default = Pill */
+  variant?: "default" | "overlay" | "icon" | "footer" | "card";
   showLabel?: boolean;
 }
 
@@ -21,18 +22,43 @@ export function PlatformBadge({
   showLabel = true,
 }: PlatformBadgeProps) {
   const label = PLATFORM_LABELS[platform];
+  const brandColor = PLATFORM_ICON_COLORS[platform];
 
-  if (variant === "icon") {
+  if (variant === "card") {
     return (
       <span
         className={cn(
-          "inline-flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-sm ring-1 ring-black/5",
+          "inline-flex items-center gap-2.5 rounded-2xl px-3 py-2 shadow-md ring-1 ring-black/5",
+          PLATFORM_COLORS[platform],
           className,
         )}
         title={label}
         aria-label={label}
       >
-        <PlatformIcon platform={platform} size="sm" />
+        <span
+          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/90 shadow-sm"
+          style={{ color: brandColor }}
+        >
+          <PlatformIcon platform={platform} size="md" active />
+        </span>
+        {showLabel && (
+          <span className="text-sm font-bold">{label}</span>
+        )}
+      </span>
+    );
+  }
+
+  if (variant === "icon") {
+    return (
+      <span
+        className={cn(
+          "inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white shadow-lg ring-1 ring-black/5",
+          className,
+        )}
+        title={label}
+        aria-label={label}
+      >
+        <PlatformIcon platform={platform} size="md" active />
       </span>
     );
   }
@@ -41,12 +67,13 @@ export function PlatformBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-lg bg-black/35 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-md",
+          "inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-md",
           className,
         )}
+        style={{ backgroundColor: `${brandColor}dd` }}
         title={label}
       >
-        <PlatformIcon platform={platform} size="xs" onDark />
+        <PlatformIcon platform={platform} size="sm" onDark active />
         {showLabel && label}
       </span>
     );
@@ -56,12 +83,13 @@ export function PlatformBadge({
     return (
       <span
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-full bg-unze-surface-muted px-2 py-1 text-[11px] font-medium text-unze-ink-secondary",
+          "inline-flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold",
+          PLATFORM_COLORS[platform],
           className,
         )}
         title={label}
       >
-        <PlatformIcon platform={platform} size="xs" />
+        <PlatformIcon platform={platform} size="sm" active />
         {showLabel && label}
       </span>
     );
@@ -70,13 +98,13 @@ export function PlatformBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-lg px-2 py-0.5 text-[11px] font-semibold tracking-wide",
+        "inline-flex items-center gap-2 rounded-lg px-2.5 py-1 text-xs font-semibold tracking-wide",
         PLATFORM_COLORS[platform],
         className,
       )}
       title={label}
     >
-      <PlatformIcon platform={platform} size="xs" />
+      <PlatformIcon platform={platform} size="sm" active />
       {showLabel && label}
     </span>
   );
