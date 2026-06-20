@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityEvent } from "@/types/event";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 function mapEventRow(row: Record<string, unknown>): CommunityEvent {
   const communityRaw = row.community as Record<string, unknown> | Record<string, unknown>[] | null;
@@ -99,15 +100,13 @@ export async function fetchDiscoverEventsFromDb(limit = 24): Promise<CommunityEv
     .map((row) => mapEventRow(row as Record<string, unknown>));
 }
 
-export async function fetchUpcomingEventsForCommunitiesFromDb(
+export async function fetchUpcomingEventsForCommunitiesWithClient(
+  supabase: SupabaseClient,
   communityIds: string[],
   limit = 8,
 ): Promise<CommunityEvent[]> {
   const unique = [...new Set(communityIds.filter(Boolean))];
   if (unique.length === 0) return [];
-
-  const supabase = await createClient();
-  if (!supabase) return [];
 
   const now = new Date().toISOString();
 
@@ -127,6 +126,15 @@ export async function fetchUpcomingEventsForCommunitiesFromDb(
   }
 
   return (data ?? []).map((row) => mapEventRow(row as Record<string, unknown>));
+}
+
+export async function fetchUpcomingEventsForCommunitiesFromDb(
+  communityIds: string[],
+  limit = 8,
+): Promise<CommunityEvent[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+  return fetchUpcomingEventsForCommunitiesWithClient(supabase, communityIds, limit);
 }
 
 /** Home/PWA: Mitgliedschaften + Follows parallel, dann Events — kein Waterfall nach Community-Liste. */

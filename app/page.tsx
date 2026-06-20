@@ -1,37 +1,28 @@
 import { HomeContentSkeleton } from "@/components/home/HomeContentSkeleton";
-import { HomeGuestContent } from "@/components/home/HomeGuestContent";
-import { HomeMemberContent } from "@/components/home/HomeMemberContent";
+import { HomePageBody } from "@/components/home/HomePageBody";
 import { HomePwaWarmStart } from "@/components/home/HomePwaWarmStart";
-import { PageHeader } from "@/components/layout/PageHeader";
-import { PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
-import { getCurrentUser } from "@/services/auth/auth.service";
 import { Suspense } from "react";
 
 export const revalidate = 60;
 
-export default async function HomePage() {
-  const user = await getCurrentUser();
+function HomePageFallback() {
+  return (
+    <>
+      <div className="mb-6 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-unze-border/60" />
+        <div className="mt-2 h-4 w-full max-w-sm rounded bg-unze-border/40" />
+      </div>
+      <HomeContentSkeleton variant="member" />
+    </>
+  );
+}
 
+export default function HomePage() {
   return (
     <div className="page-padding">
       <HomePwaWarmStart />
-      <PageHeader
-        title={user ? "Mein UNZE" : "Willkommen bei UNZE"}
-        subtitle={
-          user
-            ? "Communities, Gruppen, Events und Anträge — dein Verwaltungs-Hub."
-            : PLATFORM_TAGLINE
-        }
-      />
-
-      <Suspense
-        fallback={<HomeContentSkeleton variant={user ? "member" : "guest"} />}
-      >
-        {user ? (
-          <HomeMemberContent userId={user.id} />
-        ) : (
-          <HomeGuestContent />
-        )}
+      <Suspense fallback={<HomePageFallback />}>
+        <HomePageBody />
       </Suspense>
     </div>
   );

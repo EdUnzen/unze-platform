@@ -2,6 +2,10 @@ import { mapCommunityRow } from "@/lib/mappers/community.mapper";
 import { createClient } from "@/lib/supabase/server";
 import type { Community } from "@/types/community";
 import type { CommunityRole } from "@/types/database";
+import { cache } from "react";
+import { fetchHomeMemberBundleFromDb } from "./home-member-bundle.repository";
+
+export type { HomeMemberBundle } from "./home-member-bundle.repository";
 
 const COMMUNITY_SELECT = `
   *,
@@ -98,3 +102,6 @@ export async function countMyPendingApplications(userId: string): Promise<number
   const apps = await getMyPendingApplications(userId);
   return apps.length;
 }
+
+/** Ein Request-Bundle fuer Home (Mitglied) — weniger DB-Roundtrips als 8 Einzelcalls. */
+export const getHomeMemberBundle = cache(fetchHomeMemberBundleFromDb);
