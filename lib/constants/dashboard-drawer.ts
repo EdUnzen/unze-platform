@@ -39,7 +39,7 @@ export const DASHBOARD_DRAWER_SECTIONS: DashboardDrawerSection[] = [
     items: [
       {
         id: "overview",
-        label: "Übersicht",
+        label: "\u00dcbersicht",
         href: (slug) => `/dashboard/community/${slug}`,
         icon: LayoutDashboard,
       },
@@ -66,7 +66,7 @@ export const DASHBOARD_DRAWER_SECTIONS: DashboardDrawerSection[] = [
       },
       {
         id: "requests",
-        label: "Anträge",
+        label: "Antr\u00e4ge",
         href: (slug) => `/dashboard/community/${slug}/requests`,
         icon: ClipboardList,
         minRole: "moderator",

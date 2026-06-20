@@ -1,8 +1,9 @@
-/* UNZE PWA v4 — Shell SWR, Assets cache-first, PWA-Warmup */
-const SHELL_CACHE = "unze-shell-v4";
-const ASSET_CACHE = "unze-assets-v4";
+/* UNZE PWA v5 — SWR Shell, Background Sync, Discover warmup */
+const SHELL_CACHE = "unze-shell-v5";
+const ASSET_CACHE = "unze-assets-v5";
 const PREFETCH_PATH = "/api/pwa/prefetch";
 const SHELL_API = "/api/pwa/shell";
+const SYNC_TAG = "unze-pwa-warmup";
 
 const SHELL_ASSETS = [
   "/manifest.json",
@@ -27,7 +28,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((k) => !["unze-shell-v4", "unze-assets-v4"].includes(k))
+          .filter((k) => !["unze-shell-v5", "unze-assets-v5"].includes(k))
           .map((k) => caches.delete(k)),
       ),
     ),
@@ -54,6 +55,28 @@ function staleWhileRevalidateNavigation(request) {
   });
 }
 
+async function runWarmupSync() {
+  const urls = [
+    PREFETCH_PATH,
+    SHELL_API,
+    "/discover",
+    "/discover?tab=events",
+    "/profile",
+    "/favorites",
+  ];
+  await Promise.allSettled(
+    urls.map((path) =>
+      fetch(path, { credentials: "include", cache: "no-store" }).catch(() => {}),
+    ),
+  );
+}
+
+self.addEventListener("sync", (event) => {
+  if (event.tag === SYNC_TAG) {
+    event.waitUntil(runWarmupSync());
+  }
+});
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
@@ -62,6 +85,9 @@ self.addEventListener("fetch", (event) => {
       fetch(event.request)
         .then((res) => {
           cachePut(event.request, res);
+          if ("sync" in self.registration) {
+            self.registration.sync.register(SYNC_TAG).catch(() => {});
+          }
           return res;
         })
         .catch(() => caches.match(event.request)),

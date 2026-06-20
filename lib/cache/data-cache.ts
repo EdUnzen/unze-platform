@@ -65,5 +65,5 @@ async function fetchDiscoverListForCache(): Promise<Community[] | null> {
 export const getCachedDiscoverList = unstable_cache(
   fetchDiscoverListForCache,
   [DISCOVER_LIST_KEY],
-  { revalidate: 60, tags: ["discover"] },
+  { revalidate: 120, tags: ["discover"] },
 );

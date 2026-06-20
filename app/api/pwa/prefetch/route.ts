@@ -1,6 +1,6 @@
 import { getCurrentUser, getCurrentProfile } from "@/services/auth/auth.service";
 import { getMyMemberCommunities } from "@/services/home/home.service";
-import { getUpcomingEventsForCommunities } from "@/services/events/event.service";
+import { getUpcomingEventsForUser } from "@/services/events/event.service";
 import {
   getNotifications,
   getUnreadNotificationCount,
@@ -19,15 +19,13 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const [profile, unreadCount, notifications, communities] = await Promise.all([
+  const [profile, unreadCount, notifications, communities, events] = await Promise.all([
     getCurrentProfile(),
     getUnreadNotificationCount(user.id),
     getNotifications(user.id, { limit: 8 }),
     getMyMemberCommunities(user.id),
+    getUpcomingEventsForUser(user.id, 5),
   ]);
-
-  const communityIds = communities.map((c) => c.id);
-  const events = await getUpcomingEventsForCommunities(communityIds, 5);
 
   return NextResponse.json({
     fetchedAt: new Date().toISOString(),

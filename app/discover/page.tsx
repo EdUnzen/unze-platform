@@ -8,7 +8,7 @@ import { DiscoverTabs } from "@/components/discover/DiscoverTabs";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Suspense } from "react";
 
-export const revalidate = 60;
+export const revalidate = 120;
 
 interface DiscoverPageProps {
   searchParams: Promise<{

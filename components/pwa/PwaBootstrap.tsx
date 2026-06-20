@@ -76,10 +76,26 @@ export function PwaBootstrap({ userId }: PwaBootstrapProps) {
       warmRoutes();
     };
 
+    const registerBackgroundSync = () => {
+      if ("serviceWorker" in navigator && "SyncManager" in window) {
+        navigator.serviceWorker.ready
+          .then((reg) => {
+            const syncReg = reg as ServiceWorkerRegistration & {
+              sync?: { register: (tag: string) => Promise<void> };
+            };
+            return syncReg.sync?.register("unze-pwa-warmup");
+          })
+          .catch(() => {});
+      }
+    };
+
     if (isStandalonePwa()) {
       run();
+      registerBackgroundSync();
       return;
     }
+
+    registerBackgroundSync();
 
     if ("requestIdleCallback" in window) {
       const id = window.requestIdleCallback(run, { timeout: 2000 });

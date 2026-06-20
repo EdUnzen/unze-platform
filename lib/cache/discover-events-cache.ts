@@ -91,8 +91,8 @@ async function fetchDiscoverEventsForCache(limit = 24): Promise<CommunityEvent[]
 
 export const getCachedDiscoverEvents = unstable_cache(
   async (limit: number) => fetchDiscoverEventsForCache(limit),
-  ["discover-events-v1"],
-  { revalidate: 60, tags: ["discover", "discover-events"] },
+  ["discover-events-v2"],
+  { revalidate: 120, tags: ["discover", "discover-events"] },
 );
 
 export async function getDiscoverEventsCached(limit = 24): Promise<CommunityEvent[]> {

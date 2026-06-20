@@ -1,4 +1,4 @@
-import { DashboardScannerPanel } from "@/components/dashboard/DashboardScannerPanel";
+import { DashboardScannerPanelLazy } from "@/components/dashboard/DashboardScannerPanelLazy";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { hasCommunityPermission } from "@/lib/permissions/community.permissions";
@@ -25,7 +25,7 @@ export default async function DashboardScannerPage({ params }: ScannerPageProps)
   }
 
   return (
-    <DashboardScannerPanel
+    <DashboardScannerPanelLazy
       slug={slug}
       communityId={community.id}
       communityTitle={community.title}

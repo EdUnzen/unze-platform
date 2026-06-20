@@ -3,14 +3,11 @@ import { CommunityGroupCardList } from "@/components/community/CommunityGroupCar
 import { DiscoverEventList } from "@/components/events/CommunityEventsSection";
 import { filterDiscoverCommunities } from "@/lib/discover/filter-communities";
 import {
-  filterDiscoverEvents,
   filterDiscoverGroups,
 } from "@/lib/discover/search";
-import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDiscoverCommunities } from "@/services/community/community.service";
 import { getDiscoverGroups } from "@/services/community/group.service";
 import { getDiscoverEvents } from "@/services/events/event.service";
-import { getFollowedEventIdsAmong } from "@/services/follow/follow.service";
 import Link from "next/link";
 
 interface DiscoverContentProps {
@@ -67,29 +64,8 @@ async function DiscoverContentInner({
         </section>
       );
     }
-    const [events, user] = await Promise.all([
-      getDiscoverEvents(24),
-      getCurrentUser(),
-    ]);
-    const filtered = filterDiscoverEvents(events, query);
-    const followedEventIds =
-      user && filtered.length > 0
-        ? await getFollowedEventIdsAmong(filtered.map((e) => e.id))
-        : [];
-
-    return (
-      <DiscoverEventList
-        events={filtered}
-        title="Events entdecken"
-        subtitle={
-          query
-            ? `${filtered.length} Ergebnis${filtered.length === 1 ? "" : "se"}`
-            : "Kommende Termine aus Communities und Gruppen"
-        }
-        followedEventIds={followedEventIds}
-        showFollowButtons={Boolean(user)}
-      />
-    );
+    const { DiscoverEventsTab } = await import("@/components/discover/DiscoverEventsTab");
+    return <DiscoverEventsTab query={query} />;
   }
 
   if (effectiveTab === "groups") {

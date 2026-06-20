@@ -1,15 +1,15 @@
-import { HomeHub } from "@/components/home/HomeHub";
-import { HomeCacheRecorder } from "@/components/pwa/HomeCacheRecorder";
+import { getUpcomingEventsForUser } from "@/services/events/event.service";
+import { getCurrentProfile } from "@/services/auth/auth.service";
 import {
   getMyMemberCommunities,
   getMyPendingApplications,
 } from "@/services/home/home.service";
 import { getFollowedCommunities } from "@/services/community/community.service";
-import { getUpcomingEventsForCommunities } from "@/services/events/event.service";
 import { getFollowedGroups } from "@/services/follow/follow.service";
 import { hasManagedCommunities } from "@/services/dashboard/dashboard.service";
 import { getUnreadNotificationCount } from "@/services/notifications/notification-center.service";
-import { getCurrentProfile } from "@/services/auth/auth.service";
+import { HomeHub } from "@/components/home/HomeHub";
+import { HomeCacheRecorder } from "@/components/pwa/HomeCacheRecorder";
 
 interface HomeMemberContentProps {
   userId: string;
@@ -24,6 +24,7 @@ export async function HomeMemberContent({ userId }: HomeMemberContentProps) {
     followedCommunities,
     followedGroups,
     pendingApplications,
+    upcomingEvents,
   ] = await Promise.all([
     getCurrentProfile(),
     getUnreadNotificationCount(userId),
@@ -32,19 +33,8 @@ export async function HomeMemberContent({ userId }: HomeMemberContentProps) {
     getFollowedCommunities(),
     getFollowedGroups(),
     getMyPendingApplications(userId),
+    getUpcomingEventsForUser(userId, 8),
   ]);
-
-  const communityIds = [
-    ...new Set([
-      ...myCommunities.map((c) => c.id),
-      ...followedCommunities.map((c) => c.id),
-    ]),
-  ];
-
-  const upcomingEvents =
-    communityIds.length > 0
-      ? await getUpcomingEventsForCommunities(communityIds, 8)
-      : [];
 
   return (
     <>

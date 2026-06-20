@@ -129,6 +129,35 @@ export async function fetchUpcomingEventsForCommunitiesFromDb(
   return (data ?? []).map((row) => mapEventRow(row as Record<string, unknown>));
 }
 
+/** Home/PWA: Mitgliedschaften + Follows parallel, dann Events — kein Waterfall nach Community-Liste. */
+export async function fetchUpcomingEventsForUserFromDb(
+  userId: string,
+  limit = 8,
+): Promise<CommunityEvent[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const [membersRes, followsRes] = await Promise.all([
+    supabase.from("community_members").select("community_id").eq("user_id", userId),
+    supabase
+      .from("follows")
+      .select("target_community_id")
+      .eq("follower_id", userId)
+      .eq("target_type", "community"),
+  ]);
+
+  const ids = new Set<string>();
+  for (const row of membersRes.data ?? []) {
+    if (row.community_id) ids.add(row.community_id as string);
+  }
+  for (const row of followsRes.data ?? []) {
+    if (row.target_community_id) ids.add(row.target_community_id as string);
+  }
+
+  if (ids.size === 0) return [];
+  return fetchUpcomingEventsForCommunitiesFromDb([...ids], limit);
+}
+
 export async function countEventsByCommunityIdsFromDb(
   communityIds: string[],
 ): Promise<Record<string, number>> {
