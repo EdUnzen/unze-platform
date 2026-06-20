@@ -3,8 +3,7 @@ import { PlatformTopBarActions } from "@/components/layout/PlatformTopBarActions
 import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
 
 export async function PlatformTopBar() {
-  const { user, unreadCount, showDashboard, showOwnerCenter } =
-    await getPlatformShellContext();
+  const { user } = await getPlatformShellContext();
 
   return (
     <header
@@ -14,12 +13,7 @@ export async function PlatformTopBar() {
       <div className="mx-auto flex max-w-lg items-center justify-between gap-4">
         <UnzeLogo href="/" size="sm" className="-ml-0.5" />
 
-        <PlatformTopBarActions
-          userId={user?.id ?? null}
-          unreadCount={unreadCount}
-          showDashboard={showDashboard}
-          showOwnerCenter={showOwnerCenter}
-        />
+        <PlatformTopBarActions userId={user?.id ?? null} />
       </div>
     </header>
   );

@@ -1,49 +1,13 @@
-import { HomeHub } from "@/components/home/HomeHub";
+import { HomeContentSkeleton } from "@/components/home/HomeContentSkeleton";
+import { HomeGuestContent } from "@/components/home/HomeGuestContent";
+import { HomeMemberContent } from "@/components/home/HomeMemberContent";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
-import {
-  getDiscoverCommunities,
-  getFollowedCommunities,
-} from "@/services/community/community.service";
-import { getDiscoverGroups } from "@/services/community/group.service";
-import { getUpcomingEventsForCommunities } from "@/services/events/event.service";
-import { getFollowedGroups } from "@/services/follow/follow.service";
-import {
-  getMyMemberCommunities,
-  getMyPendingApplications,
-} from "@/services/home/home.service";
-import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
+import { getCurrentUser } from "@/services/auth/auth.service";
+import { Suspense } from "react";
 
 export default async function HomePage() {
-  const shell = await getPlatformShellContext();
-  const user = shell.user;
-
-  const [
-    myCommunities,
-    followedCommunities,
-    followedGroups,
-    pendingApplications,
-    discoverCommunities,
-    discoverServices,
-  ] = await Promise.all([
-    user ? getMyMemberCommunities(user.id) : Promise.resolve([]),
-    user ? getFollowedCommunities() : Promise.resolve([]),
-    user ? getFollowedGroups() : Promise.resolve([]),
-    user ? getMyPendingApplications(user.id) : Promise.resolve([]),
-    user ? Promise.resolve([]) : getDiscoverCommunities(),
-    user ? Promise.resolve([]) : getDiscoverGroups(6, { groupType: "service" }),
-  ]);
-
-  const communityIds = [
-    ...new Set([
-      ...myCommunities.map((c) => c.id),
-      ...followedCommunities.map((c) => c.id),
-    ]),
-  ];
-
-  const upcomingEvents = user
-    ? await getUpcomingEventsForCommunities(communityIds, 8)
-    : [];
+  const user = await getCurrentUser();
 
   return (
     <div className="page-padding">
@@ -56,18 +20,15 @@ export default async function HomePage() {
         }
       />
 
-      <HomeHub
-        user={user}
-        myCommunities={myCommunities}
-        followedCommunities={followedCommunities}
-        followedGroups={followedGroups}
-        discoverCommunities={discoverCommunities}
-        discoverServices={discoverServices}
-        upcomingEvents={upcomingEvents}
-        pendingApplications={pendingApplications}
-        unreadNotifications={shell.unreadCount}
-        managedCount={shell.showDashboard ? 1 : 0}
-      />
+      <Suspense
+        fallback={<HomeContentSkeleton variant={user ? "member" : "guest"} />}
+      >
+        {user ? (
+          <HomeMemberContent userId={user.id} />
+        ) : (
+          <HomeGuestContent />
+        )}
+      </Suspense>
     </div>
   );
 }

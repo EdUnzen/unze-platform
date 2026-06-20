@@ -1,6 +1,7 @@
 "use client";
 
 import { NAV_ITEMS, type NavItemId } from "@/lib/constants/navigation";
+import { useShellState } from "@/components/pwa/ShellHydrator";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -19,18 +20,21 @@ function getActiveNavId(pathname: string): NavItemId | null {
 }
 
 interface BottomNavProps {
+  /** @deprecated ShellHydrator liefert Werte — Props optional für Tests */
   unreadNotifications?: number;
-  /** Creator-Menü im +-Button — nur wenn Nutzer Communities verwaltet */
   showCreatorMenu?: boolean;
 }
 
 export function BottomNav({
-  unreadNotifications = 0,
-  showCreatorMenu = false,
-}: BottomNavProps) {
+  unreadNotifications: unreadProp,
+  showCreatorMenu: creatorProp,
+}: BottomNavProps = {}) {
   const pathname = usePathname();
   const [plusOpen, setPlusOpen] = useState(false);
   const activeId = getActiveNavId(pathname);
+  const shell = useShellState();
+  const unreadNotifications = unreadProp ?? shell.unreadCount;
+  const showCreatorMenu = creatorProp ?? shell.showDashboard;
 
   return (
     <>

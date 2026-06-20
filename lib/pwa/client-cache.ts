@@ -3,6 +3,8 @@
 export const PWA_CACHE_KEYS = {
   prefetch: "unze:pwa:prefetch:v1",
   visitedSlugs: "unze:pwa:visited-slugs:v1",
+  shell: "unze:pwa:shell:v1",
+  home: "unze:pwa:home:v1",
 } as const;
 
 export type PwaPrefetchPayload = {
@@ -21,14 +23,57 @@ export type PwaPrefetchPayload = {
   upcomingEventCount: number;
 };
 
+export type PwaHomeSnapshot = {
+  fetchedAt: string;
+  displayName: string | null;
+  communityTitles: Array<{ slug: string; title: string }>;
+  pendingApplicationCount: number;
+  upcomingEventCount: number;
+};
+
+export function readPwaHomeCache(): PwaHomeSnapshot | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(PWA_CACHE_KEYS.home);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as PwaHomeSnapshot;
+    const ttl = 4 * 60 * 60 * 1000;
+    const age = Date.now() - new Date(parsed.fetchedAt).getTime();
+    if (age > ttl) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+export function writePwaHomeCache(
+  payload: Omit<PwaHomeSnapshot, "fetchedAt">,
+): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(
+      PWA_CACHE_KEYS.home,
+      JSON.stringify({ ...payload, fetchedAt: new Date().toISOString() }),
+    );
+  } catch {
+    /* quota */
+  }
+}
+
 export function readPwaPrefetchCache(): PwaPrefetchPayload | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(PWA_CACHE_KEYS.prefetch);
     if (!raw) return null;
     const parsed = JSON.parse(raw) as PwaPrefetchPayload;
+    const ttl =
+      typeof window !== "undefined" &&
+      (window.matchMedia("(display-mode: standalone)").matches ||
+        (window.navigator as Navigator & { standalone?: boolean }).standalone)
+        ? 4 * 60 * 60 * 1000
+        : 15 * 60 * 1000;
     const age = Date.now() - new Date(parsed.fetchedAt).getTime();
-    if (age > 15 * 60 * 1000) return null;
+    if (age > ttl) return null;
     return parsed;
   } catch {
     return null;

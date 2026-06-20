@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useShellState } from "@/components/pwa/ShellHydrator";
 import { LayoutDashboard, Shield } from "lucide-react";
 import Link from "next/link";
 
@@ -14,17 +15,11 @@ const NotificationCenter = dynamic(
 
 interface PlatformTopBarActionsProps {
   userId: string | null;
-  unreadCount: number;
-  showDashboard: boolean;
-  showOwnerCenter: boolean;
 }
 
-export function PlatformTopBarActions({
-  userId,
-  unreadCount,
-  showDashboard,
-  showOwnerCenter,
-}: PlatformTopBarActionsProps) {
+export function PlatformTopBarActions({ userId }: PlatformTopBarActionsProps) {
+  const { unreadCount, showDashboard, showOwnerCenter } = useShellState();
+
   return (
     <div className="flex items-center gap-2">
       {showOwnerCenter && (

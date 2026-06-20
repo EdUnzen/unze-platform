@@ -1,7 +1,8 @@
 import { DashboardStatGrid } from "@/components/dashboard/DashboardStatGrid";
-import { DashboardGrowthPanel } from "@/components/dashboard/DashboardGrowthPanel";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { DashboardAttentionPanel } from "@/components/dashboard/DashboardAttentionPanel";
+import { DashboardStatusStrip } from "@/components/dashboard/DashboardStatusStrip";
+import { DashboardQuickActions } from "@/components/dashboard/DashboardQuickActions";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
@@ -34,22 +35,37 @@ export default async function DashboardOverviewPage({
   } catch (e) {
     console.error("[dashboard.overview] activity:", e);
   }
-  const pendingApplicationCount = await countPendingApplicationsFromDb(
-    community.id,
-  );
-  const pendingReportCount = await countPendingReportsFromDb(community.id);
-  const pendingRemovalCount = await countPendingRemovalTasks(community.id);
-  const pendingPaymentIssues =
+
+  const [
+    pendingApplicationCount,
+    pendingReportCount,
+    pendingRemovalCount,
+    pendingPaymentIssues,
+  ] = await Promise.all([
+    countPendingApplicationsFromDb(community.id),
+    countPendingReportsFromDb(community.id),
+    countPendingRemovalTasks(community.id),
     community.monetizationEnabled && community.viewerRole === "creator"
-      ? await countCommunityPaymentIssues(community.id)
-      : 0;
+      ? countCommunityPaymentIssues(community.id)
+      : Promise.resolve(0),
+  ]);
+
   const accessLabel =
     ACCESS_STATUS_OPTIONS.find(
       (o) => o.value === community.access?.accessStatus,
     )?.label ?? "Offen";
 
+  const openTasks =
+    pendingApplicationCount + pendingReportCount + pendingRemovalCount + pendingPaymentIssues;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
+      <DashboardStatusStrip
+        memberCount={community.stats.memberCount}
+        accessStatusLabel={accessLabel}
+        openTaskCount={openTasks}
+      />
+
       <DashboardAttentionPanel
         slug={slug}
         pendingApplications={pendingApplicationCount}
@@ -61,11 +77,7 @@ export default async function DashboardOverviewPage({
         viewerRole={community.viewerRole}
       />
 
-      <DashboardGrowthPanel
-        slug={slug}
-        stats={community.stats}
-        communityTitle={community.title}
-      />
+      <DashboardQuickActions slug={slug} viewerRole={community.viewerRole} />
 
       <DashboardStatGrid stats={community.stats} slug={slug} />
 
@@ -104,9 +116,7 @@ export default async function DashboardOverviewPage({
       </section>
 
       <section className="rounded-3xl bg-white p-4 shadow-card">
-        <h2 className="mb-3 text-sm font-semibold text-unze-ink">
-          Letzte Aktivität
-        </h2>
+        <h2 className="mb-3 text-sm font-semibold text-unze-ink">Letzte Aktivität</h2>
         <ActivityFeed items={activity} />
       </section>
     </div>

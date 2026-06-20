@@ -106,6 +106,7 @@ export interface ProfileRow {
   is_creator: boolean;
   is_verified: boolean;
   platform_role: PlatformRole;
+  unze_public_id?: string;
   settings: Record<string, unknown>;
   created_at: string;
   updated_at: string;

@@ -1,15 +1,19 @@
-/* UNZE PWA v3 — Shell, Assets, Navigation SWR, Bilder */
-const SHELL_CACHE = "unze-shell-v3";
-const ASSET_CACHE = "unze-assets-v3";
+/* UNZE PWA v4 — Shell SWR, Assets cache-first, PWA-Warmup */
+const SHELL_CACHE = "unze-shell-v4";
+const ASSET_CACHE = "unze-assets-v4";
 const PREFETCH_PATH = "/api/pwa/prefetch";
+const SHELL_API = "/api/pwa/shell";
 
 const SHELL_ASSETS = [
   "/manifest.json",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
+  "/brand/unze-logo.png",
+  "/brand/unze-home-hero.png",
+  "/brand/unze-guest-hero.png",
 ];
 
-const WARM_NAV_PATHS = ["/discover", "/profile", "/favorites"];
+const WARM_NAV_PATHS = ["/", "/discover", "/profile", "/favorites"];
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
@@ -23,7 +27,7 @@ self.addEventListener("activate", (event) => {
     caches.keys().then((keys) =>
       Promise.all(
         keys
-          .filter((k) => !["unze-shell-v3", "unze-assets-v3"].includes(k))
+          .filter((k) => !["unze-shell-v4", "unze-assets-v4"].includes(k))
           .map((k) => caches.delete(k)),
       ),
     ),
@@ -37,10 +41,23 @@ function cachePut(request, response) {
   caches.open(ASSET_CACHE).then((cache) => cache.put(request, clone));
 }
 
+function staleWhileRevalidateNavigation(request) {
+  return caches.open(SHELL_CACHE).then(async (cache) => {
+    const cached = await cache.match(request);
+    const network = fetch(request)
+      .then((res) => {
+        if (res.ok) cache.put(request, res.clone());
+        return res;
+      })
+      .catch(() => cached);
+    return cached || network;
+  });
+}
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  if (url.pathname === PREFETCH_PATH) {
+  if (url.pathname === PREFETCH_PATH || url.pathname === SHELL_API) {
     event.respondWith(
       fetch(event.request)
         .then((res) => {
@@ -73,17 +90,8 @@ self.addEventListener("fetch", (event) => {
     const isWarmNav = WARM_NAV_PATHS.some(
       (p) => url.pathname === p || url.pathname.startsWith(p + "/"),
     );
-    if (isWarmNav || url.pathname === "/") {
-      event.respondWith(
-        fetch(event.request)
-          .then((res) => {
-            if (res.ok) {
-              caches.open(SHELL_CACHE).then((c) => c.put(event.request, res.clone()));
-            }
-            return res;
-          })
-          .catch(() => caches.match(event.request)),
-      );
+    if (isWarmNav) {
+      event.respondWith(staleWhileRevalidateNavigation(event.request));
       return;
     }
   }

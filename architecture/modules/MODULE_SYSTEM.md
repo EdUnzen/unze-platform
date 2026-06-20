@@ -62,6 +62,27 @@ werden.
 
 ---
 
+## UNZE-ID Modul
+- Eine Identität pro Nutzer (QR)
+- Kontextuelle Berechtigungsprüfung (serverseitig)
+- Event Check-In, Zutritt, Credentials
+- Siehe `UNZE_ID_SYSTEM.md`
+
+---
+
+## Credential Modul (UNZE-003)
+- Qualifikationen, Sammlungen
+- Siehe `CREDENTIAL_SYSTEM.md`
+
+---
+
+## Requirement-Engine (UNZE-005)
+- Zentralisierte Zugangslogik für alle Ressourcen
+- Keine modul-eigenen Gates
+- Siehe `REQUIREMENT_ENGINE.md`
+
+---
+
 ## Monetarisierungs Modul
 - Mitgliedschaften
 - Premium-Zugang

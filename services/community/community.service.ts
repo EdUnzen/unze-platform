@@ -63,6 +63,12 @@ export async function getDiscoverCommunities(): Promise<Community[]> {
   return withViewerContext(withDemoFallback(fromDb));
 }
 
+/** Gast-Startseite — ohne Session/Engagement (schneller TTFB). */
+export async function getDiscoverCommunitiesPreview(limit = 6): Promise<Community[]> {
+  const fromDb = await getCachedDiscoverList();
+  return withDemoFallback(fromDb).slice(0, limit);
+}
+
 export async function getFeaturedCommunities(): Promise<Community[]> {
   const fromDb = await fetchCommunitiesFromDb({
     trending: true,

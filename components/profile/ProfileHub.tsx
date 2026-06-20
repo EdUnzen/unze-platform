@@ -13,6 +13,7 @@ import {
   Settings,
   Sparkles,
   Ticket,
+  QrCode,
 } from "lucide-react";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
@@ -231,6 +232,20 @@ export function ProfileHub({
           <span>
             <span className="block text-sm font-semibold text-unze-ink">Tickets</span>
             <span className="mt-0.5 block text-xs text-unze-ink-secondary">Events &amp; QR</span>
+          </span>
+        </Link>
+        <Link
+          href="/profile/id"
+          className="flex min-h-[88px] flex-col items-start justify-between gap-2 rounded-2xl bg-white p-4 shadow-card transition active:scale-[0.98]"
+        >
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-unze-surface-muted text-unze-green">
+            <QrCode className="h-5 w-5" aria-hidden />
+          </span>
+          <span>
+            <span className="block text-sm font-semibold text-unze-ink">UNZE-ID</span>
+            <span className="mt-0.5 block text-xs text-unze-ink-secondary">
+              Verifizierung &amp; Zugang
+            </span>
           </span>
         </Link>
         <Link
