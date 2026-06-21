@@ -7,49 +7,54 @@
     body {
       width: {{WIDTH}}px;
       height: {{HEIGHT}}px;
-      background: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: #050508;
       overflow: hidden;
-      padding: 48px;
-      gap: 48px;
+      position: relative;
+    }
+    .mesh {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 80% at 50% 50%, rgba(16, 185, 129, 0.12) 0%, transparent 60%),
+        linear-gradient(180deg, #0a0a10, #050508);
     }
     .browser {
-      flex: 1;
-      max-height: 100%;
-      background: #fff;
-      border-radius: 12px;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% - 120px);
+      border-radius: 14px;
       overflow: hidden;
-      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08);
     }
     .chrome {
-      height: 36px;
-      background: #ececec;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.05);
       display: flex;
       align-items: center;
       padding: 0 12px;
       gap: 6px;
     }
-    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; }
     .dot.r { background: #ff5f57; }
     .dot.y { background: #febc2e; }
     .dot.g { background: #28c840; }
-    .browser img { width: 100%; height: auto; display: block; }
+    .browser img { width: 100%; display: block; }
     .badge {
       position: absolute;
       bottom: 32px;
       right: 48px;
       font-size: 18px;
       font-weight: 700;
-      letter-spacing: 0.1em;
-      color: #1d1d1f;
+      letter-spacing: 0.14em;
+      color: rgba(255, 255, 255, 0.3);
     }
-    body { position: relative; }
   </style>
 </head>
 <body>
+  <div class="mesh"></div>
   <div class="browser">
     <div class="chrome">
       <div class="dot r"></div>

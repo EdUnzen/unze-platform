@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    :root {
+      --accent: {{ACCENT_RGB}};
+      --accent-soft: {{ACCENT_SOFT}};
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #07070a;
+      overflow: hidden;
+      position: relative;
+    }
+    .mesh {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, var(--accent-soft) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 50% at 85% 25%, rgba(99, 102, 241, 0.18) 0%, transparent 50%),
+        radial-gradient(ellipse 90% 70% at 50% 100%, rgba(16, 185, 129, 0.12) 0%, transparent 55%),
+        linear-gradient(180deg, #0c0c12 0%, #07070a 45%, #050508 100%);
+    }
+    .grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+    .glass-msg {
+      position: absolute;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      max-width: 920px;
+      padding: 22px 36px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      font-size: 34px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: #f5f5f7;
+      text-align: center;
+      line-height: 1.25;
+      white-space: normal;
+      max-width: 880px;
+    }
+    .phone-stage {
+      position: absolute;
+      left: 50%;
+      bottom: 64px;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+    .glow {
+      position: absolute;
+      width: 520px;
+      height: 520px;
+      left: 50%;
+      top: 55%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 68%);
+      filter: blur(40px);
+      z-index: 0;
+    }
+    .phone {
+      position: relative;
+      width: 480px;
+      height: 984px;
+      background: linear-gradient(155deg, #3a3a3c 0%, #1c1c1e 35%, #09090b 100%);
+      border-radius: 62px;
+      padding: 14px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        0 60px 120px rgba(0, 0, 0, 0.55),
+        0 20px 40px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    .island {
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 136px;
+      height: 38px;
+      background: #000;
+      border-radius: 22px;
+      z-index: 5;
+    }
+    .screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 50px;
+      overflow: hidden;
+      background: #000;
+    }
+    .screen img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+    }
+    .logo {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      color: rgba(255, 255, 255, 0.35);
+    }
+  </style>
+</head>
+<body>
+  <div class="mesh"></div>
+  <div class="grain"></div>
+  <div class="glass-msg">{{MESSAGE}}</div>
+  <div class="phone-stage">
+    <div class="glow"></div>
+    <div class="phone">
+      <div class="island"></div>
+      <div class="screen">
+        <img src="data:image/png;base64,{{SCREEN_B64}}" alt="" />
+      </div>
+    </div>
+  </div>
+  <div class="logo">UNZE</div>
+</body>
+</html>

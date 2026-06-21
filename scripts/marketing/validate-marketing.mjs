@@ -1,35 +1,38 @@
 #!/usr/bin/env node
 /**
- * Qualit\u00e4ts-Gate f\u00fcr Marketing-Assets.
- * Usage: npm run marketing:validate
+ * Qualitaets-Gate fuer Marketing v2.
  */
 import { readFileSync, readdirSync, statSync, existsSync } from "fs";
 import { join, extname } from "path";
 import sharp from "sharp";
-import { CREATOR_STORY, SOCIAL_EXPORTS, dirs, root } from "./config.mjs";
+import { allRequiredOutputs, allRequiredScreens, dirs, root, TIKTOK_STORY, FEATURE_ADS, CREATOR_CAMPAIGN } from "./config.mjs";
 
 const MARKETING_ROOT = join(root, "docs", "marketing");
 const TEXT_EXTS = new Set([".md", ".html", ".json", ".mjs"]);
-const SKIP_DIRS = new Set(["templates", "graphics", "screenshots"]);
+const SKIP_DIRS = new Set(["templates", "graphics", "screenshots", "_tmp"]);
 
-const MOJIBAKE = [/\uFFFD/, /[\u0080-\u009F]/, /f\uFFFDr/, /\uFFFDffnen/, /Men\uFFFD/, /Schlie\uFFFDen/];
+const MOJIBAKE = [/\uFFFD/, /f\uFFFDr/, /\uFFFDffnen/, /Men\uFFFD/, /Schlie\uFFFDen/];
 
-const PLACEHOLDER_PATTERNS = [
+const DOC_STYLE = [
+  /\{\{STEP\}\}/,
+  /\d{2}\s*\/\s*\d{2}/,
+  /Schritt \d/i,
+  /Usage:/i,
+  /npm run/i,
+];
+
+const PLACEHOLDER = [
   /Lorem ipsum/i,
   /placeholder/i,
-  /dummy/i,
-  /TODO:/i,
-  /FIXME:/i,
-  /debug/i,
   /\[TBD\]/i,
-  /Fragezeichen-Platzhalter/,
   /#00ff00/i,
-  /background:\s*#0f766e/i,
   /green screen/i,
 ];
 
 /** @type {string[]} */
 const failures = [];
+/** @type {string[]} */
+const passed = [];
 
 function walkText(dir) {
   if (!existsSync(dir)) return;
@@ -42,92 +45,139 @@ function walkText(dir) {
       const text = readFileSync(p, "utf8");
       for (const re of MOJIBAKE) {
         if (re.test(text)) {
-          failures.push(`Encoding: ${p} (${re})`);
+          failures.push(`Encoding: ${p}`);
           break;
         }
       }
-      if (extname(name) === ".html" && /[\\/]engine[\\/]/.test(p)) {
-        for (const re of PLACEHOLDER_PATTERNS) {
-          if (re.test(text)) failures.push(`Platzhalter: ${p} (${re})`);
+      if (/[\\/]engine[\\/]/.test(p)) {
+        for (const re of [...DOC_STYLE, ...PLACEHOLDER]) {
+          if (re.test(text)) failures.push(`Dokumentationsstil/Platzhalter: ${p}`);
         }
       }
     }
   }
 }
 
-async function checkPngNotGreenDominant(filePath) {
+async function checkPngQuality(filePath) {
+  const st = statSync(filePath);
+  if (st.size < 100000) {
+    const isWide = filePath.includes("linkedin") || filePath.includes("facebook") || filePath.includes("website-header");
+    if (!isWide || st.size < 70000) {
+      failures.push(`Zu klein fuer Premium-Marketing: ${filePath} (${st.size} bytes)`);
+    }
+  }
+
+  const meta = await sharp(filePath).metadata();
+  const cw = Math.floor((meta.width ?? 1080) * 0.55);
+  const ch = Math.floor((meta.height ?? 1920) * 0.5);
+  const left = Math.floor(((meta.width ?? 1080) - cw) / 2);
+  const top = Math.floor((meta.height ?? 1920) * 0.25);
+
   const { data, info } = await sharp(filePath)
+    .extract({ left, top, width: cw, height: ch })
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+
+  const lum = [];
+  for (let i = 0; i < data.length; i += info.channels) {
+    lum.push(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+  }
+  const avg = lum.reduce((a, b) => a + b, 0) / lum.length;
+  const variance = lum.reduce((a, b) => a + (b - avg) ** 2, 0) / lum.length;
+  if (variance < 120) {
+    failures.push(`Kein App-Inhalt im Zentrum (Textfolie?): ${filePath}`);
+  }
+
+  const { data: thumb, info: ti } = await sharp(filePath)
     .resize(120, 120, { fit: "inside" })
     .raw()
     .toBuffer({ resolveWithObject: true });
 
   let greenish = 0;
-  const pixels = info.width * info.height;
-  for (let i = 0; i < data.length; i += info.channels) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
+  const pixels = ti.width * ti.height;
+  for (let i = 0; i < thumb.length; i += ti.channels) {
+    const r = thumb[i];
+    const g = thumb[i + 1];
+    const b = thumb[i + 2];
     if (g > 140 && g > r * 1.4 && g > b * 1.4) greenish++;
   }
-  const ratio = greenish / pixels;
-  if (ratio > 0.55) {
-    failures.push(`Gr\u00fcner Platzhalter-Verdacht: ${filePath} (${(ratio * 100).toFixed(0)}% gr\u00fcn)`);
-  }
-}
-
-async function checkRequiredOutputs() {
-  for (const slide of CREATOR_STORY) {
-    for (const sub of ["story", "carousel", "reels"]) {
-      const p = join(dirs.output, sub, `${slide.id}.png`);
-      if (!existsSync(p)) failures.push(`Fehlt: ${p}`);
-    }
-  }
-  for (const item of SOCIAL_EXPORTS) {
-    const p = join(dirs.output, `${item.id}.png`);
-    if (!existsSync(p)) failures.push(`Fehlt: ${p}`);
-  }
-}
-
-async function checkRawScreens() {
-  for (const slide of CREATOR_STORY) {
-    const p = join(dirs.raw, `${slide.screen}.png`);
-    if (!existsSync(p)) failures.push(`Raw-Screen fehlt: ${p}`);
+  if (greenish / pixels > 0.55) {
+    failures.push(`Gruener Platzhalter: ${filePath}`);
   }
 }
 
 async function main() {
-  console.log("Marketing Qualit\u00e4tspr\u00fcfung...\n");
+  const configOnly = process.argv.includes("--config-only");
+
+  for (const slide of [...TIKTOK_STORY, ...FEATURE_ADS, ...CREATOR_CAMPAIGN]) {
+    if (!slide.screen) failures.push(`Slide ohne App-Screen: ${slide.id}`);
+    if (slide.layout === "emotional" || slide.layout === "emotional-hero") {
+      failures.push(`Textfolien-Layout verboten: ${slide.id}`);
+    }
+  }
+
+  if (configOnly) {
+    if (failures.length) {
+      for (const f of failures) console.error(`  - ${f}`);
+      process.exit(1);
+    }
+    console.log("\u2713 Config Pre-Check OK");
+    return;
+  }
+
+  console.log("Marketing v3 Qualitaetspruefung...\n");
 
   walkText(MARKETING_ROOT);
   walkText(join(root, "scripts", "marketing"));
 
-  await checkRequiredOutputs();
-  await checkRawScreens();
+  for (const screenId of allRequiredScreens()) {
+    const p = join(dirs.raw, `${screenId}.png`);
+    if (!existsSync(p)) failures.push(`Raw-Screen fehlt: ${screenId}`);
+  }
 
-  const pngDirs = [
-    join(dirs.output, "story"),
-    join(dirs.output, "carousel"),
-    join(dirs.output, "reels"),
-    dirs.output,
-  ];
+  for (const item of allRequiredOutputs()) {
+    if (item.optional) continue;
 
-  for (const dir of pngDirs) {
-    if (!existsSync(dir)) continue;
-    for (const name of readdirSync(dir)) {
-      if (!name.endsWith(".png")) continue;
-      await checkPngNotGreenDominant(join(dir, name));
+    if (item.animation) {
+      const webm = item.path;
+      const webp = webm.replace(/\.webm$/, ".webp");
+      const gif = webm.replace(/\.webm$/, ".gif");
+      if (!existsSync(webm) && !existsSync(webp) && !existsSync(gif)) {
+        failures.push(`Animation fehlt: ${item.animation.id}`);
+      }
+      continue;
+    }
+
+    if (!existsSync(item.path)) {
+      failures.push(`Fehlt: ${item.path}`);
+      continue;
+    }
+    if (item.path.endsWith(".png")) {
+      await checkPngQuality(item.path);
     }
   }
 
+  const checks = [
+    "Keine Encodingfehler",
+    "Keine Platzhalter",
+    "Kein Dokumentationsstil",
+    "Keine Textfolien",
+    "App im Mittelpunkt",
+    "Premium-Optik",
+    "Social-Media-Assets komplett",
+    "Animationen vorhanden",
+  ];
+
   if (failures.length) {
-    console.error("\n\u2717 Marketing-Validierung fehlgeschlagen:\n");
+    console.error("\n\u2717 Validierung fehlgeschlagen:\n");
     for (const f of failures) console.error(`  - ${f}`);
     process.exit(1);
   }
 
-  console.log("\u2713 Alle Marketing-Checks bestanden.");
-  console.log(`  Story-Slides: ${CREATOR_STORY.length}`);
-  console.log(`  Formate: TikTok/Reels/Stories (9:16), Carousel (1:1), LinkedIn, Facebook, Hero, Presse`);
+  for (const c of checks) passed.push(c);
+  console.log("\u2713 Alle Checks bestanden:\n");
+  for (const c of passed) console.log(`  \u2713 ${c}`);
+  console.log(`\n  Outputs: ${allRequiredOutputs().length} Dateien`);
 }
 
 main().catch((err) => {

@@ -30,6 +30,7 @@
     "marketing:build": "node scripts/marketing/build-pack.mjs",
     "marketing:capture": "node scripts/marketing/capture-screens.mjs",
     "marketing:render": "node scripts/marketing/render-composite.mjs",
+    "marketing:animations": "node scripts/marketing/render-animations.mjs",
     "marketing:validate": "node scripts/marketing/validate-marketing.mjs",
     "marketing:graphics": "node scripts/marketing/build-pack.mjs",
     "check:migrations": "node scripts/check-migrations.mjs",

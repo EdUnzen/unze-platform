@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1920px;
+      height: 1080px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #050508;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      align-items: center;
+    }
+    .mesh {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 15% 50%, rgba(16, 185, 129, 0.15) 0%, transparent 55%),
+        radial-gradient(ellipse 50% 60% at 90% 30%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        linear-gradient(135deg, #0a0a10, #050508);
+    }
+    .copy {
+      position: relative;
+      z-index: 2;
+      padding: 0 100px 0 140px;
+    }
+    .eyebrow {
+      font-size: 16px;
+      font-weight: 650;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #10b981;
+      margin-bottom: 28px;
+    }
+    .headline {
+      font-size: 72px;
+      font-weight: 750;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      color: #f5f5f7;
+      max-width: 640px;
+    }
+    .subline {
+      margin-top: 28px;
+      font-size: 26px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.5);
+      max-width: 520px;
+    }
+    .pill {
+      display: inline-block;
+      margin-top: 40px;
+      padding: 16px 32px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      font-size: 18px;
+      font-weight: 600;
+      color: #f5f5f7;
+    }
+    .visual {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      padding-right: 80px;
+    }
+    .browser {
+      width: 960px;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 48px 96px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.08);
+      background: #111;
+    }
+    .chrome {
+      height: 40px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .dot { width: 11px; height: 11px; border-radius: 50%; }
+    .dot.r { background: #ff5f57; }
+    .dot.y { background: #febc2e; }
+    .dot.g { background: #28c840; }
+    .url {
+      flex: 1;
+      margin-left: 12px;
+      height: 24px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 6px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+    }
+    .browser img { width: 100%; display: block; }
+  </style>
+</head>
+<body>
+  <div class="mesh"></div>
+  <div class="copy">
+    <div class="eyebrow">Creator Beta</div>
+    <div class="headline">{{HEADLINE}}</div>
+    <div class="subline">{{SUBLINE}}</div>
+    <div class="pill">unze-platform.vercel.app</div>
+  </div>
+  <div class="visual">
+    <div class="browser">
+      <div class="chrome">
+        <div class="dot r"></div>
+        <div class="dot y"></div>
+        <div class="dot g"></div>
+        <div class="url">unze-platform.vercel.app</div>
+      </div>
+      <img src="data:image/png;base64,{{SCREEN_B64}}" alt="" />
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1920px; background: #050508; font-family: -apple-system, sans-serif; overflow: hidden; }
+    .mesh { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 25%, rgba(59,130,246,0.2), transparent 60%); }
+    .browser {
+      position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%) scale(0.85);
+      width: 920px; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 48px 96px rgba(0,0,0,0.5);
+      opacity: 0; animation: reveal 1.2s cubic-bezier(0.22,1,0.36,1) 0.3s forwards;
+    }
+    .browser img { width: 100%; display: block; }
+    .label {
+      position: absolute; top: 160px; left: 50%; transform: translateX(-50%);
+      font-size: 52px; font-weight: 750; color: #fff; letter-spacing: -0.03em;
+      opacity: 0; animation: fade 0.8s ease 0.1s forwards;
+    }
+    @keyframes reveal { to { opacity: 1; transform: translate(-50%,-50%) scale(1); } }
+    @keyframes fade { to { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="mesh"></div>
+  <div class="label">Creator Dashboard</div>
+  <div class="browser">
+    <img src="data:image/png;base64,{{SCREEN_DASHBOARD}}" alt="" />
+  </div>
+</body>
+</html>

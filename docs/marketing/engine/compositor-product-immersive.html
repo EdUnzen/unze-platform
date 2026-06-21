@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    :root {
+      --accent-soft: {{ACCENT_SOFT}};
+      --accent-rgb: {{ACCENT_RGB}};
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 1080px;
+      height: 1920px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #030305;
+      overflow: hidden;
+      position: relative;
+    }
+    .ambient {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 70% at 50% -10%, rgba(var(--accent-rgb), 0.22) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 100% 40%, rgba(99, 102, 241, 0.14) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 60% at 0% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, #0a0a0f 0%, #030305 100%);
+    }
+    .vignette {
+      position: absolute;
+      inset: 0;
+      box-shadow: inset 0 0 200px rgba(0, 0, 0, 0.45);
+      pointer-events: none;
+    }
+    .msg {
+      position: absolute;
+      top: 56px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px) saturate(180%);
+      font-size: 26px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: rgba(255, 255, 255, 0.92);
+      text-align: center;
+      max-width: 860px;
+      line-height: 1.2;
+      display: {{MSG_DISPLAY}};
+    }
+    .chips {
+      position: absolute;
+      bottom: 1180px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      max-width: 900px;
+      z-index: 25;
+    }
+    .chip {
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+    }
+    .stage {
+      position: absolute;
+      left: 50%;
+      bottom: 40px;
+      transform: translateX(-50%) perspective(1400px) rotateX(2deg);
+      z-index: 10;
+    }
+    .halo {
+      position: absolute;
+      width: 620px;
+      height: 620px;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+      filter: blur(50px);
+      z-index: 0;
+    }
+    .device {
+      position: relative;
+      width: 520px;
+      height: 1064px;
+      background: linear-gradient(160deg, #48484a 0%, #2c2c2e 25%, #1c1c1e 60%, #000 100%);
+      border-radius: 66px;
+      padding: 15px;
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.12),
+        0 2px 0 rgba(255, 255, 255, 0.06) inset,
+        0 80px 160px rgba(0, 0, 0, 0.65),
+        0 30px 60px rgba(0, 0, 0, 0.4),
+        0 0 120px rgba(var(--accent-rgb), 0.15);
+    }
+    .island {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 142px;
+      height: 40px;
+      background: #000;
+      border-radius: 24px;
+      z-index: 5;
+    }
+    .display {
+      width: 100%;
+      height: 100%;
+      border-radius: 54px;
+      overflow: hidden;
+      background: #000;
+    }
+    .display img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .cta {
+      position: absolute;
+      bottom: 1180px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      padding: 18px 36px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgb(var(--accent-rgb)), rgba(var(--accent-rgb), 0.75));
+      color: #fff;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      box-shadow: 0 12px 40px rgba(var(--accent-rgb), 0.35);
+      display: {{CTA_DISPLAY}};
+      white-space: nowrap;
+    }
+    .mark {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.2);
+      z-index: 20;
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient"></div>
+  <div class="vignette"></div>
+  <div class="msg">{{MESSAGE}}</div>
+  <div class="cta">{{CTA_TEXT}}</div>
+  <div class="chips">{{CHIPS_HTML}}</div>
+  <div class="stage">
+    <div class="halo"></div>
+    <div class="device">
+      <div class="island"></div>
+      <div class="display">
+        <img src="data:image/png;base64,{{SCREEN_B64}}" alt="" />
+      </div>
+    </div>
+  </div>
+  <div class="mark">UNZE</div>
+</body>
+</html>

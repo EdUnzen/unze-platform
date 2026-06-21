@@ -1,8 +1,26 @@
 /** Marketing-Demo: Communities mit simulierten Gr\u00f6\u00dfen (member_count). */
 export const MARKETING_COMMUNITIES = [
   {
+    slug: "street-photography-europe",
+    title: "Street Photography Europe",
+    description:
+      "Europ\u00e4ische Street-Photography-Community. Walks, Critiques, Ausstellungen und Zertifikate f\u00fcr urbanes Storytelling.",
+    category: "Fotografie",
+    bannerGradient: "from-zinc-700/90 via-stone-800/80 to-neutral-900/70",
+    platformType: "unze",
+    tags: ["Street", "Urban", "Europe", "Fotografie"],
+    focusTags: ["Walks", "Critiques", "Events"],
+    memberCount: 5600,
+    rating: 4.85,
+    reviews: 478,
+    discoverScore: 240,
+    communityLevel: "platinum",
+    levelScore: 74,
+    isTrending: true,
+  },
+  {
     slug: "fit-squad-dach",
-    title: "Fit Squad DACH",
+    title: "Fitness Community",
     description:
       "Fitness-Community f\u00fcr Training, Ern\u00e4hrung und Accountability. Workouts, Challenges und Events \u2014 von Anf\u00e4nger bis Athlet.",
     category: "Fitness",
@@ -10,7 +28,7 @@ export const MARKETING_COMMUNITIES = [
     platformType: "unze",
     tags: ["Fitness", "Training", "Ern\u00e4hrung", "Community"],
     focusTags: ["Workouts", "Challenges", "Events"],
-    memberCount: 50,
+    memberCount: 3800,
     rating: 4.8,
     reviews: 12,
     discoverScore: 140,
@@ -19,7 +37,7 @@ export const MARKETING_COMMUNITIES = [
   },
   {
     slug: "code-craft-academy",
-    title: "CodeCraft Academy",
+    title: "Programmier Community",
     description:
       "Programmieren lernen und Projekte bauen \u2014 von Python bis Full-Stack. Mentoring, Code-Reviews und Hackathons.",
     category: "Technologie",
@@ -36,7 +54,7 @@ export const MARKETING_COMMUNITIES = [
   },
   {
     slug: "mathe-meister",
-    title: "Mathe Meister",
+    title: "Mathe Akademie",
     description:
       "Mathematik-Community f\u00fcr Sch\u00fcler, Studierende und Enthusiasten. \u00dcbungen, Pr\u00fcfungscoaching und Olympiade-Vorbereitung.",
     category: "Bildung",
@@ -70,7 +88,7 @@ export const MARKETING_COMMUNITIES = [
   },
   {
     slug: "handwerk-meister",
-    title: "Handwerk Meister",
+    title: "Handwerker Netzwerk",
     description:
       "Netzwerk f\u00fcr Handwerker und Meisterbetriebe. Wissen teilen, Auftr\u00e4ge, Fortbildungen und regionale Events.",
     category: "Handwerk",
@@ -87,7 +105,7 @@ export const MARKETING_COMMUNITIES = [
   },
   {
     slug: "lens-masters-guild",
-    title: "Lens Masters Guild",
+    title: "Fotografie Deutschland",
     description:
       "Fotografie-Community f\u00fcr Profis und Enthusiasten. Portfolio-Reviews, Workshops, Ausstellungen und Zertifikate.",
     category: "Fotografie",
