@@ -25,6 +25,8 @@ function mapEventRow(row: Record<string, unknown>): CommunityEvent {
     coverUrl: (row.cover_url as string) ?? null,
     isPublic: Boolean(row.is_public),
     isFeatured: Boolean(row.is_featured),
+    checkInCredentialId: (row.check_in_credential_id as string) ?? null,
+    checkInGroupId: (row.check_in_group_id as string) ?? null,
     platformType: community?.platform_type as string | undefined,
   };
 }

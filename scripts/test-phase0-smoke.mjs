@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Phase 0 smoke test ó schema + RPC stubs (no auth session required for DB checks).
+ * Phase 0 smoke test ù schema + RPC stubs (no auth session required for DB checks).
  * Usage: npm run test:phase0
  */
 import { readFileSync, existsSync } from "fs";
@@ -44,7 +44,7 @@ const results = [];
 
 function record(name, ok, note = "") {
   results.push({ name, ok, note });
-  console.log(`${ok ? "?" : "?"} ${name}${note ? ` ó ${note}` : ""}`);
+  console.log(`${ok ? "?" : "?"} ${name}${note ? ` ù ${note}` : ""}`);
 }
 
 async function checkDb(client) {
@@ -81,7 +81,7 @@ async function checkDb(client) {
     SELECT unze_public_id FROM public.profiles LIMIT 1
   `);
   const token = sample[0]?.unze_public_id;
-  record("Sample UNZE-ID vorhanden", Boolean(token), token ? token.slice(0, 12) + "Ö" : "keine Profile");
+  record("Sample UNZE-ID vorhanden", Boolean(token), token ? token.slice(0, 12) + "ù" : "keine Profile");
 
   if (token) {
     const { rows: resolved } = await client.query(
@@ -98,12 +98,20 @@ async function checkDb(client) {
     const evalObj = evalRows[0]?.r;
     record(
       "RPC evaluate_requirements",
-      evalObj?.fulfilled === true,
+      evalObj?.fulfilled === true && evalObj?.phase === 1,
       evalObj?.phase != null ? `phase ${evalObj.phase}` : "",
     );
   }
 
-  const funcs = ["resolve_unze_public_id", "evaluate_requirements", "verify_unze_id", "generate_unze_public_id"];
+  const funcs = [
+    "resolve_unze_public_id",
+    "evaluate_requirements",
+    "verify_unze_id",
+    "generate_unze_public_id",
+    "grant_credential",
+    "apply_event_check_in_rewards",
+    "user_has_group_unlock",
+  ];
   for (const fn of funcs) {
     const { rows } = await client.query(
       `SELECT 1 FROM pg_proc p JOIN pg_namespace n ON p.pronamespace = n.oid
@@ -143,7 +151,7 @@ async function main() {
   const dbUrl = buildDbUrl(env);
 
   if (!dbUrl) {
-    record("DB-Verbindung", false, "Credentials fehlen ó nur HTTP-Checks");
+    record("DB-Verbindung", false, "Credentials fehlen ù nur HTTP-Checks");
     await checkHttp();
   } else {
     const client = new pg.Client({

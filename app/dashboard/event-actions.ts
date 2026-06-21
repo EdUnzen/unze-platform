@@ -91,3 +91,37 @@ export async function createEventAction(
   revalidateDiscover();
   return { success: true as const };
 }
+
+export async function updateEventCheckInRewardsAction(
+  slug: string,
+  eventId: string,
+  formData: FormData,
+): Promise<{ error?: string; success?: boolean }> {
+  const user = await getCurrentUser();
+  if (!user) return { error: "Nicht angemeldet" };
+
+  const { community, canAccess } = await import(
+    "@/services/dashboard/dashboard.service"
+  ).then((m) => m.getDashboardCommunityAccess(slug, user.id));
+
+  if (!canAccess || !community) return { error: "Kein Zugriff" };
+  if (!canEditCommunity(community.viewerRole)) return { error: "Keine Berechtigung" };
+
+  const checkInCredentialId =
+    String(formData.get("checkInCredentialId") ?? "").trim() || null;
+  const checkInGroupId = String(formData.get("checkInGroupId") ?? "").trim() || null;
+
+  const { updateEventCheckInRewards } = await import(
+    "@/services/credentials/credential.service"
+  );
+  const result = await updateEventCheckInRewards({
+    eventId,
+    checkInCredentialId,
+    checkInGroupId,
+  });
+
+  if (result.error) return { error: result.error };
+
+  revalidatePath(`/dashboard/community/${slug}/events`);
+  return { success: true };
+}

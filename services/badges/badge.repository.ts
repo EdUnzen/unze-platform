@@ -1,47 +1,109 @@
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityBadgeView } from "@/types/dashboard";
 import type { BadgeType } from "@/types/database";
+import {
+  grantCredentialInDb,
+  mapValidityToBadgeType,
+} from "@/services/credentials/credential.repository";
 
-export async function fetchBadgesByCommunity(
+async function fetchCredentialsByCommunity(
   communityId: string,
-): Promise<CommunityBadgeView[]> {
+): Promise<
+  {
+    id: string;
+    community_id: string;
+    name: string;
+    description: string | null;
+    validity_mode: string;
+    icon_url: string | null;
+  }[]
+> {
   const supabase = await createClient();
   if (!supabase) return [];
 
   const { data, error } = await supabase
-    .from("badges")
-    .select("id, community_id, name, description, badge_type, icon_url")
+    .from("credentials")
+    .select("id, community_id, name, description, validity_mode, icon_url")
     .eq("community_id", communityId)
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("[badge.repository] fetch:", error.message);
+    console.error("[badge.repository] credentials:", error.message);
     return [];
   }
 
-  const badges = data ?? [];
-  if (badges.length === 0) return [];
+  return data ?? [];
+}
 
-  const badgeIds = badges.map((b) => b.id as string);
+export async function fetchBadgesByCommunity(
+  communityId: string,
+): Promise<CommunityBadgeView[]> {
+  const credentials = await fetchCredentialsByCommunity(communityId);
+  if (credentials.length === 0) {
+    const supabase = await createClient();
+    if (!supabase) return [];
+
+    const { data, error } = await supabase
+      .from("badges")
+      .select("id, community_id, name, description, badge_type, icon_url")
+      .eq("community_id", communityId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("[badge.repository] fetch legacy:", error.message);
+      return [];
+    }
+
+    const badges = data ?? [];
+    if (badges.length === 0) return [];
+
+    const badgeIds = badges.map((b) => b.id as string);
+    const { data: grants } = await supabase
+      .from("user_badges")
+      .select("badge_id")
+      .in("badge_id", badgeIds);
+
+    const grantCounts: Record<string, number> = {};
+    for (const row of grants ?? []) {
+      const id = row.badge_id as string;
+      grantCounts[id] = (grantCounts[id] ?? 0) + 1;
+    }
+
+    return badges.map((badge) => ({
+      id: badge.id,
+      communityId: badge.community_id,
+      name: badge.name,
+      description: badge.description,
+      badgeType: badge.badge_type as BadgeType,
+      iconUrl: badge.icon_url,
+      grantedCount: grantCounts[badge.id as string] ?? 0,
+    }));
+  }
+
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const credentialIds = credentials.map((c) => c.id);
   const { data: grants } = await supabase
-    .from("user_badges")
-    .select("badge_id")
-    .in("badge_id", badgeIds);
+    .from("user_credentials")
+    .select("credential_id")
+    .in("credential_id", credentialIds)
+    .is("revoked_at", null);
 
   const grantCounts: Record<string, number> = {};
   for (const row of grants ?? []) {
-    const id = row.badge_id as string;
+    const id = row.credential_id as string;
     grantCounts[id] = (grantCounts[id] ?? 0) + 1;
   }
 
-  return badges.map((badge) => ({
-    id: badge.id,
-    communityId: badge.community_id,
-    name: badge.name,
-    description: badge.description,
-    badgeType: badge.badge_type as BadgeType,
-    iconUrl: badge.icon_url,
-    grantedCount: grantCounts[badge.id as string] ?? 0,
+  return credentials.map((credential) => ({
+    id: credential.id,
+    communityId: credential.community_id,
+    name: credential.name,
+    description: credential.description,
+    badgeType: mapValidityToBadgeType(credential.validity_mode),
+    iconUrl: credential.icon_url,
+    grantedCount: grantCounts[credential.id] ?? 0,
   }));
 }
 
@@ -86,6 +148,14 @@ export async function grantBadgeInDb(input: {
   communityId: string;
   grantedBy: string;
 }): Promise<{ error: string | null }> {
+  const credentialResult = await grantCredentialInDb({
+    credentialId: input.badgeId,
+    userId: input.userId,
+    grantedBy: input.grantedBy,
+    sourceType: "manual_grant",
+  });
+  if (!credentialResult.error) return { error: null };
+
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase nicht konfiguriert" };
 
@@ -120,6 +190,63 @@ export async function fetchUserAwardsForProfile(
 ): Promise<UserAwardView[]> {
   const supabase = await createClient();
   if (!supabase) return [];
+
+  const { data: credentialRows, error: credentialError } = await supabase
+    .from("user_credentials")
+    .select(
+      `
+      id,
+      granted_at,
+      credential:credentials (
+        id,
+        name,
+        validity_mode
+      ),
+      community:communities (
+        id,
+        title,
+        slug
+      ),
+      granter:profiles!user_credentials_granted_by_fkey (
+        display_name,
+        username
+      )
+    `,
+    )
+    .eq("user_id", userId)
+    .is("revoked_at", null)
+    .order("granted_at", { ascending: false });
+
+  if (!credentialError && credentialRows && credentialRows.length > 0) {
+    return credentialRows
+      .map((row) => {
+        const credentialRaw = row.credential;
+        const credential = Array.isArray(credentialRaw) ? credentialRaw[0] : credentialRaw;
+        const communityRaw = row.community;
+        const community = Array.isArray(communityRaw) ? communityRaw[0] : communityRaw;
+        const granterRaw = row.granter;
+        const granter = Array.isArray(granterRaw) ? granterRaw[0] : granterRaw;
+        if (!credential || !community) return null;
+
+        const grantedByName =
+          (granter?.display_name as string | null) ??
+          (granter?.username as string | null) ??
+          null;
+
+        return {
+          id: row.id as string,
+          badgeId: credential.id as string,
+          name: credential.name as string,
+          badgeType: mapValidityToBadgeType(credential.validity_mode as string),
+          communityId: community.id as string,
+          communityTitle: community.title as string,
+          communitySlug: community.slug as string,
+          grantedAt: row.granted_at as string,
+          grantedByName,
+        };
+      })
+      .filter((a): a is UserAwardView => Boolean(a));
+  }
 
   const { data, error } = await supabase
     .from("user_badges")
@@ -192,6 +319,41 @@ export async function fetchUserBadgesForCommunity(
   if (!supabase) return {};
 
   const { data, error } = await supabase
+    .from("user_credentials")
+    .select(
+      `
+      user_id,
+      credential:credentials (
+        id,
+        name,
+        validity_mode
+      )
+    `,
+    )
+    .eq("community_id", communityId)
+    .in("user_id", unique)
+    .is("revoked_at", null);
+
+  if (!error && data) {
+    const result: Record<string, { id: string; name: string; badgeType: BadgeType }[]> = {};
+    for (const row of data) {
+      const userId = row.user_id as string;
+      const credentialRaw = row.credential;
+      const credential = Array.isArray(credentialRaw) ? credentialRaw[0] : credentialRaw;
+      if (!credential) continue;
+      if (!result[userId]) result[userId] = [];
+      result[userId].push({
+        id: credential.id as string,
+        name: credential.name as string,
+        badgeType: mapValidityToBadgeType(credential.validity_mode as string),
+      });
+    }
+    if (Object.keys(result).length > 0 || data.length === 0) {
+      return result;
+    }
+  }
+
+  const { data: legacyData, error: legacyError } = await supabase
     .from("user_badges")
     .select(
       `
@@ -206,24 +368,24 @@ export async function fetchUserBadgesForCommunity(
     .eq("community_id", communityId)
     .in("user_id", unique);
 
-  if (error) {
-    console.error("[badge.repository] user badges:", error.message);
+  if (legacyError) {
+    console.error("[badge.repository] user badges:", legacyError.message);
     return {};
   }
 
-  const result: Record<string, { id: string; name: string; badgeType: BadgeType }[]> = {};
-  for (const row of data ?? []) {
+  const legacyResult: Record<string, { id: string; name: string; badgeType: BadgeType }[]> = {};
+  for (const row of legacyData ?? []) {
     const userId = row.user_id as string;
     const badgeRaw = row.badge;
     const badge = Array.isArray(badgeRaw) ? badgeRaw[0] : badgeRaw;
     if (!badge) continue;
-    if (!result[userId]) result[userId] = [];
-    result[userId].push({
+    if (!legacyResult[userId]) legacyResult[userId] = [];
+    legacyResult[userId].push({
       id: badge.id as string,
       name: badge.name as string,
       badgeType: badge.badge_type as BadgeType,
     });
   }
 
-  return result;
+  return legacyResult;
 }

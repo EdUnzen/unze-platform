@@ -6,7 +6,7 @@ import type {
 
 /**
  * Central Requirement-Engine entry (UNZE-005).
- * Phase 0: RPC stub  predicate evaluation in later phases.
+ * Phase 1: membership, premium, verification, role, ticket, credential predicates.
  */
 export async function evaluateRequirements(
   userId: string,

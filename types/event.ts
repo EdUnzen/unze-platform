@@ -15,6 +15,8 @@ export interface CommunityEvent {
   coverUrl: string | null;
   isPublic: boolean;
   isFeatured: boolean;
+  checkInCredentialId?: string | null;
+  checkInGroupId?: string | null;
   platformType?: string;
 }
 
