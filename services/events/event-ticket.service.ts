@@ -5,6 +5,7 @@ import {
   bookEventTicketInDb,
   cancelEventTicketInDb,
   checkInEventTicketInDb,
+  fetchCheckInRewardLabels,
   fetchEventTicketStatsFromDb,
   fetchEventTicketsForCommunityFromDb,
   fetchUserEventTicketsFromDb,
@@ -85,7 +86,13 @@ export async function checkInEventTicket(
     return { error: "Ticket gehört nicht zu dieser Community" };
   }
 
-  return { error: null, ticketId: result.ticketId };
+  const rewardLabels = await fetchCheckInRewardLabels(result.rewards);
+
+  return {
+    error: null,
+    ticketId: result.ticketId,
+    rewards: rewardLabels,
+  };
 }
 
 export async function cancelEventTicket(ticketId: string) {

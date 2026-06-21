@@ -45,7 +45,11 @@ export async function checkInEventTicketAction(
   if (result.error) return { error: result.error };
 
   revalidatePath(`/dashboard/community/${slug}/events`);
-  return { success: true, ticketId: result.ticketId };
+  return {
+    success: true,
+    ticketId: result.ticketId,
+    rewards: result.rewards,
+  };
 }
 
 export async function cancelEventTicketAction(ticketId: string) {

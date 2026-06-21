@@ -193,15 +193,22 @@ async function main() {
     process.exit(1);
   }
 
-  const { data: checkInId, error: checkErr } = await admin.rpc("check_in_event_ticket", {
+  const { data: checkInPayload, error: checkErr } = await admin.rpc("check_in_event_ticket", {
     p_ticket_code: ticketCode2,
     p_actor_id: member.user_id,
   });
 
+  const checkInId =
+    typeof checkInPayload === "string" ? checkInPayload : checkInPayload?.ticketId;
+
   if (checkErr) {
     record("Creator Check-In", "fail", checkErr.message);
   } else {
-    record("Creator Check-In", "ok", `ticketId=${checkInId}`);
+    const rewardNote =
+      checkInPayload?.rewards?.grantedCredential || checkInPayload?.rewards?.unlockedGroup
+        ? ` rewards=${JSON.stringify(checkInPayload.rewards)}`
+        : "";
+    record("Creator Check-In", "ok", `ticketId=${checkInId}${rewardNote}`);
   }
 
   const { data: afterCheckIn } = await admin

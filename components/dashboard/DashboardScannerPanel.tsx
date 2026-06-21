@@ -23,6 +23,20 @@ type ScanResult =
   | { kind: "unze_id"; ok: boolean; message: string; code?: UnzeVerifyResultCode }
   | { kind: "error"; message: string };
 
+function buildCheckInMessage(rewards?: {
+  credentialName: string | null;
+  groupName: string | null;
+}): string {
+  const segments: string[] = [String(ACTION_MESSAGES.event.checkedIn)];
+  if (rewards?.credentialName) {
+    segments.push(`Auszeichnung vergeben: ${rewards.credentialName}.`);
+  }
+  if (rewards?.groupName) {
+    segments.push(`Gruppe freigeschaltet: ${rewards.groupName}.`);
+  }
+  return segments.join(" ");
+}
+
 const VERIFY_LABELS: Record<UnzeVerifyResultCode, string> = {
   allowed: "Zugang best\u00e4tigt \u2014 UNZE-ID verifiziert.",
   denied: "Zugang abgelehnt \u2014 Voraussetzungen nicht erf\u00fcllt.",
@@ -71,7 +85,7 @@ export function DashboardScannerPanel({
           setLastResult({
             kind: "ticket",
             ok: true,
-            message: ACTION_MESSAGES.event.checkedIn,
+            message: buildCheckInMessage(result.rewards),
           });
           setManualCode("");
         }
@@ -129,14 +143,14 @@ export function DashboardScannerPanel({
           <IdCard className="mb-2 h-5 w-5 text-unze-green" aria-hidden />
           <p className="text-xs font-semibold text-unze-ink">UNZE-ID</p>
           <p className="mt-1 text-[11px] leading-relaxed text-unze-ink-secondary">
-            Pers\u00f6nlicher Verify-Code {"\u2014"} Zugang wird serverseitig gepr\u00fcft.
+            {"Pers\u00f6nlicher Verify-Code \u2014 Zugang wird serverseitig gepr\u00fcft."}
           </p>
         </div>
         <div className="rounded-2xl border border-unze-border bg-unze-surface-muted/50 p-3">
           <Ticket className="mb-2 h-5 w-5 text-unze-green" aria-hidden />
           <p className="text-xs font-semibold text-unze-ink">Event-Ticket</p>
           <p className="mt-1 text-[11px] leading-relaxed text-unze-ink-secondary">
-            Einmaliger Check-in-Code f\u00fcr ein gebuchtes Event.
+            {"Einmaliger Check-in-Code f\u00fcr ein gebuchtes Event."}
           </p>
         </div>
       </section>

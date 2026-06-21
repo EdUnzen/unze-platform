@@ -179,13 +179,106 @@ export type UserAwardView = {
   id: string;
   badgeId: string;
   name: string;
+  description: string | null;
+  category: string;
   badgeType: BadgeType;
   communityId: string;
   communityTitle: string;
   communitySlug: string;
   grantedAt: string;
   grantedByName: string | null;
+  sourceType: string | null;
+  isCollectionQualification?: boolean;
+  collectionCredentialCount?: number;
 };
+
+async function fetchCompletedCollectionQualifications(
+  userId: string,
+): Promise<UserAwardView[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data: userCreds, error: credError } = await supabase
+    .from("user_credentials")
+    .select("credential_id, granted_at")
+    .eq("user_id", userId)
+    .is("revoked_at", null);
+
+  if (credError || !userCreds?.length) return [];
+
+  const ownedIds = new Set(userCreds.map((r) => r.credential_id as string));
+  const grantedAtByCredential = new Map<string, string>();
+  for (const row of userCreds) {
+    grantedAtByCredential.set(row.credential_id as string, row.granted_at as string);
+  }
+
+  const { data: collections, error: collError } = await supabase
+    .from("credential_collections")
+    .select(
+      `
+      id,
+      name,
+      description,
+      community:communities (
+        id,
+        title,
+        slug
+      )
+    `,
+    );
+
+  if (collError || !collections?.length) return [];
+
+  const collectionIds = collections.map((c) => c.id as string);
+  const { data: items } = await supabase
+    .from("credential_collection_items")
+    .select("collection_id, credential_id")
+    .in("collection_id", collectionIds);
+
+  const itemsByCollection = new Map<string, string[]>();
+  for (const row of items ?? []) {
+    const collectionId = row.collection_id as string;
+    if (!itemsByCollection.has(collectionId)) itemsByCollection.set(collectionId, []);
+    itemsByCollection.get(collectionId)!.push(row.credential_id as string);
+  }
+
+  const qualifications: UserAwardView[] = [];
+
+  for (const collection of collections) {
+    const collectionId = collection.id as string;
+    const credentialIds = itemsByCollection.get(collectionId) ?? [];
+    if (credentialIds.length === 0) continue;
+    if (!credentialIds.every((id) => ownedIds.has(id))) continue;
+
+    const communityRaw = collection.community;
+    const community = Array.isArray(communityRaw) ? communityRaw[0] : communityRaw;
+    if (!community) continue;
+
+    const latestGrant = credentialIds
+      .map((id) => grantedAtByCredential.get(id))
+      .filter(Boolean)
+      .sort((a, b) => new Date(b!).getTime() - new Date(a!).getTime())[0];
+
+    qualifications.push({
+      id: `collection-${collectionId}`,
+      badgeId: collectionId,
+      name: collection.name as string,
+      description: (collection.description as string) ?? null,
+      category: "certificate",
+      badgeType: "permanent",
+      communityId: community.id as string,
+      communityTitle: community.title as string,
+      communitySlug: community.slug as string,
+      grantedAt: latestGrant ?? new Date().toISOString(),
+      grantedByName: null,
+      sourceType: "collection_completion",
+      isCollectionQualification: true,
+      collectionCredentialCount: credentialIds.length,
+    });
+  }
+
+  return qualifications;
+}
 
 export async function fetchUserAwardsForProfile(
   userId: string,
@@ -199,10 +292,13 @@ export async function fetchUserAwardsForProfile(
       `
       id,
       granted_at,
+      source_type,
       credential:credentials (
         id,
         name,
-        validity_mode
+        description,
+        validity_mode,
+        category
       ),
       community:communities (
         id,
@@ -220,8 +316,8 @@ export async function fetchUserAwardsForProfile(
     .order("granted_at", { ascending: false });
 
   if (!credentialError && credentialRows && credentialRows.length > 0) {
-    return credentialRows
-      .map((row) => {
+    const individual: UserAwardView[] = credentialRows
+      .map((row): UserAwardView | null => {
         const credentialRaw = row.credential;
         const credential = Array.isArray(credentialRaw) ? credentialRaw[0] : credentialRaw;
         const communityRaw = row.community;
@@ -239,15 +335,23 @@ export async function fetchUserAwardsForProfile(
           id: row.id as string,
           badgeId: credential.id as string,
           name: credential.name as string,
+          description: (credential.description as string | null) ?? null,
+          category: (credential.category as string) ?? "community_award",
           badgeType: mapValidityToBadgeType(credential.validity_mode as string),
           communityId: community.id as string,
           communityTitle: community.title as string,
           communitySlug: community.slug as string,
           grantedAt: row.granted_at as string,
           grantedByName,
+          sourceType: (row.source_type as string) ?? null,
         };
       })
       .filter((a): a is UserAwardView => Boolean(a));
+
+    const collections = await fetchCompletedCollectionQualifications(userId);
+    return [...individual, ...collections].sort(
+      (a, b) => new Date(b.grantedAt).getTime() - new Date(a.grantedAt).getTime(),
+    );
   }
 
   const { data, error } = await supabase
@@ -281,7 +385,7 @@ export async function fetchUserAwardsForProfile(
   }
 
   return (data ?? [])
-    .map((row) => {
+    .map((row): UserAwardView | null => {
       const badgeRaw = row.badge;
       const badge = Array.isArray(badgeRaw) ? badgeRaw[0] : badgeRaw;
       const communityRaw = row.community;
@@ -299,12 +403,15 @@ export async function fetchUserAwardsForProfile(
         id: row.id as string,
         badgeId: badge.id as string,
         name: badge.name as string,
+        description: null,
+        category: "legacy",
         badgeType: badge.badge_type as BadgeType,
         communityId: community.id as string,
         communityTitle: community.title as string,
         communitySlug: community.slug as string,
         grantedAt: row.created_at as string,
         grantedByName,
+        sourceType: "legacy_badge",
       };
     })
     .filter((a): a is UserAwardView => Boolean(a));

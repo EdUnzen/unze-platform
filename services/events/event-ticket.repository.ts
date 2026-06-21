@@ -219,10 +219,52 @@ export async function fetchEventTicketsForCommunityFromDb(
   return (data ?? []).map((row) => mapTicketRow(row as Record<string, unknown>));
 }
 
+export type CheckInRewards = {
+  grantedCredential: string | null;
+  unlockedGroup: string | null;
+};
+
+export type CheckInRewardLabels = {
+  credentialName: string | null;
+  groupName: string | null;
+};
+
+export async function fetchCheckInRewardLabels(
+  rewards: CheckInRewards | null | undefined,
+): Promise<CheckInRewardLabels> {
+  if (!rewards) return { credentialName: null, groupName: null };
+
+  const supabase = await createClient();
+  if (!supabase) return { credentialName: null, groupName: null };
+
+  let credentialName: string | null = null;
+  let groupName: string | null = null;
+
+  if (rewards.grantedCredential) {
+    const { data } = await supabase
+      .from("credentials")
+      .select("name")
+      .eq("id", rewards.grantedCredential)
+      .maybeSingle();
+    credentialName = (data?.name as string) ?? null;
+  }
+
+  if (rewards.unlockedGroup) {
+    const { data } = await supabase
+      .from("community_groups")
+      .select("name")
+      .eq("id", rewards.unlockedGroup)
+      .maybeSingle();
+    groupName = (data?.name as string) ?? null;
+  }
+
+  return { credentialName, groupName };
+}
+
 export async function checkInEventTicketInDb(
   ticketCode: string,
   actorId: string,
-): Promise<{ error: string | null; ticketId?: string }> {
+): Promise<{ error: string | null; ticketId?: string; rewards?: CheckInRewards }> {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase nicht konfiguriert" };
 
@@ -232,7 +274,21 @@ export async function checkInEventTicketInDb(
   });
 
   if (error) return { error: error.message };
-  return { error: null, ticketId: data as string };
+
+  if (typeof data === "string") {
+    return { error: null, ticketId: data };
+  }
+
+  const payload = data as {
+    ticketId?: string;
+    rewards?: CheckInRewards;
+  };
+
+  return {
+    error: null,
+    ticketId: payload.ticketId,
+    rewards: payload.rewards ?? undefined,
+  };
 }
 
 export async function cancelEventTicketInDb(

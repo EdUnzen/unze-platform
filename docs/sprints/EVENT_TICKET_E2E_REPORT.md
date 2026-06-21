@@ -1,19 +1,20 @@
 # Event Ticket E2E Report
 
-**Datum:** 2026-06-13  
+**Datum:** 2026-06-21  
 **Typ:** Automatisierter DB/API-Test (Service Role)
 
 | Schritt | Status | Notiz |
 |---------|--------|-------|
-| Event finden | ✅ | E2E Ticket Test Event (de8f0054-5260-4fb4-96e7-c4b6c5e77937) |
-| Testnutzer | ✅ | Max SSL |
-| Ticket buchen | ✅ | UNZE-TEST-6F376E3332A5 |
+| Event anlegen | ✅ | E2E Ticket Test Event (1c578332-82d6-4386-ae02-4726f1ff5746) |
+| Testnutzer | ✅ | ED UNzen |
+| Ticket buchen | ✅ | UNZE-TEST-4D981CD6165F |
 | Ticket im Profil (DB) | ✅ | status=active |
 | Ticket stornieren | ✅ | status=cancelled |
-| Creator Check-In | ✅ | ticketId=e2d536ab-5d5b-45b3-bf8f-48b7b8d878da |
-| Status eingecheckt | ✅ | 2026-06-13T13:08:53.979411+00:00 |
+| Creator Check-In | ✅ | ticketId=8e2b3fa9-6a37-466a-a951-94b6b667d7e9 |
+| Status eingecheckt | ✅ | 2026-06-21T07:46:54.127104+00:00 |
 | Mehrfachnutzung blockiert | ✅ | Ticket bereits verwendet |
 | Event-Statistik | ✅ | total=1, eingecheckt=1, offen=0 |
 | Cleanup | ✅ | Test-Ticket entfernt |
+| Event Cleanup | ✅ | Temporäres Event entfernt |
 
 _QR-Code UI und Profil-Seite: manuell im Browser mit Login prüfen._

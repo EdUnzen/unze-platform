@@ -1,6 +1,6 @@
 {
   "name": "unze",
-  "version": "0.3.0-beta.1",
+  "version": "0.3.0-rc.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -42,7 +42,9 @@
     "db:migrate:036": "node scripts/apply-migration-036.mjs",
     "db:migrate:037": "node scripts/apply-migration-037.mjs",
     "db:migrate:038": "node scripts/apply-migration-038.mjs",
+    "db:migrate:039": "node scripts/apply-migration-039.mjs",
     "test:beta": "node scripts/test-beta-e2e.mjs",
+    "test:requirements": "node scripts/test-requirement-combinations.mjs",
     "assign:owner": "node scripts/assign-platform-owner.mjs",
     "verify:community-create": "node scripts/verify-community-create.mjs",
     "backfill:banners": "node scripts/backfill-category-banners.mjs",
