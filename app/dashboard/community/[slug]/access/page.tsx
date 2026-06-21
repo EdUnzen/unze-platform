@@ -1,6 +1,8 @@
 import { AccessSettingsPanel } from "@/components/dashboard/AccessSettingsPanel";
+import { RequirementRulesPanel } from "@/components/dashboard/RequirementRulesPanel";
 import { InviteLinkManager } from "@/components/dashboard/InviteLinkManager";
 import { loadAccessDashboardData } from "@/app/dashboard/access-actions";
+import { loadRequirementDashboardData } from "@/app/dashboard/requirement-actions";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -15,7 +17,10 @@ export default async function DashboardAccessPage({
 }: AccessPageProps) {
   const { slug } = await params;
   const { welcome } = await searchParams;
-  const data = await loadAccessDashboardData(slug);
+  const [data, requirementData] = await Promise.all([
+    loadAccessDashboardData(slug),
+    loadRequirementDashboardData(slug),
+  ]);
 
   if (!data) redirect("/dashboard");
 
@@ -54,6 +59,26 @@ export default async function DashboardAccessPage({
         questions={data.questions}
         canManage={data.canManage}
       />
+
+      {requirementData && (
+        <RequirementRulesPanel
+          slug={slug}
+          resources={requirementData.resources}
+          sets={requirementData.sets}
+          credentials={requirementData.credentials.map((c) => ({
+            id: c.id,
+            label: c.name,
+          }))}
+          collections={requirementData.collections.map((c) => ({
+            id: c.id,
+            label: c.name,
+          }))}
+          events={requirementData.resources
+            .filter((r) => r.type === "event")
+            .map((r) => ({ id: r.id, label: r.label.replace(/^Event: /, "") }))}
+          canManage={requirementData.canManage}
+        />
+      )}
 
       <InviteLinkManager
         slug={slug}

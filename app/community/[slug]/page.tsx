@@ -6,6 +6,8 @@ import { CommunityHeader } from "@/components/community/CommunityHeader";
 
 import { CommunityJoinPanel } from "@/components/community/CommunityJoinPanel";
 
+import { CommunityRequirementsHint } from "@/components/community/CommunityRequirementsHint";
+
 import { CommunityLevelPanel } from "@/components/community/CommunityLevelPanel";
 
 import { CommunityManageButton } from "@/components/community/CommunityManageButton";
@@ -405,6 +407,12 @@ export default async function CommunityPage({
               <h2 className="mb-3 text-sm font-semibold text-unze-ink">
                 Community beitreten
               </h2>
+
+              {user && !community.membership?.isMember && (
+                <div className="mb-3">
+                  <CommunityRequirementsHint userId={user.id} communityId={community.id} />
+                </div>
+              )}
 
               <CommunityJoinPanel
                 community={communityWithLevel}
