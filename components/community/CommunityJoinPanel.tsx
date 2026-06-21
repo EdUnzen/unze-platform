@@ -11,7 +11,7 @@ import { SubscribeCommunityPanel } from "@/components/billing/SubscribeCommunity
 import { ApplicationStatusBadge, MemberRestrictionBadge } from "@/components/dashboard/StatusBadge";
 import { ActionFeedback } from "@/components/ui/ActionFeedback";
 import { ACTION_MESSAGES } from "@/lib/constants/action-messages";
-import { PLATFORM_IDENTITY_OPTIONS } from "@/lib/constants/access";
+import { PLATFORM_IDENTITY_GROUPS, getPlatformIdentityOption } from "@/lib/constants/access";
 import { formatMaxSizeHint } from "@/lib/storage/validation";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import type { Community } from "@/types/community";
@@ -492,22 +492,64 @@ export function CommunityJoinPanel({
             </div>
           ))}
 
-          {requiredPlatforms.map((platform) => {
-            const opt = PLATFORM_IDENTITY_OPTIONS.find((p) => p.value === platform);
+          {PLATFORM_IDENTITY_GROUPS.map((group) => {
+            const platformsInGroup = requiredPlatforms.filter((platform) =>
+              group.values.includes(platform),
+            );
+            if (platformsInGroup.length === 0) return null;
             return (
-              <div key={platform}>
-                <label className="mb-1 block text-xs font-medium text-unze-ink">
-                  {opt?.label ?? platform} *
-                </label>
-                <input
-                  name={`platform_${platform}`}
-                  required
-                  placeholder={opt?.placeholder}
-                  className="w-full rounded-xl border border-unze-border bg-white px-3 py-2 text-sm"
-                />
+              <div
+                key={group.id}
+                className="rounded-xl border border-unze-border/70 bg-unze-surface-muted/40 p-3"
+              >
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-unze-ink-muted">
+                  {group.label}
+                </p>
+                <div className="space-y-3">
+                  {platformsInGroup.map((platform) => {
+                    const opt = getPlatformIdentityOption(platform);
+                    return (
+                      <div key={platform}>
+                        <label className="mb-1 block text-xs font-medium text-unze-ink">
+                          {opt?.label ?? platform} *
+                        </label>
+                        <input
+                          name={`platform_${platform}`}
+                          required
+                          placeholder={opt?.placeholder}
+                          className="w-full rounded-xl border border-unze-border bg-white px-3 py-2 text-sm"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
+
+          {requiredPlatforms
+            .filter(
+              (platform) =>
+                !PLATFORM_IDENTITY_GROUPS.some((group) =>
+                  group.values.includes(platform),
+                ),
+            )
+            .map((platform) => {
+              const opt = getPlatformIdentityOption(platform);
+              return (
+                <div key={platform}>
+                  <label className="mb-1 block text-xs font-medium text-unze-ink">
+                    {opt?.label ?? platform} *
+                  </label>
+                  <input
+                    name={`platform_${platform}`}
+                    required
+                    placeholder={opt?.placeholder}
+                    className="w-full rounded-xl border border-unze-border bg-white px-3 py-2 text-sm"
+                  />
+                </div>
+              );
+            })}
 
           <div className="flex gap-2">
             <button

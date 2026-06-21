@@ -165,6 +165,7 @@ export async function grantBadgeAction(
 
   revalidatePath(`/dashboard/community/${slug}/auszeichnungen`);
   revalidatePath(`/dashboard/community/${slug}/members`);
+  revalidatePath("/profile/auszeichnungen");
   return { success: true };
 }
 

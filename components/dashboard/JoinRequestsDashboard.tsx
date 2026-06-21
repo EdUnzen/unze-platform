@@ -15,19 +15,17 @@ import {
 } from "@/lib/constants/access";
 import type { JoinApplication, JoinApplicationStatus, JoinQuestion } from "@/types/access";
 import { cn } from "@/lib/utils/cn";
-import { Check, Clock, X } from "lucide-react";
+import { Check, ChevronDown, Clock, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 
-const STATUS_FILTERS: { value: JoinApplicationStatus | "all"; label: string }[] =
-  [
-    { value: "all", label: "Alle" },
-    { value: "pending", label: "Offen" },
-    { value: "waitlisted", label: "Warteliste" },
-    { value: "accepted", label: "Angenommen" },
-    { value: "rejected", label: "Abgelehnt" },
-    { value: "withdrawn", label: "Zurückgezogen" },
-  ];
+type PrimaryFilter = "pending" | "waitlisted" | "done";
+
+const DONE_STATUSES: JoinApplicationStatus[] = [
+  "accepted",
+  "rejected",
+  "withdrawn",
+];
 
 interface JoinRequestsDashboardProps {
   slug: string;
@@ -43,31 +41,52 @@ export function JoinRequestsDashboard({
   applications,
   statusCounts,
   canReview,
-  initialFilter = "all",
+  initialFilter = "pending",
   questions = [],
 }: JoinRequestsDashboardProps) {
   const router = useRouter();
-  const [filter, setFilter] = useState<JoinApplicationStatus | "all">(
-    initialFilter,
-  );
+  const [primary, setPrimary] = useState<PrimaryFilter>(() => {
+    if (initialFilter === "waitlisted") return "waitlisted";
+    if (initialFilter === "all" || DONE_STATUSES.includes(initialFilter as JoinApplicationStatus)) {
+      return "done";
+    }
+    return "pending";
+  });
+  const [doneStatus, setDoneStatus] = useState<JoinApplicationStatus>(() => {
+    if (DONE_STATUSES.includes(initialFilter as JoinApplicationStatus)) {
+      return initialFilter as JoinApplicationStatus;
+    }
+    return "accepted";
+  });
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
+  const filtered = useMemo(() => {
+    if (primary === "pending") {
+      return applications.filter((a) => a.status === "pending");
+    }
+    if (primary === "waitlisted") {
+      return applications.filter((a) => a.status === "waitlisted");
+    }
+    return applications.filter((a) => a.status === doneStatus);
+  }, [applications, primary, doneStatus]);
+
   if (!canReview) {
     return (
       <p className="text-sm text-unze-ink-muted">
-        Keine Berechtigung zur Antragsprüfung.
+        Keine Berechtigung zur Antragspr{"\u00fc"}fung.
       </p>
     );
   }
 
-  const filtered =
-    filter === "all"
-      ? applications
-      : applications.filter((a) => a.status === filter);
+  const openCount = (statusCounts.pending ?? 0) + (statusCounts.waitlisted ?? 0);
+  const doneCount = DONE_STATUSES.reduce(
+    (sum, key) => sum + (statusCounts[key] ?? 0),
+    0,
+  );
 
   const handleReview = (
     applicationId: string,
@@ -107,35 +126,25 @@ export function JoinRequestsDashboard({
         setError(result.error);
         return;
       }
-      setSuccess("Nächster Wartelisten-Platz wurde angenommen.");
+      setSuccess("N\u00e4chster Wartelisten-Platz wurde angenommen.");
       router.refresh();
     });
   };
 
-  const pendingCount =
-    (statusCounts.pending ?? 0) + (statusCounts.waitlisted ?? 0);
-
   return (
     <div className="space-y-4" data-testid="join-requests-dashboard">
-      <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
-        {(["pending", "waitlisted", "accepted", "rejected", "withdrawn"] as const).map(
-          (key) => (
-            <div
-              key={key}
-              className="rounded-xl bg-white p-3 text-center shadow-card"
-            >
-              <p className="text-lg font-bold text-unze-ink">
-                {statusCounts[key] ?? 0}
-              </p>
-              <p className="text-[10px] text-unze-ink-muted">
-                {APPLICATION_STATUS_LABELS[key]}
-              </p>
-            </div>
-          ),
-        )}
+      <div className="grid grid-cols-2 gap-2">
+        <div className="rounded-2xl bg-unze-green-muted/40 p-4 shadow-card">
+          <p className="text-2xl font-bold tabular-nums text-unze-ink">{openCount}</p>
+          <p className="text-xs font-medium text-unze-green-dark">Offen & Warteliste</p>
+        </div>
+        <div className="rounded-2xl bg-white p-4 shadow-card">
+          <p className="text-2xl font-bold tabular-nums text-unze-ink">{doneCount}</p>
+          <p className="text-xs font-medium text-unze-ink-muted">Erledigt</p>
+        </div>
       </div>
 
-      {(statusCounts.waitlisted ?? 0) > 0 && (
+      {(statusCounts.waitlisted ?? 0) > 0 && primary === "waitlisted" && (
         <button
           type="button"
           disabled={pending}
@@ -143,38 +152,66 @@ export function JoinRequestsDashboard({
           data-testid="join-promote-waitlist"
           className="w-full rounded-xl border border-unze-green bg-unze-green-muted/30 py-2.5 text-sm font-medium text-unze-green-dark disabled:opacity-60"
         >
-          Nächsten von Warteliste annehmen (wenn Platz frei)
+          N{"\u00e4"}chsten von Warteliste annehmen (wenn Platz frei)
         </button>
       )}
 
-      <div className="flex gap-1 overflow-x-auto pb-1">
-        {STATUS_FILTERS.map((f) => (
+      <div className="flex flex-wrap items-center gap-2">
+        {(
+          [
+            { value: "pending" as const, label: "Offen", count: statusCounts.pending ?? 0 },
+            {
+              value: "waitlisted" as const,
+              label: "Warteliste",
+              count: statusCounts.waitlisted ?? 0,
+            },
+            { value: "done" as const, label: "Erledigt", count: doneCount },
+          ] as const
+        ).map((tab) => (
           <button
-            key={f.value}
+            key={tab.value}
             type="button"
-            onClick={() => setFilter(f.value)}
-            data-testid={`join-filter-${f.value}`}
+            onClick={() => setPrimary(tab.value)}
+            data-testid={`join-filter-${tab.value}`}
             className={cn(
-              "shrink-0 rounded-full px-3 py-1.5 text-xs font-medium",
-              filter === f.value
+              "rounded-full px-4 py-2 text-xs font-semibold",
+              primary === tab.value
                 ? "bg-unze-green text-white"
                 : "bg-unze-surface-muted text-unze-ink-secondary",
             )}
           >
-            {f.label}
-            {f.value !== "all" && statusCounts[f.value]
-              ? ` (${statusCounts[f.value]})`
-              : ""}
+            {tab.label}
+            {tab.count > 0 ? ` (${tab.count})` : ""}
           </button>
         ))}
+
+        {primary === "done" && (
+          <div className="relative ml-auto">
+            <select
+              value={doneStatus}
+              onChange={(e) => setDoneStatus(e.target.value as JoinApplicationStatus)}
+              className="appearance-none rounded-full border border-unze-border bg-white py-2 pl-3 pr-8 text-xs font-medium"
+              aria-label="Erledigt-Status filtern"
+            >
+              {DONE_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {APPLICATION_STATUS_LABELS[status]} ({statusCounts[status] ?? 0})
+                </option>
+              ))}
+            </select>
+            <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-unze-ink-muted" />
+          </div>
+        )}
       </div>
 
       {filtered.length === 0 ? (
         <div className="rounded-2xl bg-white py-10 text-center shadow-card">
           <p className="text-sm font-medium text-unze-ink">
-            {filter === "all"
-              ? "Noch keine Beitrittsanträge"
-              : `Keine Anträge: ${APPLICATION_STATUS_LABELS[filter as JoinApplicationStatus] ?? filter}`}
+            {primary === "pending"
+              ? "Keine offenen Antr\u00e4ge"
+              : primary === "waitlisted"
+                ? "Keine Eintr\u00e4ge auf der Warteliste"
+                : `Keine Antr\u00e4ge: ${APPLICATION_STATUS_LABELS[doneStatus]}`}
           </p>
           <p className="mt-1 text-xs text-unze-ink-muted">
             Bewerbungen erscheinen hier, sobald Nutzer sich bewerben.
@@ -211,7 +248,7 @@ export function JoinRequestsDashboard({
                     </div>
                     <p className="text-xs text-unze-ink-muted">
                       {APPLICATION_SOURCE_LABELS[app.source] ?? app.source}
-                      {" · "}
+                      {" \u00b7 "}
                       {new Date(app.createdAt).toLocaleDateString("de-DE")}
                     </p>
                     {app.systemMessage && (
@@ -256,7 +293,7 @@ export function JoinRequestsDashboard({
                             data-testid={`join-request-reject-${app.id}`}
                             className="flex-1 rounded-lg bg-red-50 py-2 text-xs font-medium text-red-700"
                           >
-                            Ablehnen bestätigen
+                            Ablehnen best{"\u00e4"}tigen
                           </button>
                           <button
                             type="button"
@@ -309,19 +346,8 @@ export function JoinRequestsDashboard({
         </ul>
       )}
 
-      {pendingCount > 0 && filter === "all" && (
-        <p className="text-center text-xs text-unze-ink-muted">
-          {pendingCount} offene Anträge warten auf Prüfung
-        </p>
-      )}
-
-      {success && (
-        <ActionFeedback variant="success">{success}</ActionFeedback>
-      )}
-
-      {error && (
-        <ActionFeedback variant="error">{error}</ActionFeedback>
-      )}
+      {success && <ActionFeedback variant="success">{success}</ActionFeedback>}
+      {error && <ActionFeedback variant="error">{error}</ActionFeedback>}
     </div>
   );
 }

@@ -29,8 +29,7 @@ export function AuszeichnungenPanel({ slug, badges }: AuszeichnungenPanelProps) 
           keine eigenen Badge-Typen mehr.
         </p>
         <p className="mt-2 text-xs text-unze-ink-muted">
-          Vergabe an Mitglieder: Mitgliederliste {"\u2192"} Rolle & Auszeichnung
-          (demn{"\u00e4"}chst).
+          Vergabe an Mitglieder: Mitgliederliste {"\u2192"} Auszeichnung vergeben.
         </p>
       </section>
 

@@ -396,7 +396,62 @@ export const BANNER_PRESETS: BannerPreset[] = [
   },
 ];
 
-const presetById = new Map(BANNER_PRESETS.map((p) => [p.id, p]));
+/** Neutrale Platzhalter fuer Community-Erstellung (Review 2). */
+export const NEUTRAL_BANNER_PRESETS: BannerPreset[] = [
+  {
+    id: "neutral-netzwerk",
+    label: "Netzwerk",
+    imageUrl:
+      "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-neutral-600/85 via-stone-700/75 to-neutral-800/70",
+    categories: [],
+  },
+  {
+    id: "neutral-community",
+    label: "Community",
+    imageUrl:
+      "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-emerald-500/90 via-teal-600/80 to-cyan-700/70",
+    categories: [],
+  },
+  {
+    id: "neutral-menschen",
+    label: "Menschen",
+    imageUrl:
+      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-slate-600/85 via-zinc-700/75 to-neutral-900/70",
+    categories: [],
+  },
+  {
+    id: "neutral-zusammenarbeit",
+    label: "Zusammenarbeit",
+    imageUrl:
+      "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-green-600/85 via-emerald-700/75 to-teal-900/70",
+    categories: [],
+  },
+  {
+    id: "neutral-verbindung",
+    label: "Verbindung",
+    imageUrl:
+      "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-blue-700/85 via-slate-800/75 to-neutral-900/70",
+    categories: [],
+  },
+  {
+    id: "neutral-willkommen",
+    label: "Willkommen",
+    imageUrl:
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=80",
+    gradient: "from-teal-500/90 via-cyan-600/80 to-emerald-800/75",
+    categories: [],
+  },
+];
+
+const presetById = new Map([
+  ...BANNER_PRESETS.map((p) => [p.id, p] as const),
+  ...NEUTRAL_BANNER_PRESETS.map((p) => [p.id, p] as const),
+]);
 
 export function getBannerPresetById(id: string | null | undefined): BannerPreset | null {
   if (!id) return null;
@@ -407,22 +462,12 @@ export function normalizeBannerCategory(category: string): string {
   return category;
 }
 
-export function getDefaultBannerPresetForCategory(category: string): BannerPreset {
-  const forCategory = BANNER_PRESETS.find((p) => p.categories.includes(category));
-  return forCategory ?? presetById.get("general-1")!;
+export function getDefaultBannerPresetForCategory(_category: string): BannerPreset {
+  return NEUTRAL_BANNER_PRESETS[0]!;
 }
 
-export function getBannerPresetsForCategory(category: string): BannerPreset[] {
-  const specific = BANNER_PRESETS.filter((p) => p.categories.includes(category));
-  const general = BANNER_PRESETS.filter((p) => p.categories.includes("Allgemein"));
-  const seen = new Set<string>();
-  const merged: BannerPreset[] = [];
-  for (const p of [...specific, ...general]) {
-    if (seen.has(p.id)) continue;
-    seen.add(p.id);
-    merged.push(p);
-  }
-  return merged.length > 0 ? merged : [getDefaultBannerPresetForCategory(category)];
+export function getBannerPresetsForCategory(_category: string): BannerPreset[] {
+  return NEUTRAL_BANNER_PRESETS;
 }
 
 export function resolveBannerFromPresetOrUrl(input: {

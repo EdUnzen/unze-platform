@@ -24,7 +24,7 @@ export default async function DashboardRequestsPage({
     status === "rejected" ||
     status === "withdrawn"
       ? status
-      : "all";
+      : "pending";
 
   return (
     <section className="space-y-4">

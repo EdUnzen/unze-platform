@@ -6,13 +6,14 @@ import { loadRestrictionsData } from "@/app/dashboard/lifecycle-actions";
 import { loadRemovedMembersData } from "@/app/dashboard/governance-actions";
 import { loadPendingRemovalsData } from "@/app/dashboard/removal-actions";
 import { getCurrentUser } from "@/services/auth/auth.service";
-import { canBanMembers } from "@/lib/permissions/community.permissions";
-import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
 import {
   canManageRoles,
   getCommunityMembers,
 } from "@/services/community/member.service";
-import { hasCommunityPermission } from "@/lib/permissions/community.permissions";
+import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.service";
+import { getCommunityBadges } from "@/services/badges/badge.service";
+import { fetchUserBadgesForCommunity } from "@/services/badges/badge.repository";
+import { canBanMembers, hasCommunityPermission } from "@/lib/permissions/community.permissions";
 import { redirect } from "next/navigation";
 
 interface MembersPageProps {
@@ -28,6 +29,13 @@ export default async function DashboardMembersPage({ params }: MembersPageProps)
   if (!community) redirect("/dashboard");
 
   const members = await getCommunityMembers(community.id);
+  const [communityBadges, memberAwards] = await Promise.all([
+    getCommunityBadges(community.id),
+    fetchUserBadgesForCommunity(
+      community.id,
+      members.map((m) => m.userId),
+    ),
+  ]);
   const role = community.viewerRole;
   const restrictionsData = await loadRestrictionsData(slug);
   const removedData = await loadRemovedMembersData(slug);
@@ -51,6 +59,9 @@ export default async function DashboardMembersPage({ params }: MembersPageProps)
         canManageRoles={canManageRoles(role)}
         canRemove={hasCommunityPermission(role, "manage_members")}
         canBan={canBanMembers(role)}
+        communityBadges={communityBadges}
+        memberAwards={memberAwards}
+        canGrantAwards={hasCommunityPermission(role, "moderate")}
       />
       {restrictionsData && (
         <RestrictionsPanel

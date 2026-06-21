@@ -9,8 +9,8 @@ import {
   ACCESS_STATUS_OPTIONS,
   JOIN_APPROVAL_OPTIONS,
   JOIN_QUESTION_TYPE_OPTIONS,
-  PLATFORM_IDENTITY_OPTIONS,
 } from "@/lib/constants/access";
+import { PlatformIdGroupsFieldset } from "@/components/dashboard/PlatformIdGroupsFieldset";
 import { COMMUNITY_ACCESS_MODE_PRESETS } from "@/lib/access/presets";
 import type { CommunityAccessConfig, JoinQuestion } from "@/types/access";
 import { cn } from "@/lib/utils/cn";
@@ -182,22 +182,7 @@ export function AccessSettingsPanel({
             />
           </div>
 
-          <fieldset>
-            <legend className="mb-2 text-xs font-medium">Pflicht-Plattform-IDs</legend>
-            <div className="grid grid-cols-2 gap-2">
-              {PLATFORM_IDENTITY_OPTIONS.map((p) => (
-                <label key={p.value} className="flex items-center gap-2 text-xs">
-                  <input
-                    type="checkbox"
-                    name="requiredPlatformIds"
-                    value={p.value}
-                    defaultChecked={c.requiredPlatformIds.includes(p.value)}
-                  />
-                  {p.label}
-                </label>
-              ))}
-            </div>
-          </fieldset>
+          <PlatformIdGroupsFieldset selected={c.requiredPlatformIds} />
 
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-xs">

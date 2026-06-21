@@ -113,6 +113,44 @@ export const PLATFORM_IDENTITY_OPTIONS: {
   { value: "other", label: "Andere", placeholder: "Plattform-ID" },
 ];
 
+export type PlatformIdentityGroupId =
+  | "communication"
+  | "gaming"
+  | "social"
+  | "other";
+
+/** UX-Gruppen fuer Pflicht-Plattform-IDs (Creator-Dashboard). */
+export const PLATFORM_IDENTITY_GROUPS: {
+  id: PlatformIdentityGroupId;
+  label: string;
+  values: PlatformIdentityType[];
+}[] = [
+  {
+    id: "communication",
+    label: "Kommunikation",
+    values: ["whatsapp", "discord", "telegram"],
+  },
+  {
+    id: "gaming",
+    label: "Gaming",
+    values: ["psn", "epic"],
+  },
+  {
+    id: "social",
+    label: "Social",
+    values: ["instagram", "tiktok", "linkedin", "x", "facebook"],
+  },
+  {
+    id: "other",
+    label: "Weitere",
+    values: ["phone", "other"],
+  },
+];
+
+export function getPlatformIdentityOption(value: PlatformIdentityType) {
+  return PLATFORM_IDENTITY_OPTIONS.find((p) => p.value === value);
+}
+
 export const APPLICATION_STATUS_LABELS: Record<JoinApplicationStatus, string> = {
   pending: "Offen",
   accepted: "Angenommen",
