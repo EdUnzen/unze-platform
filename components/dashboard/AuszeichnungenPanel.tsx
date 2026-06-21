@@ -1,7 +1,7 @@
 "use client";
 
 import { deleteBadgeAction } from "@/app/dashboard/actions";
-import { getCredentialCategoryLabel } from "@/lib/constants/credential-categories";
+import { getCredentialDisplayTerm } from "@/lib/constants/credential-categories";
 import type { CommunityBadgeView } from "@/types/dashboard";
 import { CommunityBadgeIcon } from "@/components/badges/UserBadgeChip";
 import { Award, Trash2 } from "lucide-react";
@@ -25,7 +25,7 @@ export function AuszeichnungenPanel({ slug, badges }: AuszeichnungenPanelProps) 
           </h3>
         </div>
         <p className="text-xs leading-relaxed text-unze-ink-secondary">
-          {"Auszeichnungen sind die zentrale Struktur f\u00fcr Qualifikationen. Kategorien wie Zertifikate, Community-, Event- oder Gruppen-Auszeichnungen werden schrittweise erg\u00e4nzt \u2014 der Oberbegriff bleibt \u201eAuszeichnungen\u201c."}
+          {"Ein System f\u00fcr Auszeichnungen, Zertifikate und Qualifikationen \u2014 je nach Kategorie wird automatisch die passende Bezeichnung angezeigt."}
         </p>
         <p className="mt-2 text-xs text-unze-ink-muted">
           Vergabe an Mitglieder: Mitgliederliste {"\u2192"} Auszeichnung vergeben.
@@ -51,7 +51,7 @@ export function AuszeichnungenPanel({ slug, badges }: AuszeichnungenPanelProps) 
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-unze-ink">{badge.name}</p>
                 <p className="text-xs text-unze-ink-muted">
-                  {getCredentialCategoryLabel(badge.category)} {"\u00b7"} {badge.grantedCount}{" "}
+                  {getCredentialDisplayTerm(badge.category)} {"\u00b7"} {badge.grantedCount}{" "}
                   vergeben
                 </p>
                 {badge.description && (

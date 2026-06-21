@@ -22,7 +22,7 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Home",
     href: "/",
     icon: Home,
-    description: "Verwaltungs-Hub: Communities, Gruppen, Events, Anträge",
+    description: "Verwaltungs-Hub: Communities, Gruppen, Events, Services, Auszeichnungen",
   },
   {
     id: "discover",

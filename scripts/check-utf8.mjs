@@ -14,6 +14,7 @@ const SKIP = new Set(["node_modules", ".next", ".git"]);
 
 const MOJIBAKE = [
   /\uFFFD/,
+  /[\u0080-\u009F]/,
   /Men\uFFFD schlie/,
   /pers\uFFFDn/,
   /Schlie\uFFFDen/,
@@ -25,6 +26,8 @@ const MOJIBAKE = [
   /erf\uFFFDllt/,
   /f\uFFFDr /,
   /verf\uFFFDgbar/,
+  /Antr[\u009D\uFFFD]ge/,
+  /Men[\u009D\uFFFD] /,
 ];
 
 /** @type {string[]} */

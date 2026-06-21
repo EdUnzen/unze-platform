@@ -38,7 +38,7 @@ const ACTIONS = [
   },
   {
     id: "requests",
-    label: "Antrge",
+    label: "Antr\u00e4ge",
     href: (slug: string) => `/dashboard/community/${slug}/requests`,
     icon: ClipboardList,
     show: (role: CommunityRole) => canReviewApplications(role),
@@ -83,7 +83,7 @@ export function DashboardQuickActions({ slug, viewerRole }: DashboardQuickAction
       <header className="mb-2">
         <h2 className="text-sm font-semibold text-unze-ink">Schnellzugriff</h2>
         <p className="text-xs text-unze-ink-secondary">
-          Men links fr alle Bereiche
+          {"Men\u00fc links f\u00fcr alle Bereiche"}
         </p>
       </header>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">

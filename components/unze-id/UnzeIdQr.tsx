@@ -35,7 +35,7 @@ export function UnzeIdQr({ payload, size = 180 }: UnzeIdQrProps) {
         className="flex items-center justify-center rounded-xl bg-unze-surface-muted text-xs text-unze-ink-muted"
         style={{ width: size, height: size }}
       >
-        QR 
+        {"QR \u2026"}
       </div>
     );
   }

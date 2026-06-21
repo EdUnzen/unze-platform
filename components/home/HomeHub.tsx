@@ -69,9 +69,9 @@ export function HomeHub({
             Von der Startseite in die App
           </p>
           <p className="mt-1 text-xs text-unze-ink-secondary sm:text-sm">
-            Registriere dich oder melde dich an — dann findest du Communities unter{" "}
+            Registriere dich oder melde dich an {"\u2014"} dann findest du Communities unter{" "}
             <strong className="font-semibold text-unze-ink">Entdecken</strong>, verwaltest dein
-            Netzwerk auf der Startseite und kannst UNZE als App installieren.
+            Netzwerk, sammelst Auszeichnungen und kannst UNZE als App installieren.
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <Link

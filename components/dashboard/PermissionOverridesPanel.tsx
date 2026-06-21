@@ -1,20 +1,20 @@
 "use client";
 
-import { CreatorHelpTip } from "@/components/dashboard/CreatorHelpTip";
 import { setPermissionOverrideAction } from "@/app/dashboard/governance-actions";
+import { CreatorHelpTip } from "@/components/dashboard/CreatorHelpTip";
+import { ActionFeedback } from "@/components/ui/ActionFeedback";
+import { ROLE_LABELS } from "@/lib/constants/dashboard";
 import {
   getPermissionsByCategory,
   PERMISSION_DEFINITIONS,
 } from "@/lib/permissions/definitions";
-import {
-  getPermissionsByDisplayGroup,
-} from "@/lib/permissions/display-groups";
-import { ROLE_LABELS } from "@/lib/constants/dashboard";
+import { getPermissionsByDisplayGroup } from "@/lib/permissions/display-groups";
 import type { GovernancePermissionKey, PermissionOverride } from "@/types/governance";
 import type { CommunityRole } from "@/types/database";
-import { ChevronDown, KeyRound } from "lucide-react";
-import { useState, useTransition } from "react";
 import { cn } from "@/lib/utils/cn";
+import { ChevronDown, KeyRound, Save } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 const CONFIGURABLE_ROLES: CommunityRole[] = [
   "moderator",
@@ -22,6 +22,45 @@ const CONFIGURABLE_ROLES: CommunityRole[] = [
   "verified_member",
   "member",
 ];
+
+const ROLE_RANKS: Record<CommunityRole, number> = {
+  member: 0,
+  verified_member: 0,
+  moderator: 1,
+  expert: 1,
+  admin: 2,
+  creator: 3,
+};
+
+function grantKey(role: CommunityRole, permissionKey: GovernancePermissionKey) {
+  return `${role}:${permissionKey}`;
+}
+
+function computeEffectiveGrant(
+  role: CommunityRole,
+  key: GovernancePermissionKey,
+  overrides: PermissionOverride[],
+): boolean {
+  const override = overrides.find((o) => o.role === role && o.permissionKey === key);
+  if (override) return override.granted;
+
+  const def = PERMISSION_DEFINITIONS.find((d) => d.key === key);
+  if (!def) return false;
+  return ROLE_RANKS[role] >= ROLE_RANKS[def.defaultMinRole];
+}
+
+function buildGrantSnapshot(
+  overrides: PermissionOverride[],
+  permissionKeys: GovernancePermissionKey[],
+): Record<string, boolean> {
+  const snapshot: Record<string, boolean> = {};
+  for (const key of permissionKeys) {
+    for (const role of CONFIGURABLE_ROLES) {
+      snapshot[grantKey(role, key)] = computeEffectiveGrant(role, key, overrides);
+    }
+  }
+  return snapshot;
+}
 
 interface PermissionOverridesPanelProps {
   slug: string;
@@ -32,57 +71,138 @@ export function PermissionOverridesPanel({
   slug,
   overrides,
 }: PermissionOverridesPanelProps) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [feedback, setFeedback] = useState<{ variant: "success" | "error"; message: string } | null>(
+    null,
+  );
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
     content: true,
     moderation: true,
     administration: false,
     finance: false,
   });
+
   const displayGroups = getPermissionsByDisplayGroup(getPermissionsByCategory());
+  const permissionKeys = useMemo(
+    () =>
+      displayGroups
+        .flatMap((g) => g.permissions)
+        .filter((d) => d.defaultMinRole !== "creator")
+        .map((d) => d.key),
+    [displayGroups],
+  );
+
+  const baselineRef = useRef<Record<string, boolean>>({});
+  const [localGrants, setLocalGrants] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    const snapshot = buildGrantSnapshot(overrides, permissionKeys);
+    baselineRef.current = snapshot;
+    setLocalGrants(snapshot);
+    setFeedback(null);
+  }, [overrides, permissionKeys]);
+
+  const isDirty = useMemo(
+    () =>
+      permissionKeys.some((key) =>
+        CONFIGURABLE_ROLES.some(
+          (role) =>
+            localGrants[grantKey(role, key)] !== baselineRef.current[grantKey(role, key)],
+        ),
+      ),
+    [localGrants, permissionKeys],
+  );
 
   function isGranted(role: CommunityRole, key: GovernancePermissionKey): boolean {
-    const override = overrides.find(
-      (o) => o.role === role && o.permissionKey === key,
-    );
-    if (override) return override.granted;
-
-    const def = PERMISSION_DEFINITIONS.find((d) => d.key === key);
-    if (!def) return false;
-
-    const ranks: Record<CommunityRole, number> = {
-      member: 0,
-      verified_member: 0,
-      moderator: 1,
-      expert: 1,
-      admin: 2,
-      creator: 3,
-    };
-    return ranks[role] >= ranks[def.defaultMinRole];
+    return localGrants[grantKey(role, key)] ?? computeEffectiveGrant(role, key, overrides);
   }
 
   function toggle(role: CommunityRole, key: GovernancePermissionKey) {
-    const next = !isGranted(role, key);
+    const k = grantKey(role, key);
+    setLocalGrants((prev) => ({ ...prev, [k]: !prev[k] }));
+    setFeedback(null);
+  }
+
+  function handleSave() {
     startTransition(async () => {
-      await setPermissionOverrideAction(slug, key, role, next);
+      const changes: { role: CommunityRole; key: GovernancePermissionKey; granted: boolean }[] =
+        [];
+
+      for (const key of permissionKeys) {
+        for (const role of CONFIGURABLE_ROLES) {
+          const k = grantKey(role, key);
+          if (localGrants[k] !== baselineRef.current[k]) {
+            changes.push({ role, key, granted: localGrants[k] });
+          }
+        }
+      }
+
+      if (changes.length === 0) {
+        setFeedback({ variant: "success", message: "Keine \u00c4nderungen zum Speichern." });
+        return;
+      }
+
+      let failed = 0;
+      for (const change of changes) {
+        const result = await setPermissionOverrideAction(
+          slug,
+          change.key,
+          change.role,
+          change.granted,
+        );
+        if (result.error) failed += 1;
+      }
+
+      if (failed > 0) {
+        setFeedback({
+          variant: "error",
+          message: `${failed} Rechte konnten nicht gespeichert werden.`,
+        });
+        return;
+      }
+
+      baselineRef.current = { ...localGrants };
+      setFeedback({
+        variant: "success",
+        message: "Granulare Rechte gespeichert.",
+      });
+      router.refresh();
     });
   }
 
   return (
     <section className="rounded-2xl border border-unze-border bg-white p-4">
-      <div className="mb-4 flex items-center gap-2">
-        <KeyRound className="h-4 w-4 text-unze-green" aria-hidden />
-        <h2 className="font-semibold text-unze-ink">Granulare Rechte</h2>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <KeyRound className="h-4 w-4 text-unze-green" aria-hidden />
+          <h2 className="font-semibold text-unze-ink">Granulare Rechte</h2>
+        </div>
+        <button
+          type="button"
+          disabled={pending || !isDirty}
+          onClick={handleSave}
+          className="inline-flex items-center gap-2 rounded-xl bg-unze-green px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <Save className="h-4 w-4" aria-hidden />
+          {pending ? "Speichert\u2026" : "Rechte speichern"}
+        </button>
       </div>
+
       <p className="mb-4 text-xs text-unze-ink-secondary">
-        Obergruppen zur {"\u00dc"}bersicht {"\u2014"} Overrides pro Rolle, Creator-Rechte
-        gesch{"\u00fc"}tzt.
+        {"\u00c4nderungen werden erst nach \"Rechte speichern\" wirksam. Creator-Rechte bleiben gesch\u00fctzt."}
       </p>
 
       <CreatorHelpTip title="So funktioniert es" className="mb-4">
         Standardrechte gelten pro Rolle. Aktiviere hier nur Abweichungen {"\u2014"} z. B.
         Moderator darf Mitglieder verwalten, aber keine Finanzen sehen.
       </CreatorHelpTip>
+
+      {feedback && (
+        <ActionFeedback variant={feedback.variant} className="mb-4">
+          {feedback.message}
+        </ActionFeedback>
+      )}
 
       <div className="space-y-2">
         {displayGroups.map(({ group, permissions }) => {

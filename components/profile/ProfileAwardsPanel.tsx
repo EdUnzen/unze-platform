@@ -1,6 +1,6 @@
 import { CommunityBadgeIcon } from "@/components/badges/UserBadgeChip";
 import { getAwardSourceLabel } from "@/lib/constants/award-source-labels";
-import { getCredentialCategoryLabel } from "@/lib/constants/credential-categories";
+import { getCredentialDisplayTerm } from "@/lib/constants/credential-categories";
 import type { UserAwardView } from "@/services/badges/badge.repository";
 import { Award } from "lucide-react";
 import Link from "next/link";
@@ -47,7 +47,9 @@ export function ProfileAwardsPanel({ awards }: ProfileAwardsPanelProps) {
     <ul className="space-y-3">
       {awards.map((award) => {
         const sourceLabel = getAwardSourceLabel(award.sourceType);
-        const categoryLabel = getCredentialCategoryLabel(award.category);
+        const displayTerm = getCredentialDisplayTerm(award.category, {
+          isCollectionQualification: award.isCollectionQualification,
+        });
 
         return (
           <li key={award.id} className="rounded-2xl bg-white p-4 shadow-card">
@@ -58,12 +60,12 @@ export function ProfileAwardsPanel({ awards }: ProfileAwardsPanelProps) {
                   <p className="font-semibold text-unze-ink">{award.name}</p>
                   {award.isCollectionQualification && (
                     <span className="rounded-full bg-unze-green-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-unze-green-dark">
-                      Zertifikat
+                      Qualifikation
                     </span>
                   )}
                 </div>
                 <p className="mt-0.5 text-xs text-unze-ink-muted">
-                  {categoryLabel}
+                  {displayTerm}
                   {" \u00b7 "}
                   {BADGE_TYPE_LABELS[award.badgeType] ?? award.badgeType}
                   {" \u00b7 "}

@@ -27,7 +27,7 @@ export async function evaluateRequirements(
   return evaluateRequirementsInDb(userId, resourceType, resourceId);
 }
 
-/** UI helper  pre-application check (§10). */
+/** UI helper \u2014 pre-application check. */
 export async function checkRequirements(
   userId: string,
   resourceType: RequirementResourceType,

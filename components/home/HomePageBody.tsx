@@ -15,7 +15,7 @@ export async function HomePageBody() {
         title={user ? "Mein UNZE" : "Willkommen bei UNZE"}
         subtitle={
           user
-            ? "Communities, Gruppen, Events und Antr\u00e4ge \u2014 dein Verwaltungs-Hub."
+            ? "Communities, Gruppen, Events, Services, Auszeichnungen & Zertifikate \u2014 dein Verwaltungs-Hub."
             : PLATFORM_TAGLINE
         }
       />

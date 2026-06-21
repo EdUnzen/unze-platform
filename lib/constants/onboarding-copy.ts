@@ -2,31 +2,36 @@ export const ONBOARDING_STORAGE_KEY = "unze-onboarding-complete-v1";
 
 export const ONBOARDING_COPY = {
   title: "Willkommen bei UNZE",
-  subtitle: "Dein Netzwerk für Communities, Gruppen, Events und Services",
+  subtitle:
+    "Communities, Gruppen, Events, Services, Auszeichnungen und Zertifikate \u2014 auf einer Plattform.",
   whatIsUnze:
-    "UNZE bündelt alles an einem Ort: Communities organisieren, Gruppen verwalten, Events planen und Services anbieten — mit Verifizierung und klaren Strukturen.",
+    "UNZE b\u00fcndelt alles an einem Ort: Communities verwalten, Gruppen organisieren, Events erstellen, Services anbieten, Auszeichnungen vergeben und Zertifikate sammeln \u2014 mit Verifizierung und Monetarisierung.",
   howItWorks:
-    "So funktioniert UNZE: Entdecke Communities, tritt Gruppen bei, nimm an Events teil und buche Services — alles vernetzt auf einer Plattform.",
+    "Entdecke Communities, tritt Gruppen bei, nimm an Events teil, buche Services und sammle Auszeichnungen sowie Zertifikate \u2014 alles vernetzt.",
   pillars: [
     {
       title: "Communities",
-      description: "Finde und verwalte vernetzte Communities zu deinen Themen.",
+      description: "Erstellen, verwalten und mit Mitgliedern wachsen.",
     },
     {
       title: "Gruppen",
-      description: "Tritt Gruppen bei und tausche dich fokussiert aus.",
+      description: "Bereiche organisieren und gezielt freischalten.",
     },
     {
       title: "Events",
-      description: "Entdecke Termine, Tickets und Community-Events.",
+      description: "Termine planen, Tickets und Check-in nutzen.",
     },
     {
       title: "Services",
-      description: "Buche Coaching, Beratung und Angebote aus Communities.",
+      description: "Coaching, Beratung und Angebote anbieten.",
     },
     {
-      title: "Verifizierung",
-      description: "Vertrauen durch geprüfte Communities, Creator und Angebote.",
+      title: "Auszeichnungen",
+      description: "Verdienste und Erfolge sichtbar machen.",
+    },
+    {
+      title: "Zertifikate",
+      description: "Qualifikationen und Nachweise sammeln.",
     },
   ],
   discoverCta: "Communities entdecken",
@@ -34,12 +39,12 @@ export const ONBOARDING_COPY = {
   installAndroidTitle: "Installation auf Android",
   installIosTitle: "Installation auf iPhone",
   installAndroid:
-    "Tippe auf „App installieren“, um UNZE wie eine native App zu nutzen. Alternativ: Browser-Menü → „App installieren“ oder „Zum Startbildschirm hinzufügen“.",
+    "Tippe auf \u201eApp installieren\u201c, um UNZE wie eine native App zu nutzen. Alternativ: Browser-Men\u00fc \u2192 \u201eApp installieren\u201c oder \u201eZum Startbildschirm hinzuf\u00fcgen\u201c.",
   installIosIntro:
-    "Auf dem iPhone funktioniert UNZE wie eine App über den Home-Bildschirm:",
+    "Auf dem iPhone funktioniert UNZE wie eine App \u00fcber den Home-Bildschirm:",
   installIosSteps: [
     "Teilen-Symbol in Safari antippen",
-    "„Zum Home-Bildschirm“ wählen",
-    "„Hinzufügen“ bestätigen",
+    "\u201eZum Home-Bildschirm\u201c w\u00e4hlen",
+    "\u201eHinzuf\u00fcgen\u201c best\u00e4tigen",
   ],
 } as const;

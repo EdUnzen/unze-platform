@@ -22,7 +22,7 @@ const HOW_IT_WORKS = [
   {
     icon: QrCode,
     title: "QR vorzeigen",
-    text: "Zeige diesen Code am Eingang oder beim Check-in  z. B. bei Events, Communities oder Verifizierung.",
+    text: "Zeige diesen Code am Eingang oder beim Check-in \u2014 z. B. bei Events, Communities oder Verifizierung.",
   },
   {
     icon: ScanLine,
@@ -101,8 +101,7 @@ export function UnzeIdPanel({ token, payload }: UnzeIdPanelProps) {
           </div>
 
           <p className="max-w-sm text-center text-xs leading-relaxed text-unze-ink-secondary">
-            Enthält keine Passwörter oder Zahlungsdaten  nur deine öffentliche
-            UNZE-Kennung.
+            {"Enth\u00e4lt keine Passw\u00f6rter oder Zahlungsdaten \u2014 nur deine \u00f6ffentliche UNZE-Kennung."}
           </p>
         </div>
       </article>
@@ -138,15 +137,13 @@ export function UnzeIdPanel({ token, payload }: UnzeIdPanelProps) {
           <div>
             <dt className="font-semibold text-unze-ink">UNZE-ID</dt>
             <dd className="mt-0.5 text-unze-ink-secondary">
-              Dein dauerhafter Nachweis als UNZE-Nutzer  für Verifizierung und
-              Zugangsprüfungen durch Organisatoren.
+              {"Dein dauerhafter Nachweis als UNZE-Nutzer \u2014 f\u00fcr Verifizierung und Zugangspr\u00fcfungen durch Organisatoren."}
             </dd>
           </div>
           <div>
             <dt className="font-semibold text-unze-ink">Event-Ticket</dt>
             <dd className="mt-0.5 text-unze-ink-secondary">
-              Separater QR pro gebuchtem Event  nur für den Check-in dieses
-              Termins.{" "}
+              {"Separater QR pro gebuchtem Event \u2014 nur f\u00fcr den Check-in dieses Termins. "}
               <Link href="/profile/tickets" className="font-medium text-unze-green">
                 Meine Tickets
               </Link>
