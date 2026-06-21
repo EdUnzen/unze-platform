@@ -34,7 +34,7 @@ export function RevenueOverviewPanel({ ledger, userId }: RevenueOverviewPanelPro
 
       <div className="mb-4 grid grid-cols-2 gap-2">
         <StatChip label="Creator (Brutto Sandbox)" value={formatEuro(creatorTotal)} />
-        <StatChip label="Referral-Anteil" value={formatEuro(referrerTotal)} highlight />
+        <StatChip label="Crowd-Partner-Anteil" value={formatEuro(referrerTotal)} highlight />
       </div>
 
       {ledger.length === 0 ? (
@@ -51,7 +51,7 @@ export function RevenueOverviewPanel({ ledger, userId }: RevenueOverviewPanelPro
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="font-medium text-unze-ink">
-                    {entry.creatorUserId === userId ? "Creator-Einnahme" : "Referral-Anteil"}
+                    {entry.creatorUserId === userId ? "Creator-Einnahme" : "Crowd-Partner-Anteil"}
                   </p>
                   <p className="text-xs text-unze-ink-muted">
                     {new Date(entry.createdAt).toLocaleDateString("de-DE")} ·{" "}
@@ -70,7 +70,7 @@ export function RevenueOverviewPanel({ ledger, userId }: RevenueOverviewPanelPro
                 <span>Brutto {formatEuro(entry.grossAmountCents)}</span>
                 <span>Plattform {formatEuro(entry.platformFeeCents)}</span>
                 {entry.referrerShareCents > 0 && (
-                  <span>Referral {formatEuro(entry.referrerShareCents)}</span>
+                  <span>Crowd Partner {formatEuro(entry.referrerShareCents)}</span>
                 )}
               </div>
             </li>

@@ -103,6 +103,84 @@ export async function grantBadgeInDb(input: {
   return { error: null };
 }
 
+export type UserAwardView = {
+  id: string;
+  badgeId: string;
+  name: string;
+  badgeType: BadgeType;
+  communityId: string;
+  communityTitle: string;
+  communitySlug: string;
+  grantedAt: string;
+  grantedByName: string | null;
+};
+
+export async function fetchUserAwardsForProfile(
+  userId: string,
+): Promise<UserAwardView[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data, error } = await supabase
+    .from("user_badges")
+    .select(
+      `
+      id,
+      created_at,
+      badge:badges (
+        id,
+        name,
+        badge_type
+      ),
+      community:communities (
+        id,
+        title,
+        slug
+      ),
+      granter:profiles!user_badges_granted_by_fkey (
+        display_name,
+        username
+      )
+    `,
+    )
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("[badge.repository] profile awards:", error.message);
+    return [];
+  }
+
+  return (data ?? [])
+    .map((row) => {
+      const badgeRaw = row.badge;
+      const badge = Array.isArray(badgeRaw) ? badgeRaw[0] : badgeRaw;
+      const communityRaw = row.community;
+      const community = Array.isArray(communityRaw) ? communityRaw[0] : communityRaw;
+      const granterRaw = row.granter;
+      const granter = Array.isArray(granterRaw) ? granterRaw[0] : granterRaw;
+      if (!badge || !community) return null;
+
+      const grantedByName =
+        (granter?.display_name as string | null) ??
+        (granter?.username as string | null) ??
+        null;
+
+      return {
+        id: row.id as string,
+        badgeId: badge.id as string,
+        name: badge.name as string,
+        badgeType: badge.badge_type as BadgeType,
+        communityId: community.id as string,
+        communityTitle: community.title as string,
+        communitySlug: community.slug as string,
+        grantedAt: row.created_at as string,
+        grantedByName,
+      };
+    })
+    .filter((a): a is UserAwardView => Boolean(a));
+}
+
 export async function fetchUserBadgesForCommunity(
   communityId: string,
   userIds: string[],

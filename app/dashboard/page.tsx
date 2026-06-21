@@ -44,11 +44,11 @@ export default async function DashboardHubPage() {
             Neue Community erstellen
           </Link>
           <Link
-            href="/dashboard/referrals"
+            href="/dashboard/crowd-partner"
             className="flex items-center justify-center gap-2 rounded-2xl border border-unze-border bg-white py-4 text-sm font-semibold text-unze-ink shadow-card active:scale-[0.98]"
           >
             <Coins className="h-5 w-5 text-unze-green" aria-hidden />
-            Einnahmen & Referrals
+            Crowd Partner
           </Link>
         </div>
 

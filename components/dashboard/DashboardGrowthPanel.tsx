@@ -69,7 +69,7 @@ export function DashboardGrowthPanel({
       </div>
 
       <p className="mt-3 rounded-xl bg-white/60 px-3 py-2 text-[11px] text-unze-ink-secondary">
-        Einnahmen & Revenue Share — Sandbox unter Dashboard → Einnahmen & Referrals.
+        Einnahmen & Revenue Share {"\u2014"} Sandbox unter Dashboard {"\u2192"} Crowd Partner.
       </p>
     </section>
   );

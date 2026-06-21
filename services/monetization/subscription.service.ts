@@ -50,6 +50,6 @@ export async function prepareCheckout(communityId: string) {
     ready: false,
     communityId,
     message:
-      "Checkout über Dashboard → Einnahmen & Referrals (Stripe Sandbox).",
+      "Checkout \u00fcber Dashboard \u2192 Crowd Partner (Stripe Sandbox).",
   };
 }

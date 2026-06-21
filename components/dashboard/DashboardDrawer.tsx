@@ -85,7 +85,7 @@ export function DashboardDrawer({
         type="button"
         className="absolute inset-0 bg-unze-ink/45 backdrop-blur-[2px] animate-fade-in"
         onClick={closeDrawer}
-        aria-label="Men� schlie�en"
+        aria-label="Men\u00fc schlie\u00dfen"
       />
 
       <aside
@@ -127,7 +127,7 @@ export function DashboardDrawer({
             type="button"
             onClick={closeDrawer}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-unze-surface-muted text-unze-ink-secondary"
-            aria-label="Schlie�en"
+            aria-label="Schlie\u00dfen"
           >
             <X className="h-5 w-5" />
           </button>
@@ -164,11 +164,11 @@ export function DashboardDrawer({
               })}
               <li className="pt-2">
                 <Link
-                  href="/dashboard/referrals"
+                  href="/dashboard/crowd-partner"
                   onClick={closeDrawer}
                   className="flex min-h-[48px] items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium text-unze-green"
                 >
-                  Einnahmen & Referrals
+                  Crowd Partner
                 </Link>
               </li>
             </ul>
@@ -245,7 +245,7 @@ export function DashboardDrawer({
                   onClick={closeDrawer}
                   className="flex min-h-[44px] items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium text-unze-ink-secondary"
                 >
-                  ? Alle Communities
+                  {"\u2190"} Alle Communities
                 </Link>
                 <Link
                   href={`/community/${slug}`}
@@ -253,7 +253,7 @@ export function DashboardDrawer({
                   className="mt-1 flex min-h-[44px] items-center gap-2 rounded-2xl px-3 py-2 text-sm font-medium text-unze-green"
                 >
                   <ExternalLink className="h-4 w-4" aria-hidden />
-                  �ffentliche Ansicht
+                  {"\u00d6ffentliche Ansicht"}
                 </Link>
               </div>
             </div>

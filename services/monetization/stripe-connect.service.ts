@@ -97,8 +97,8 @@ export async function startStripeConnectOnboarding(
   const base = getAppUrl();
   const link = await stripe.accountLinks.create({
     account: accountId,
-    refresh_url: `${base}/dashboard/referrals?stripe=refresh`,
-    return_url: `${base}/dashboard/referrals?stripe=complete`,
+    refresh_url: `${base}/dashboard/crowd-partner?stripe=refresh`,
+    return_url: `${base}/dashboard/crowd-partner?stripe=complete`,
     type: "account_onboarding",
   });
 
@@ -145,8 +145,8 @@ export async function createSandboxCheckoutSession(input: {
         quantity: 1,
       },
     ],
-    success_url: `${getAppUrl()}/dashboard/referrals?checkout=success`,
-    cancel_url: `${getAppUrl()}/dashboard/referrals?checkout=cancel`,
+    success_url: `${getAppUrl()}/dashboard/crowd-partner?checkout=success`,
+    cancel_url: `${getAppUrl()}/dashboard/crowd-partner?checkout=cancel`,
     metadata: {
       unze_user_id: input.userId,
       unze_community_id: input.communityId,

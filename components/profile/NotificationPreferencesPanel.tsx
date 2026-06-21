@@ -116,7 +116,7 @@ export function NotificationPreferencesPanel({
         <ToggleRow
           name="creatorReferrals"
           label="Creator-Benachrichtigungen"
-          description="z. B. neuer Referral"
+          description="z. B. neuer Crowd Partner"
           defaultChecked={initial.creatorReferrals}
         />
         <ToggleRow

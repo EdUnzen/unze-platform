@@ -4,11 +4,18 @@ import {
   createBadgeInDb,
   deleteBadgeInDb,
   fetchBadgesByCommunity,
+  fetchUserAwardsForProfile,
   grantBadgeInDb,
 } from "./badge.repository";
 
+export type { UserAwardView } from "./badge.repository";
+
 export async function getCommunityBadges(communityId: string) {
   return fetchBadgesByCommunity(communityId);
+}
+
+export async function getUserAwards(userId: string) {
+  return fetchUserAwardsForProfile(userId);
 }
 
 export async function createCommunityBadge(input: {

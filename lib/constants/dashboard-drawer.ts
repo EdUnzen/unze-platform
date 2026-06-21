@@ -108,8 +108,8 @@ export const DASHBOARD_DRAWER_SECTIONS: DashboardDrawerSection[] = [
       },
       {
         id: "badges",
-        label: "Badges",
-        href: (slug) => `/dashboard/community/${slug}/badges`,
+        label: "Auszeichnungen",
+        href: (slug) => `/dashboard/community/${slug}/auszeichnungen`,
         icon: Award,
         minRole: "admin",
       },

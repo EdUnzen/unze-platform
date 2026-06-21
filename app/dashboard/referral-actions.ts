@@ -18,7 +18,7 @@ export async function claimReferralAction(referrerUserId: string) {
   const result = await claimCreatorReferral(user.id, referrerUserId);
   if (result.error) return { error: result.error };
 
-  revalidatePath("/dashboard/referrals");
+  revalidatePath("/dashboard/crowd-partner");
   return { error: null, status: result.status };
 }
 
@@ -38,7 +38,7 @@ export async function startStripeConnectAction() {
   if (!user) return { url: null, error: "Nicht angemeldet" };
 
   const result = await startStripeConnectOnboarding(user.id);
-  revalidatePath("/dashboard/referrals");
+  revalidatePath("/dashboard/crowd-partner");
   return result;
 }
 

@@ -129,7 +129,7 @@ export async function createBadgeAction(
 
   if (result.error) return { error: result.error };
 
-  revalidatePath(`/dashboard/community/${slug}/badges`);
+  revalidatePath(`/dashboard/community/${slug}/auszeichnungen`);
   return {};
 }
 
@@ -140,7 +140,7 @@ export async function deleteBadgeAction(slug: string, badgeId: string) {
   const result = await deleteCommunityBadge(badgeId);
   if (result.error) return { error: result.error };
 
-  revalidatePath(`/dashboard/community/${slug}/badges`);
+  revalidatePath(`/dashboard/community/${slug}/auszeichnungen`);
   return { success: true };
 }
 
@@ -163,7 +163,7 @@ export async function grantBadgeAction(
 
   if (result.error) return { error: result.error };
 
-  revalidatePath(`/dashboard/community/${slug}/badges`);
+  revalidatePath(`/dashboard/community/${slug}/auszeichnungen`);
   revalidatePath(`/dashboard/community/${slug}/members`);
   return { success: true };
 }

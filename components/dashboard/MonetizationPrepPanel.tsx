@@ -66,7 +66,7 @@ export function MonetizationPrepPanel({
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Link
-            href="/dashboard/referrals"
+            href="/dashboard/crowd-partner"
             className="inline-flex items-center gap-1.5 rounded-xl bg-white/80 px-3 py-1.5 text-xs font-semibold text-unze-green-dark"
           >
             <Link2 className="h-3.5 w-3.5" />

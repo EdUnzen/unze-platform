@@ -7,7 +7,7 @@ import { NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-/** Leichtgewichtig � f�r Client-Shell-Hydration (Badges, Creator-Icon). */
+/** Lightweight shell hydration for client badges and creator flags. */
 export async function GET() {
   const user = await getCurrentUser();
   if (!user) {

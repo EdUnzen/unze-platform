@@ -11,7 +11,7 @@ export type PwaShellSnapshot = {
 
 const SHELL_KEY = PWA_CACHE_KEYS.shell;
 
-/** PWA: l�nger g�ltig � normale Tabs: 15 Min. */
+/** PWA: longer TTL in standalone; browser tabs: 15 min. */
 const TTL_MS_BROWSER = 15 * 60 * 1000;
 const TTL_MS_STANDALONE = 4 * 60 * 60 * 1000;
 

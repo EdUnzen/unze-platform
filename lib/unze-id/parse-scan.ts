@@ -4,7 +4,7 @@ export type ParsedScanPayload =
   | { type: "unze_id"; token: string }
   | { type: "ticket"; code: string };
 
-/** Erkennt UNZE-ID (UNZEID:) vs. Event-Ticket-Codes aus Kamera/Manuell. */
+/** Erkennt UNZE-ID (UNZEID:) vs. Event-Ticket-Codes aus Kamera/Manuell. */
 export function parseScannedPayload(raw: string): ParsedScanPayload | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;

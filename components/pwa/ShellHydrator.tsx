@@ -34,7 +34,7 @@ export function useShellState() {
 
 interface ShellHydratorProps {
   userId: string | null;
-  /** SSR-Fallback � wird nach Hydration durch Client-Cache/API ersetzt wenn frischer. */
+  /** SSR fallback; replaced after hydration when client cache is fresher. */
   serverShell?: {
     unreadCount: number;
     showDashboard: boolean;

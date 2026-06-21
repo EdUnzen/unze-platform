@@ -51,11 +51,11 @@ export function CreatorReferralPanel({ summary }: CreatorReferralPanelProps) {
     <section className="rounded-3xl bg-white p-4 shadow-card">
       <div className="mb-3 flex items-center gap-2">
         <UserPlus className="h-5 w-5 text-unze-green" aria-hidden />
-        <h2 className="text-base font-semibold text-unze-ink">Creator Referral</h2>
+        <h2 className="text-base font-semibold text-unze-ink">Crowd Partner</h2>
       </div>
       <p className="mb-4 text-sm text-unze-ink-secondary">
-        Optional: Ein Empfehlungsgeber pro Creator — danach nicht mehr änderbar.
-        Kein Multi-Level-System. Du kannst beliebig viele Creator werben.
+        Ein Crowd Partner pro Creator {"\u2014"} danach nicht mehr \u00e4nderbar. Kein
+        Multi-Level-System. Du kannst beliebig viele Creator unterst\u00fctzen.
       </p>
 
       {summary.myReferral ? (
@@ -144,7 +144,7 @@ export function CreatorReferralPanel({ summary }: CreatorReferralPanelProps) {
         <div className="mt-4 flex items-start gap-2 rounded-2xl bg-amber-50 p-3 text-xs text-amber-800">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
-            {summary.conflictCount} Referral-Konflikt(e) — manuelle Prüfung erforderlich.
+            {summary.conflictCount} Crowd-Partner-Konflikt(e) {"\u2014"} manuelle Pr\u00fcfung erforderlich.
             Es wird kein automatischer Missbrauch angenommen.
           </p>
         </div>
