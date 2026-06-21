@@ -70,6 +70,19 @@ async function ensureUser(admin, db, { email, password, displayName, username })
     console.log(`  ✓ E-Mail bestätigt: ${email}`);
   }
 
+  const { data: existingProfile } = await db
+    .from("profiles")
+    .select("unze_public_id")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  let unzePublicId = existingProfile?.unze_public_id;
+  if (!unzePublicId) {
+    const { data: generated, error: genError } = await db.rpc("generate_unze_public_id");
+    if (genError) throw new Error(`UNZE-ID ${email}: ${genError.message}`);
+    unzePublicId = generated;
+  }
+
   await db.from("profiles").upsert(
     {
       id: user.id,
@@ -78,6 +91,7 @@ async function ensureUser(admin, db, { email, password, displayName, username })
       bio: displayName,
       is_creator: email === DEMO_CREATOR_EMAIL,
       is_verified: email === DEMO_CREATOR_EMAIL,
+      unze_public_id: unzePublicId,
     },
     { onConflict: "id" },
   ).then(({ error }) => {

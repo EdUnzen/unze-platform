@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>UNZE Marketing Animation Showcase</title>
+<style>
+  :root { --green: #22c55e; --dark: #0c3d2e; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #0f172a; color: #fff; min-height: 100vh; padding: 40px 24px; }
+  h1 { text-align: center; margin-bottom: 12px; font-size: 2rem; }
+  .sub { text-align: center; color: #94a3b8; margin-bottom: 48px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; max-width: 1200px; margin: 0 auto; }
+  .scene { background: linear-gradient(145deg, #14532d, #134e4a); border-radius: 24px; padding: 24px; min-height: 220px; overflow: hidden; position: relative; }
+  .scene h2 { font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #6ee7b7; margin-bottom: 16px; }
+  .card { background: rgba(255,255,255,0.12); border-radius: 16px; padding: 16px; margin-bottom: 10px; animation: slideIn 0.8s ease both; }
+  .card:nth-child(2) { animation-delay: 0.15s; }
+  .card:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(-24px); } to { opacity: 1; transform: none; } }
+  .counter { font-size: 48px; font-weight: 800; color: #6ee7b7; animation: countUp 2s ease infinite alternate; }
+  @keyframes countUp { from { opacity: 0.6; transform: scale(0.95); } to { opacity: 1; transform: scale(1.05); } }
+  .badge { display: inline-block; background: var(--green); padding: 10px 16px; border-radius: 999px; font-weight: 700; animation: pop 1.2s ease infinite; }
+  @keyframes pop { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+  .verify { width: 64px; height: 64px; border-radius: 50%; border: 3px solid #6ee7b7; display: grid; place-items: center; animation: pulse 1.5s ease infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(110,231,183,0.5); } 50% { box-shadow: 0 0 0 16px rgba(110,231,183,0); } }
+  .event { border-left: 4px solid #fcd34d; padding-left: 12px; animation: fadeUp 1s ease both; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+  <h1>UNZE — Marketing Animation Showcase</h1>
+  <p class="sub">CSS-Animationen für Social-Reels & Landingpage (Screen-Recording empfohlen)</p>
+  <div class="grid">
+    <div class="scene"><h2>Karten fahren ein</h2><div class="card">Communities</div><div class="card">Gruppen</div><div class="card">Events</div></div>
+    <div class="scene"><h2>Mitglieder wachsen</h2><div class="counter">2.000+</div><p style="margin-top:12px;opacity:.85">Aktive Mitglieder</p></div>
+    <div class="scene"><h2>Auszeichnung erscheint</h2><div class="badge">?? SSL Scholar</div></div>
+    <div class="scene"><h2>Zertifikat vergeben</h2><div class="badge" style="background:#0ea5e9">?? Workshop Abschluss</div></div>
+    <div class="scene"><h2>Verifizierung</h2><div class="verify">?</div></div>
+    <div class="scene"><h2>Event erstellt</h2><div class="event"><strong>Street Photo Walk</strong><br/><span style="opacity:.8">Berlin · 14 Tage</span></div></div>
+    <div class="scene"><h2>Service veröffentlicht</h2><div class="event" style="border-color:#22c55e"><strong>Portfolio Review Pro</strong><br/><span style="opacity:.8">99 € · sofort buchbar</span></div></div>
+    <div class="scene"><h2>Crowd Partner</h2><div class="badge" style="background:#eab308;color:#0f172a">?? Creator empfehlen</div></div>
+  </div>
+</body>
+</html>
