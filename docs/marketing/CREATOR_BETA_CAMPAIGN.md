@@ -1,110 +1,75 @@
-# UNZE Creator Beta ó Marketing-Kampagne
+# Creator Beta - Kampagnen-Leitfaden
 
-**Zielgruppe:** Creator (exklusiv)  
-**Kernbotschaft:** Sei einer der ersten Creator auf UNZE.
+## Botschaft
 
----
+UNZE ist eine professionelle Plattform f√ºr Communities, Events, Auszeichnungen und Creator-Wachstum. Das Produkt selbst ist die Werbung.
 
-## Headlines
+**Kernversprechen:** Deine Community. Ein Ort. - Je fr√ºher Creator starten, desto st√§rker das Netzwerk.
 
-1. **Sei einer der ersten Creator auf UNZE.**
-2. **Je fr¸her du deine Community aufbaust, desto fr¸her w‰chst dein Netzwerk mit der Plattform.**
-3. **Communities ∑ Gruppen ∑ Events ∑ Services ∑ Auszeichnungen ∑ Zertifikate ó eine Plattform.**
+## Zielgruppe
 
----
+- Gaming- und Nischen-Communities
+- Business- und Netzwerk-Gruppen
+- Bildungsanbieter und Kurs-Creator
+- Event-Veranstalter mit Ticket- und Check-in-Flow
 
-## Crowd Partner (Kurzform)
+## Story-Sequenz (8 Bilder)
 
-> Empfiehl weitere Creator und profitiert gemeinsam vom Wachstum der Plattform.
+Verwende die generierten Assets aus `docs/marketing/output/` in dieser Reihenfolge:
 
----
+| # | Asset | Screen | Text |
+|---|-------|--------|------|
+| 1 | `story/story-01-hook.png` | Home | Sei einer der ersten Creator auf UNZE. |
+| 2 | `story/story-02-community.png` | Community Gaming | Community erstellen |
+| 3 | `story/story-03-members.png` | Mitglieder-Dashboard | Mitglieder verwalten |
+| 4 | `story/story-04-events.png` | Events-Dashboard | Events veranstalten |
+| 5 | `story/story-05-awards.png` | Auszeichnungen | Auszeichnungen vergeben |
+| 6 | `story/story-06-certificates.png` | Profil Auszeichnungen | Zertifikate sammeln |
+| 7 | `story/story-07-crowd.png` | Crowd Partner | Crowd Partner aktivieren |
+| 8 | `story/story-08-grow.png` | Discover | Wachse mit der Plattform |
 
-## Plattform-Nutzen (Creator)
+Pfeil-Story f√ºr Carousel/Reels: Bild 1 -> 2 -> ... -> 8.
 
-| Feature | Nutzen |
-|---------|--------|
-| Communities | Eigene Marke & Struktur |
-| Gruppen | Bereiche freischalten |
-| Events | Tickets & Check-in |
-| Services | Angebote monetarisieren |
-| Auszeichnungen | Engagement sichtbar machen |
-| Zertifikate | Qualifikationen & Nachweise |
-| Verifizierung | Vertrauen aufbauen |
-| Monetarisierung | Stripe-Integration |
-| Crowd Partner | Wachstum teilen |
+## Kan√§le
 
----
+| Kanal | Asset-Ordner / Datei |
+|-------|----------------------|
+| TikTok / Reels / Stories | `output/story/` oder `output/reels/` (9:16) |
+| Instagram Carousel | `output/carousel/` (1:1) |
+| LinkedIn | `output/linkedin-creator.png` |
+| Facebook | `output/facebook-creator.png` |
+| Landingpage Hero | `output/hero-landing.png` |
+| Presse | `output/press-community.png` |
 
-## TikTok / Reels / Shorts (9:16)
+## Demo-Communities (Live)
 
-**Slide 1 (Hook):**  
-ÑDu baust eine Community ó aber 5 Tools gleichzeitig?ì
+- **Gaming:** Rocket League SSL - 2.384 Mitglieder, 4,9 Sterne
+- **Business:** Business Circle DACH - 1.156 Mitglieder, Services und Projekte
+- **Bildung:** Mathe Meister - Kurse, Auszeichnungen, Zertifikate
 
-**Slide 2:**  
-ÑUNZE: Communities, Gruppen, Events, Services ó an einem Ort.ì
-
-**Slide 3:**  
-ÑAuszeichnungen vergeben. Zertifikate sammeln. Mitglieder verwalten.ì
-
-**Slide 4 (CTA):**  
-ÑSei einer der ersten Creator auf UNZE ? Link in Bioì
-
-**Slide 5 (Crowd Partner):**  
-ÑEmpfiehl Creator ó wachst mit der Plattform.ì
-
----
-
-## Instagram Carousel (1:1)
-
-1. Communities erstellen & verwalten  
-2. Auszeichnungen & Zertifikate  
-3. Crowd Partner Programm  
-4. Beta-Zugang ó jetzt starten  
-
-Grafiken: `docs/marketing/graphics/carousel-*.png`
-
----
-
-## LinkedIn
-
-**Post:**  
-UNZE startet die Creator Beta. Eine Plattform f¸r Communities, Gruppen, Events, Services ó inklusive Auszeichnungen, Zertifikaten, Verifizierung und Monetarisierung.
-
-Sei einer der ersten Creator und baue dein Netzwerk mit uns auf.
-
-? https://unze-platform.vercel.app
-
----
-
-## Facebook
-
-Kurz + visuell: Hero-Grafik `hero-creator-beta-1920x1080.png`  
-Text: ÑCreator Beta ó jetzt Community auf UNZE aufbauen.ì
-
----
-
-## YouTube Shorts
-
-30-Sekunden-Struktur:
-- 0ñ3s: Hook (ÑErste Creator auf UNZEì)
-- 3ñ10s: Screen-Recording Home + Discover
-- 10ñ20s: Dashboard (Mitglieder, Events, Auszeichnungen)
-- 20ñ27s: Crowd Partner Erkl‰rung
-- 27ñ30s: CTA + URL
-
----
+URL: https://unze-platform.vercel.app
 
 ## Hashtags (Vorschlag)
 
-`#UNZE #Creator #CommunityBuilding #Beta #SaaS #Monetization #Events #Zertifikate`
+`#UNZE #CreatorBeta #CommunityPlattform #GamingCommunity #CreatorEconomy #Events #Auszeichnungen`
 
----
+## CTA
 
-## Assets
+- Prim√§r: Community erstellen -> `/create/community`
+- Sekund√§r: Discover √∂ffnen -> `/discover`
+- Beta: Early Creator - begrenzte Pl√§tze, pers√∂nliches Onboarding
 
-| Asset | Pfad |
-|-------|------|
-| Screenshots | `docs/marketing/screenshots/` |
-| Grafiken | `docs/marketing/graphics/` |
-| Templates | `docs/marketing/templates/` |
-| Animationen | `docs/marketing/animations/showcase.html` |
+## Regenerierung
+
+```bash
+npm run marketing:build
+```
+
+Vor jeder Ver√∂ffentlichung muss `npm run marketing:validate` gr√ºn sein.
+
+## Nicht erlaubt
+
+- Platzhalter-Layouts oder gr√ºne Dummy-Screens
+- Encoding-Fehler in Texten
+- Onboarding, Pop-ups oder Tutorials in Screenshots
+- Fragezeichen, Debug- oder Entwickler-Texte

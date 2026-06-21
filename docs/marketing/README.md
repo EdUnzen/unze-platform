@@ -1,93 +1,66 @@
-# UNZE Marketing & Demo ó Toolkit
+# UNZE Marketing - Creator Beta
 
-Stand: Creator-Beta Marketing-Phase nach RC1 Deploy.
+Marketing basiert auf **echten App-Screenshots** in hochwertigen Device-Mockups - keine Platzhalter, keine gr√ºnen Dummy-Screens.
 
-## Live-Plattform
-
-- **Production:** https://unze-platform.vercel.app
-- **Deploy:** Push auf `main` ? Vercel Auto-Deploy
-
-## 1. Demo-Daten
+## Pipeline
 
 ```bash
-# Basis-Demo (3 Communities + Feed + Badges)
-npm run seed:demo
+# Komplett (Demo-Stats -> Capture -> Mockups -> Validierung)
+npm run marketing:build
 
-# Marketing-Erweiterung (6 Vertical-Communities, Events, Zertifikate)
-npm run seed:marketing
+# Einzelne Schritte
+npm run marketing:capture    # App-Screens -> docs/marketing/raw-screens/
+npm run marketing:render     # Mockups -> docs/marketing/output/
+npm run marketing:validate   # Qualit√§ts-Gate (Encoding, Platzhalter, gr√ºne Screens)
 ```
 
-**Demo-Login (Creator):**
-- E-Mail: `edubek89@icloud.com`
-- Passwort: `UnzeDemo2026!`
+**Umgebung:** `E2E_BASE_URL` (Standard: Production), `DEMO_EMAIL` / `DEMO_PASSWORD` f√ºr Dashboard-Routen.
 
-### Marketing-Communities (neu)
+## Ausgabe
 
-| Slug | Vertical | Simulierte Grˆﬂe |
-|------|----------|------------------|
-| fit-squad-dach | Fitness | 50 |
-| code-craft-academy | Programmieren | 500 |
-| mathe-meister | Mathematik | 2.000 |
-| sound-wave-studio | Musik | 500 |
-| handwerk-meister | Handwerk | 2.000 |
-| lens-masters-guild | Fotografie | 10.000 |
+| Ordner | Format | Verwendung |
+|--------|--------|------------|
+| `output/story/` | 1080x1920 | Instagram Stories, TikTok, Reels |
+| `output/reels/` | 1080x1920 | Reels / Shorts (9:16) |
+| `output/carousel/` | 1080x1080 | Instagram Carousel |
+| `output/hero-landing.png` | 1920x1080 | Landingpage Hero |
+| `output/linkedin-creator.png` | 1200x627 | LinkedIn |
+| `output/facebook-creator.png` | 1200x630 | Facebook |
+| `output/press-community.png` | 1920x1080 | Presse |
 
-Plus bestehende Demo-Communities: Gaming, Business, Creator Lounge.
+## 8-Slide Creator-Story
 
-## 2. Screenshot-Portfolio
+1. Sei einer der ersten Creator auf UNZE.
+2. Community erstellen
+3. Mitglieder verwalten
+4. Events veranstalten
+5. Auszeichnungen vergeben
+6. Zertifikate sammeln
+7. Crowd Partner aktivieren
+8. Wachse mit der Plattform
 
-```bash
-# Live (empfohlen)
-E2E_BASE_URL=https://unze-platform.vercel.app npm run screenshots:marketing
+Jede Grafik: **mind. 70 % echte UNZE-Oberfl√§che**, kurzer Erkl√§rungstext.
 
-# Lokal
-npm run dev   # Port 3000 oder 3002
-E2E_BASE_URL=http://localhost:3000 npm run screenshots:marketing
-```
+## Qualit√§tsregeln (automatisch)
 
-**Output:** `docs/marketing/screenshots/{iphone-14,ipad,desktop}/`
+Freigabe blockiert bei:
 
-Routen: Home, Discover, Communities, Dashboard, Mitglieder, Antr‰ge, Scanner, Auszeichnungen, Monetarisierung, Profil, Crowd Partner.
+- Encoding-Fehlern (Mojibake)
+- Platzhalter- oder Debug-Text in Compositor-Templates
+- Dominant gr√ºnen Bildfl√§chen (alte Dummy-Mockups)
+- Fehlenden Raw-Screens oder Output-Dateien
 
-## 3. Marketing-Grafiken & Mockups
+## Demo-Daten
 
-```bash
-npm run marketing:graphics
-```
+Gaming-Community `rocket-league-ssl`: 2.384 Mitglieder, 4,9 Sterne
+Business `business-circle-dach`: 1.156 Mitglieder
+Bildung `mathe-meister`: 2.000 Mitglieder
 
-**Output:** `docs/marketing/graphics/`
+Login f√ºr Captures: `edubek89@icloud.com` / `UnzeDemo2026!`
 
-- Hero Creator Beta (1920◊1080)
-- Social Stories 9:16 (TikTok, Reels, Shorts)
-- LinkedIn / Facebook
-- iPhone / Tablet / Desktop Mockups
-- Carousel-Slides (Instagram)
+## Architektur
 
-Templates bearbeiten: `docs/marketing/templates/*.html`
-
-## 4. Animationen
-
-÷ffne im Browser (Screen-Recording f¸r Reels/Shorts):
-
-`docs/marketing/animations/showcase.html`
-
-Enth‰lt CSS-Animationen: Karten, Counter, Auszeichnungen, Zertifikate, Verifizierung, Events, Crowd Partner.
-
-## 5. Creator-Beta Copy
-
-Siehe `CREATOR_BETA_CAMPAIGN.md` ó Texte f¸r TikTok, Instagram, LinkedIn, YouTube Shorts.
-
-## 6. Workflow Empfehlung
-
-1. `npm run seed:marketing` auf Production-DB
-2. `npm run screenshots:marketing` gegen Live-URL
-3. `npm run marketing:graphics`
-4. Animation-Showcase aufnehmen
-5. Canva/CapCut: Screenshots + Grafiken zu Reels schneiden
-
-## Einheitliches Design
-
-- Prim‰rfarbe: `#22c55e` (UNZE Green)
-- Dunkel: `#0c3d2e` ? `#14532d`
-- Typografie: System UI / Sans
-- Alle Templates nutzen dasselbe Farbschema
+- `scripts/marketing/capture-screens.mjs` - Playwright, Onboarding aus
+- `scripts/marketing/render-composite.mjs` - Compositor mit echten PNGs
+- `docs/marketing/engine/compositor-*.html` - Apple/Stripe-inspirierte Mockups
+- `scripts/marketing/validate-marketing.mjs` - Qualit√§ts-Gate
