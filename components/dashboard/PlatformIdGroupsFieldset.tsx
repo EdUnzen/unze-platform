@@ -24,6 +24,9 @@ export function PlatformIdGroupsFieldset({
       <p className="text-[11px] text-unze-ink-muted">
         Nur ausw{"\u00e4"}hlen, was f{"\u00fc"}r deine Community wirklich n{"\u00f6"}tig ist.
       </p>
+      <p className="text-[10px] text-unze-ink-muted">
+        Mitglieder tragen die ID bei der Bewerbung nach {"\u2014"} z. B. Discord oder WhatsApp.
+      </p>
       {PLATFORM_IDENTITY_GROUPS.map((group) => (
         <div
           key={group.id}

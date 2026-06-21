@@ -41,6 +41,8 @@
     "db:migrate:035": "node scripts/apply-migration-035.mjs",
     "db:migrate:036": "node scripts/apply-migration-036.mjs",
     "db:migrate:037": "node scripts/apply-migration-037.mjs",
+    "db:migrate:038": "node scripts/apply-migration-038.mjs",
+    "test:beta": "node scripts/test-beta-e2e.mjs",
     "assign:owner": "node scripts/assign-platform-owner.mjs",
     "verify:community-create": "node scripts/verify-community-create.mjs",
     "backfill:banners": "node scripts/backfill-category-banners.mjs",

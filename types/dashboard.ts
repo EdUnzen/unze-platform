@@ -38,6 +38,7 @@ export interface CommunityBadgeView {
   name: string;
   description: string | null;
   badgeType: BadgeType;
+  category?: string | null;
   iconUrl: string | null;
   grantedCount: number;
 }

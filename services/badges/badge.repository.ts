@@ -16,6 +16,7 @@ async function fetchCredentialsByCommunity(
     description: string | null;
     validity_mode: string;
     icon_url: string | null;
+    category: string | null;
   }[]
 > {
   const supabase = await createClient();
@@ -23,7 +24,7 @@ async function fetchCredentialsByCommunity(
 
   const { data, error } = await supabase
     .from("credentials")
-    .select("id, community_id, name, description, validity_mode, icon_url")
+    .select("id, community_id, name, description, validity_mode, icon_url, category")
     .eq("community_id", communityId)
     .order("created_at", { ascending: false });
 
@@ -102,6 +103,7 @@ export async function fetchBadgesByCommunity(
     name: credential.name,
     description: credential.description,
     badgeType: mapValidityToBadgeType(credential.validity_mode),
+    category: (credential.category as string) ?? "community_award",
     iconUrl: credential.icon_url,
     grantedCount: grantCounts[credential.id] ?? 0,
   }));

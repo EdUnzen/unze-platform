@@ -16,10 +16,22 @@ function mapEvaluation(raw: Record<string, unknown>): RequirementEvaluation {
       })
     : [];
 
+  const satisfiedRaw = raw.satisfied;
+  const satisfied = Array.isArray(satisfiedRaw)
+    ? satisfiedRaw.map((item) => {
+        const row = item as Record<string, unknown>;
+        return {
+          predicate: String(row.predicate ?? "unknown"),
+          label: String(row.label ?? "Voraussetzung"),
+        };
+      })
+    : [];
+
   return {
     fulfilled: Boolean(raw.fulfilled),
     severity: (raw.severity as RequirementEvaluation["severity"]) ?? "none",
     missing,
+    satisfied,
     phase: typeof raw.phase === "number" ? raw.phase : undefined,
     note: typeof raw.note === "string" ? raw.note : undefined,
   };

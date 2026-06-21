@@ -54,8 +54,8 @@ export function CreatorReferralPanel({ summary }: CreatorReferralPanelProps) {
         <h2 className="text-base font-semibold text-unze-ink">Crowd Partner</h2>
       </div>
       <p className="mb-4 text-sm text-unze-ink-secondary">
-        Ein Crowd Partner pro Creator {"\u2014"} danach nicht mehr \u00e4nderbar. Kein
-        Multi-Level-System. Du kannst beliebig viele Creator unterst\u00fctzen.
+        W\u00e4hle den Creator, der dich zu UNZE gebracht hat. Pro Person nur ein Partner
+        {" \u2014 "} danach nicht mehr \u00e4nderbar.
       </p>
 
       {summary.myReferral ? (

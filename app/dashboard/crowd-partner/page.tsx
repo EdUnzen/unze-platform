@@ -1,4 +1,5 @@
 import { CommercialInfoDialog } from "@/components/referral/CommercialInfoDialog";
+import { CrowdPartnerExplainer } from "@/components/referral/CrowdPartnerExplainer";
 import { ReferralsPanelsLazy } from "@/components/referral/ReferralsPanelsLazy";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getCurrentUser } from "@/services/auth/auth.service";
@@ -47,8 +48,10 @@ export default async function DashboardCrowdPartnerPage({
     <div className="page-padding pb-8">
       <PageHeader
         title="Crowd Partner"
-        subtitle="Du unterst\u00fctzt UNZE beim Wachstum. Wenn durch deine Empfehlung neue Creator erfolgreich Communities aufbauen, erh\u00e4ltst du automatisch einen Anteil an der UNZE-Plattformgeb\u00fchr."
+        subtitle="Du unterst\u00fctzt UNZE beim Wachstum \u2014 mit transparentem Anteil an der Plattformgeb\u00fchr."
       />
+
+      <CrowdPartnerExplainer />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link href="/dashboard" className="text-sm font-medium text-unze-green">

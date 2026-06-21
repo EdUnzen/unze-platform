@@ -1,5 +1,5 @@
 import { checkRequirements } from "@/services/requirements/requirement-engine.service";
-import type { RequirementEvaluation } from "@/types/requirement-engine";
+import { RequirementMemberStatus } from "@/components/requirements/RequirementMemberStatus";
 
 interface CommunityRequirementsHintProps {
   userId: string;
@@ -11,36 +11,15 @@ export async function CommunityRequirementsHint({
   communityId,
 }: CommunityRequirementsHintProps) {
   const { data } = await checkRequirements(userId, "community", communityId);
-  if (!data || data.severity === "none" || data.fulfilled) return null;
+  if (!data || data.severity === "none") return null;
 
-  return (
-    <RequirementsHintBox evaluation={data} />
-  );
-}
+  const hasSatisfied = (data.satisfied?.length ?? 0) > 0;
+  const hasMissing = (data.missing?.length ?? 0) > 0;
 
-function RequirementsHintBox({ evaluation }: { evaluation: RequirementEvaluation }) {
-  const isRequired = evaluation.severity === "required";
+  if (data.fulfilled && !hasSatisfied && !hasMissing) return null;
+  if (data.fulfilled && data.severity === "required" && !hasMissing) return null;
 
-  return (
-    <div
-      className={
-        isRequired
-          ? "rounded-2xl border border-amber-300/80 bg-amber-50 px-4 py-3"
-          : "rounded-2xl border border-sky-200/80 bg-sky-50 px-4 py-3"
-      }
-    >
-      <p className="text-sm font-medium text-unze-ink">
-        {isRequired ? "Zugangsvoraussetzungen fehlen" : "Empfohlene Voraussetzungen"}
-      </p>
-      {evaluation.missing.length > 0 && (
-        <ul className="mt-2 space-y-1 text-xs text-unze-ink-secondary">
-          {evaluation.missing.map((item, index) => (
-            <li key={`${item.predicate}-${index}`}>
-              {"\u2022"} {item.label}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
-  );
+  if (!hasSatisfied && !hasMissing) return null;
+
+  return <RequirementMemberStatus evaluation={data} />;
 }

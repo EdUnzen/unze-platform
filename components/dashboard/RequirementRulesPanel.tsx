@@ -5,6 +5,8 @@ import {
   saveRequirementSetAction,
 } from "@/app/dashboard/requirement-actions";
 import { ActionFeedback } from "@/components/ui/ActionFeedback";
+import { RequirementCreatorPreview } from "@/components/requirements/RequirementCreatorPreview";
+import { RequirementHelpBox } from "@/components/requirements/RequirementHelpBox";
 import {
   REQUIREMENT_OPERATOR_OPTIONS,
   REQUIREMENT_PREDICATE_OPTIONS,
@@ -133,14 +135,47 @@ export function RequirementRulesPanel({
   return (
     <section className="rounded-2xl bg-white p-4 shadow-card">
       <h3 className="mb-1 text-sm font-semibold text-unze-ink">
-        Zugangsvoraussetzungen (Requirement-Engine)
+        Zugangsvoraussetzungen
       </h3>
-      <p className="mb-4 text-xs text-unze-ink-secondary">
-        Objektive Regeln f{"\u00fc"}r Community, Gruppe oder Event. Scanner, Join und
-        Buchungen nutzen dieselbe Engine.
+      <p className="mb-3 text-xs text-unze-ink-secondary">
+        {"Lege fest, wer Zugang erh\u00e4lt. Gilt f\u00fcr Beitritt, Scanner und Buchungen."}
       </p>
 
-      <form action={saveAction} className="space-y-4">
+      <RequirementHelpBox />
+
+      {currentSet && currentSet.severity !== "none" && currentSet.rules.length > 0 && (
+        <div className="my-4">
+          <RequirementCreatorPreview
+            title="Gespeicherte Regeln (live)"
+            severity={currentSet.severity}
+            rootOperator={currentSet.rootOperator}
+            rules={currentSet.rules.map((r) => ({
+              predicateType: r.predicateType,
+              predicateRefId: r.predicateRefId,
+              predicateValue: r.predicateValue,
+            }))}
+            credentials={credentials}
+            collections={collections}
+            events={events}
+          />
+        </div>
+      )}
+
+      {(severity !== "none" && rules.some((r) => r.predicateType)) && (
+        <div className="my-4">
+          <RequirementCreatorPreview
+            title="Entwurf (vor dem Speichern)"
+            severity={severity}
+            rootOperator={rootOperator}
+            rules={rules}
+            credentials={credentials}
+            collections={collections}
+            events={events}
+          />
+        </div>
+      )}
+
+      <form action={saveAction} className="mt-4 space-y-4">
         <input type="hidden" name="resourceType" value={selectedResource?.type ?? ""} />
         <input type="hidden" name="resourceId" value={selectedResource?.id ?? ""} />
         <input type="hidden" name="rulesJson" value={JSON.stringify(rules)} />
@@ -175,6 +210,16 @@ export function RequirementRulesPanel({
                 </option>
               ))}
             </select>
+            {severity === "required" && (
+              <span className="mt-1 block text-[10px] text-unze-ink-muted">
+                Pflicht: ohne Erf{"\u00fc"}llung kein Zugang.
+              </span>
+            )}
+            {severity === "recommended" && (
+              <span className="mt-1 block text-[10px] text-unze-ink-muted">
+                {"Empfohlen: Hinweis f\u00fcr Mitglieder, Zugang bleibt m\u00f6glich."}
+              </span>
+            )}
           </label>
           <label className="block text-xs">
             <span className="mb-1 block font-medium text-unze-ink">Kombination</span>
@@ -191,6 +236,16 @@ export function RequirementRulesPanel({
                 </option>
               ))}
             </select>
+            {rules.length > 1 && rootOperator === "AND" && (
+              <span className="mt-1 block text-[10px] text-unze-ink-muted">
+                UND: alle Regeln m{"\u00fc"}ssen erf{"\u00fc"}llt sein.
+              </span>
+            )}
+            {rules.length > 1 && rootOperator === "OR" && (
+              <span className="mt-1 block text-[10px] text-unze-ink-muted">
+                ODER: mindestens eine Regel reicht.
+              </span>
+            )}
           </label>
         </div>
 

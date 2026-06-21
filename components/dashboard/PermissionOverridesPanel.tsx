@@ -1,5 +1,6 @@
 "use client";
 
+import { CreatorHelpTip } from "@/components/dashboard/CreatorHelpTip";
 import { setPermissionOverrideAction } from "@/app/dashboard/governance-actions";
 import {
   getPermissionsByCategory,
@@ -77,6 +78,11 @@ export function PermissionOverridesPanel({
         Obergruppen zur {"\u00dc"}bersicht {"\u2014"} Overrides pro Rolle, Creator-Rechte
         gesch{"\u00fc"}tzt.
       </p>
+
+      <CreatorHelpTip title="So funktioniert es" className="mb-4">
+        Standardrechte gelten pro Rolle. Aktiviere hier nur Abweichungen {"\u2014"} z. B.
+        Moderator darf Mitglieder verwalten, aber keine Finanzen sehen.
+      </CreatorHelpTip>
 
       <div className="space-y-2">
         {displayGroups.map(({ group, permissions }) => {

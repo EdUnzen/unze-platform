@@ -11,6 +11,7 @@ import {
   JOIN_QUESTION_TYPE_OPTIONS,
 } from "@/lib/constants/access";
 import { PlatformIdGroupsFieldset } from "@/components/dashboard/PlatformIdGroupsFieldset";
+import { CreatorHelpTip } from "@/components/dashboard/CreatorHelpTip";
 import { COMMUNITY_ACCESS_MODE_PRESETS } from "@/lib/access/presets";
 import type { CommunityAccessConfig, JoinQuestion } from "@/types/access";
 import { cn } from "@/lib/utils/cn";
@@ -74,6 +75,11 @@ export function AccessSettingsPanel({
 
   return (
     <div className="space-y-6">
+      <CreatorHelpTip title="Zugang in drei Schritten">
+        1) Community-Typ w{"\u00e4"}hlen (offen/privat/geschlossen). 2) Optional Limits und
+        Fragen setzen. 3) Voraussetzungen weiter unten konfigurieren.
+      </CreatorHelpTip>
+
       <section className="rounded-2xl bg-white p-4 shadow-card">
         <h3 className="mb-4 text-sm font-semibold text-unze-ink">
           Community-Typ (Creator)

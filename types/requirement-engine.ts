@@ -28,6 +28,7 @@ export interface RequirementEvaluation {
   fulfilled: boolean;
   severity: RequirementSeverity;
   missing: RequirementMissingItem[];
+  satisfied?: RequirementMissingItem[];
   phase?: number;
   note?: string;
 }
