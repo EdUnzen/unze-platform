@@ -23,7 +23,7 @@ export const POST_TYPE_LABELS: Record<PostType, string> = {
   clip: "Clip",
   poll: "Umfrage",
   event: "Event",
-  community_update: "Community News",
+  community_update: "Community-Ankündigung",
   highlight: "Highlight",
   question: "Frage",
   request: "Suche / Anfrage",
@@ -33,7 +33,7 @@ export const POST_TYPE_DESCRIPTIONS: Partial<Record<PostType, string>> = {
   text: "Offizielle Ankündigung oder Update",
   image: "Ankündigung mit einem Bild",
   event: "Termin, Turnier oder Live-Session",
-  community_update: "Community News oder Serviceangebot",
+  community_update: "Community-Ankündigung oder Serviceangebot",
 };
 
 /** Composer — nur Feed-konforme Typen */

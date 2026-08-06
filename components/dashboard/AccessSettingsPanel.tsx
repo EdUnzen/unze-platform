@@ -76,7 +76,7 @@ export function AccessSettingsPanel({
   return (
     <div className="space-y-6">
       <CreatorHelpTip title="Zugang in drei Schritten">
-        1) Community-Typ w{"\u00e4"}hlen (offen/privat/geschlossen). 2) Optional Limits und
+        1) Community-Typ w{"ä"}hlen (offen/privat/geschlossen). 2) Optional Limits und
         Fragen setzen. 3) Voraussetzungen weiter unten konfigurieren.
       </CreatorHelpTip>
 
@@ -137,7 +137,7 @@ export function AccessSettingsPanel({
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium">Join-Logik</label>
+            <label className="mb-1 block text-xs font-medium">Beitrittslogik</label>
             <select
               name="joinApprovalMode"
               defaultValue={c.joinApprovalMode}
@@ -272,7 +272,7 @@ export function AccessSettingsPanel({
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium">Lifecycle-Notizen (intern)</label>
+            <label className="mb-1 block text-xs font-medium">Interne Notizen (Lifecycle)</label>
             <textarea
               name="lifecycleNotes"
               rows={2}

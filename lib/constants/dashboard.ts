@@ -61,7 +61,7 @@ export const DASHBOARD_TABS: DashboardTab[] = [
   },
   {
     id: "audit",
-    label: "Audit",
+    label: "Protokoll",
     href: (slug) => `/dashboard/community/${slug}/audit`,
     icon: ScrollText,
     minRole: "admin",

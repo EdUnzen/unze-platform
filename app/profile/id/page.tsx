@@ -13,7 +13,7 @@ export default async function ProfileUnzeIdPage() {
     <div className="page-padding pb-8">
       <PageHeader
         title="UNZE-ID"
-        subtitle="Dein pers\u00f6nlicher QR-Code f\u00fcr Verifizierung und Zugangspr\u00fcfungen"
+        subtitle="Dein persönlicher QR-Code für Verifizierung und Zugangsprüfungen"
         backHref="/profile"
         backLabel="Profil"
       />
@@ -23,7 +23,7 @@ export default async function ProfileUnzeIdPage() {
       ) : (
         <div className="flex flex-col items-center rounded-3xl bg-white px-6 py-16 text-center shadow-card">
           <QrCode className="mb-4 h-10 w-10 text-unze-ink-muted" aria-hidden />
-          <p className="text-sm font-semibold text-unze-ink">UNZE-ID nicht verf\u00fcgbar</p>
+          <p className="text-sm font-semibold text-unze-ink">UNZE-ID nicht verfügbar</p>
           <p className="mt-2 max-w-xs text-sm text-unze-ink-secondary">
             {error ??
               "Deine ID konnte nicht geladen werden. Bitte lade die Seite neu oder melde dich erneut an."}
@@ -32,7 +32,7 @@ export default async function ProfileUnzeIdPage() {
             href="/profile"
             className="mt-6 rounded-xl bg-unze-green px-6 py-3 text-sm font-semibold text-white active:scale-[0.98]"
           >
-            Zur\u00fcck zum Profil
+            Zurück zum Profil
           </Link>
         </div>
       )}
@@ -40,7 +40,7 @@ export default async function ProfileUnzeIdPage() {
       {payload && token ? (
         <p className="mt-6 text-center">
           <Link href="/profile" className="text-sm font-medium text-unze-green">
-            {"\u2190"} Zur\u00fcck zum Profil
+            {"←"} Zurück zum Profil
           </Link>
         </p>
       ) : null}

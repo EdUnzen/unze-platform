@@ -56,7 +56,7 @@ export function CreatorFinanceDashboard({
     { label: "Kündigungen", value: String(stats.canceledSubscriptions) },
     { label: "Laufend auslaufend", value: String(stats.expiringSubscriptions) },
     { label: "Einmalzahlungen", value: String(stats.oneTimePayments) },
-    { label: "Dienstleistungen", value: String(stats.serviceBookings) },
+    { label: "Services", value: String(stats.serviceBookings) },
   ];
 
   return (

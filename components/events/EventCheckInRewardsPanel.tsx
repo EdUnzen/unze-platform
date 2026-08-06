@@ -105,7 +105,7 @@ export function EventCheckInRewardsPanel({
             disabled={pending}
             className="mt-3 rounded-xl border border-unze-border px-3 py-2 text-xs font-semibold text-unze-ink disabled:opacity-60"
           >
-            {pending ? "Speichern\u2026" : "Speichern"}
+            {pending ? "Speichern…" : "Speichern"}
           </button>
         </form>
       ))}

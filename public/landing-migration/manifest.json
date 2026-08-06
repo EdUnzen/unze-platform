@@ -1,0 +1,75 @@
+{
+  "name": "UNZE – Community Verzeichnis",
+  "short_name": "UNZE",
+  "description": "Finde deine Community im deutschsprachigen Raum. Gaming, Kochen, Fitness, Technologie und mehr.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#00C853",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "de",
+  "categories": ["social", "lifestyle"],
+  "icons": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-72x72_15087c40.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-96x96_42373500.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-128x128_1a1e6972.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-144x144_905647de.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-152x152_4da76647.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-192x192_bdd63f14.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-384x384_6b234b3c.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-512x512_a26b7c4b.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-maskable-192x192_25e930a9.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/icon-maskable-512x512_523455f1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

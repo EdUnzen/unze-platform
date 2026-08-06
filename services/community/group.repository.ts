@@ -55,8 +55,6 @@ export async function fetchGroupBySlugsFromDb(
       rating_avg,
       review_count,
       member_count,
-      view_count_weekly,
-      share_count,
       community:communities!inner (
         slug,
         title,
@@ -200,8 +198,6 @@ export async function fetchDiscoverGroups(
       is_public,
       group_type,
       price_cents,
-      view_count_weekly,
-      share_count,
       community:communities!inner (
         slug,
         title,
@@ -228,8 +224,6 @@ export async function fetchDiscoverGroups(
       description,
       sort_order,
       is_public,
-      view_count_weekly,
-      share_count,
       community:communities!inner (
         slug,
         title,

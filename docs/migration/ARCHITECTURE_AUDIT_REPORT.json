@@ -1,0 +1,165 @@
+{
+  "checkedAt": "2026-06-21T12:52:37.964Z",
+  "importViolations": [],
+  "topChunks": [
+    {
+      "file": ".next\\static\\chunks\\7cb1fa1f.8c65d46f16d7948c.js",
+      "kb": 283
+    },
+    {
+      "file": ".next\\static\\chunks\\framework-e9384f6a6720bcd2.js",
+      "kb": 185
+    },
+    {
+      "file": ".next\\static\\chunks\\1255-eae4096fb21f1304.js",
+      "kb": 170
+    },
+    {
+      "file": ".next\\static\\chunks\\4bd1b696-100b9d70ed4e49c1.js",
+      "kb": 169
+    },
+    {
+      "file": ".next\\static\\chunks\\main-e9927b74ab064770.js",
+      "kb": 120
+    },
+    {
+      "file": ".next\\static\\chunks\\polyfills-42372ed130431b0a.js",
+      "kb": 110
+    },
+    {
+      "file": ".next\\static\\chunks\\app\\community\\[slug]\\page-1fb649df0709b003.js",
+      "kb": 51
+    },
+    {
+      "file": ".next\\static\\chunks\\2181.2c7782f57c969468.js",
+      "kb": 46
+    },
+    {
+      "file": ".next\\static\\chunks\\app\\dashboard\\community\\[slug]\\access\\page-972fb20cdd8ff599.js",
+      "kb": 33
+    },
+    {
+      "file": ".next\\static\\chunks\\2391-c7caeb6bc329a373.js",
+      "kb": 25
+    },
+    {
+      "file": ".next\\static\\chunks\\app\\dashboard\\community\\[slug]\\requests\\page-e8d8cfaf516f73f9.js",
+      "kb": 23
+    },
+    {
+      "file": ".next\\static\\chunks\\app\\layout-946ca863873c9f90.js",
+      "kb": 23
+    },
+    {
+      "file": ".next\\static\\chunks\\4909-60c88923efbb24ad.js",
+      "kb": 20
+    },
+    {
+      "file": ".next\\static\\chunks\\6688-d37d8ece7cece03e.js",
+      "kb": 18
+    },
+    {
+      "file": ".next\\static\\chunks\\5219-f911a3b28aeae3a4.js",
+      "kb": 17
+    }
+  ],
+  "domains": [
+    {
+      "domain": "www.unze.app",
+      "url": "https://www.unze.app",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirect": null,
+          "type": "unknown"
+        },
+        {
+          "path": "/communities",
+          "status": 404,
+          "redirect": null,
+          "type": "unknown"
+        },
+        {
+          "path": "/discover",
+          "status": 200,
+          "redirect": null,
+          "type": "unknown"
+        }
+      ]
+    },
+    {
+      "domain": "unze.app",
+      "url": "https://unze.app",
+      "results": [
+        {
+          "path": "/",
+          "status": 307,
+          "redirect": "https://www.unze.app/",
+          "type": "unknown"
+        },
+        {
+          "path": "/communities",
+          "status": 307,
+          "redirect": "https://www.unze.app/communities",
+          "type": "unknown"
+        },
+        {
+          "path": "/discover",
+          "status": 307,
+          "redirect": "https://www.unze.app/discover",
+          "type": "unknown"
+        }
+      ]
+    },
+    {
+      "domain": "www.unzeconnect.app",
+      "url": "https://www.unzeconnect.app",
+      "results": [
+        {
+          "path": "/",
+          "status": 200,
+          "redirect": null,
+          "type": "unknown"
+        },
+        {
+          "path": "/discover",
+          "status": 200,
+          "redirect": null,
+          "type": "unknown"
+        },
+        {
+          "path": "/dashboard",
+          "status": 307,
+          "redirect": "/auth/login?next=%2Fdashboard",
+          "type": "unknown"
+        }
+      ]
+    },
+    {
+      "domain": "unzeconnect.app",
+      "url": "https://unzeconnect.app",
+      "results": [
+        {
+          "path": "/",
+          "status": 307,
+          "redirect": "https://www.unzeconnect.app/",
+          "type": "unknown"
+        },
+        {
+          "path": "/discover",
+          "status": 307,
+          "redirect": "https://www.unzeconnect.app/discover",
+          "type": "unknown"
+        },
+        {
+          "path": "/dashboard",
+          "status": 307,
+          "redirect": "https://www.unzeconnect.app/dashboard",
+          "type": "unknown"
+        }
+      ]
+    }
+  ],
+  "passed": true
+}

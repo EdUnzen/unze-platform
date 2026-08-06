@@ -1,7 +1,7 @@
 # Monetization E2E Testbericht
 
-**Datum:** 2026-06-13  
-**Umgebung:** https://unze-platform.vercel.app  
+**Datum:** 2026-06-21  
+**Umgebung:** http://localhost:3002  
 **Supabase:** https://zzbjvcwmdrnuzzlepfja.supabase.co  
 **Stripe Testmodus:** konfiguriert
 
@@ -11,9 +11,9 @@
 
 | Status | Anzahl |
 |--------|--------|
-| Funktioniert | 12 |
+| Funktioniert | 5 |
 | Teilweise | 1 |
-| Fehlerhaft | 0 |
+| Fehlerhaft | 7 |
 
 ---
 
@@ -27,20 +27,6 @@
   - URL: Supabase
 - **Stripe Verbindung** — Testmodus API + Customer Portal aktiv
   - URL: Stripe Dashboard
-- **Discover Events** — HTTP 200
-  - URL: https://unze-platform.vercel.app/discover?tab=events
-- **Nutzer Abos** — HTTP 200
-  - URL: https://unze-platform.vercel.app/profile/billing
-- **Dashboard** — HTTP 200
-  - URL: https://unze-platform.vercel.app/dashboard
-- **Community Detail** — HTTP 200
-  - URL: https://unze-platform.vercel.app/community/rocket-league-ssl
-- **Creator Finanzen** — HTTP 200
-  - URL: https://unze-platform.vercel.app/dashboard/community/rocket-league-ssl/monetization
-- **Creator Events** — HTTP 200
-  - URL: https://unze-platform.vercel.app/dashboard/community/rocket-league-ssl/events
-- **Webhook Route** — Endpoint erreichbar (HTTP 400 ohne Signatur)
-  - URL: https://unze-platform.vercel.app/api/stripe/webhook
 - **Production Build** — next build erfolgreich
   - URL: npm run build
 
@@ -53,7 +39,20 @@
 
 ## Fehlerhaft
 
-_Keine Einträge._
+- **Discover Events** — fetch failed
+  - URL: http://localhost:3002/discover?tab=events
+- **Nutzer Abos** — fetch failed
+  - URL: http://localhost:3002/profile/billing
+- **Dashboard** — fetch failed
+  - URL: http://localhost:3002/dashboard
+- **Community Detail** — fetch failed
+  - URL: http://localhost:3002/community/rocket-league-ssl
+- **Creator Finanzen** — fetch failed
+  - URL: http://localhost:3002/dashboard/community/rocket-league-ssl/monetization
+- **Creator Events** — fetch failed
+  - URL: http://localhost:3002/dashboard/community/rocket-league-ssl/events
+- **Stripe Webhook** — fetch failed
+  - URL: http://localhost:3002/api/stripe/webhook
 
 
 ---

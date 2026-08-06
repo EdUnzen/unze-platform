@@ -81,5 +81,5 @@ export function formatRulesSummary(input: {
 
   const labels = input.rules.map((r) => formatRequirementRuleLabel(r, input.refs));
 
-  return [`${severityLabel} \u00b7 ${combo}`, ...labels.map((l) => `\u2022 ${l}`)];
+  return [`${severityLabel} · ${combo}`, ...labels.map((l) => `• ${l}`)];
 }

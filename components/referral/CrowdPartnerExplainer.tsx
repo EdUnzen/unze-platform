@@ -4,17 +4,17 @@ const STEPS = [
   {
     icon: Share2,
     title: "Du empfiehlst UNZE",
-    text: "Ein Creator verkn\u00fcpft sich einmalig mit seinem Crowd Partner \u2014 kein Multi-Level, keine Ketten.",
+    text: "Ein Creator verknüpft sich einmalig mit seinem Crowd Partner — kein Multi-Level, keine Ketten.",
   },
   {
     icon: Heart,
     title: "Neue Creator wachsen",
-    text: "Wenn empfohlene Creator erfolgreich Communities aufbauen, w\u00e4chst UNZE als Plattform.",
+    text: "Wenn empfohlene Creator erfolgreich Communities aufbauen, wächst UNZE als Plattform.",
   },
   {
     icon: Wallet,
-    title: "Anteil an der Plattformgeb\u00fchr",
-    text: "Deine Beteiligung kommt ausschlie\u00dflich aus dem UNZE-Plattformanteil \u2014 nicht aus Creator-Einnahmen der Community.",
+    title: "Anteil an der Plattformgebühr",
+    text: "Deine Beteiligung kommt ausschließlich aus dem UNZE-Plattformanteil — nicht aus Creator-Einnahmen der Community.",
   },
 ] as const;
 
@@ -22,7 +22,7 @@ export function CrowdPartnerExplainer() {
   return (
     <section className="mb-6 rounded-3xl border border-unze-green/20 bg-unze-green-muted/20 p-4">
       <p className="text-sm font-semibold text-unze-ink">
-        Crowd Partner unterst\u00fctzen das Wachstum von UNZE
+        Crowd Partner unterstützen das Wachstum von UNZE
       </p>
       <p className="mt-1 text-xs text-unze-ink-secondary">
         Das ist kein klassisches Referral-System. Es geht um faires Wachstum und einen

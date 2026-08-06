@@ -91,7 +91,7 @@ export function CreatorPublicProfileView({ profile }: CreatorPublicProfileViewPr
         <div className="mt-8">
           <CommunityGroupCardList
             groups={groups}
-            title="Gruppen & Dienstleistungen"
+            title="Gruppen und Services"
             subtitle="Öffentliche Bereiche aus den Communities dieses Creators"
           />
         </div>

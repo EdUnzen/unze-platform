@@ -31,7 +31,7 @@ export async function startCommunitySubscriptionCheckoutAction(
 
   if (error) return { error };
   if (url) redirect(url);
-  return { error: "Checkout konnte nicht gestartet werden" };
+  return { error: "Zahlung konnte nicht gestartet werden" };
 }
 
 export async function startGroupCheckoutAction(input: {
@@ -64,7 +64,7 @@ export async function startGroupCheckoutAction(input: {
 
   if (error) return { error };
   if (url) redirect(url);
-  return { error: "Checkout konnte nicht gestartet werden" };
+  return { error: "Zahlung konnte nicht gestartet werden" };
 }
 
 /** Kostenlose Services — Terminreservierung ohne Stripe */

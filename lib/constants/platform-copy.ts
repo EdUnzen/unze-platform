@@ -1,9 +1,30 @@
-/** Einheitliche Plattform-Texte — Startseite, Login, Discover */
+/** Einheitliche Plattform-Texte — Startseite, Login, Discover, Onboarding, Marketing */
+
+/** Kanonische Tagline — überall identisch (Landing, App, Screenshots, Onboarding). */
 export const PLATFORM_TAGLINE =
-  "Communities verwalten, Gruppen organisieren, Events erstellen, Services anbieten \u2014 Auszeichnungen vergeben und Zertifikate sammeln.";
+  "Communities verwalten, Gruppen organisieren, Events erstellen, Services anbieten, Auszeichnungen vergeben und Zertifikate sammeln.";
+
+export const PLATFORM_TAGLINE_WITH_CONTEXT = `UNZE bündelt alles an einem Ort: ${PLATFORM_TAGLINE}`;
+
+export const PLATFORM_TAGLINE_WITH_VERIFICATION = `${PLATFORM_TAGLINE_WITH_CONTEXT} — mit Verifizierung und Monetarisierung.`;
+
+/** Kurzliste der Kernbereiche — Navigation, Onboarding, Seiten-Subtitles. */
+export const PLATFORM_PILLAR_LIST =
+  "Communities, Gruppen, Events, Services, Auszeichnungen und Zertifikate";
+
+export const PLATFORM_PILLAR_LIST_SHORT =
+  "Communities, Gruppen, Events, Services, Auszeichnungen & Zertifikate";
+
+export const PLATFORM_SUBTITLE_ONBOARDING = `${PLATFORM_PILLAR_LIST} — auf einer Plattform.`;
+
+export const MEMBER_HUB_SUBTITLE = `${PLATFORM_PILLAR_LIST_SHORT} — dein Verwaltungs-Hub.`;
+
+export const DISCOVER_SUBTITLE = `${PLATFORM_PILLAR_LIST} entdecken`;
+
+export const FAVORITES_SUBTITLE = `${PLATFORM_PILLAR_LIST}, denen du folgst`;
 
 export const PLATFORM_DESCRIPTION =
-  "UNZE vereint Communities, Gruppen, Events, Services, Auszeichnungen und Zertifikate auf einer Plattform \u2014 mit Verifizierung und Monetarisierung.";
+  "UNZE vereint Communities, Gruppen, Events, Services, Auszeichnungen und Zertifikate auf einer Plattform — mit Verifizierung und Monetarisierung.";
 
 /** Kernbereiche der Plattform — Marketing & Hero */
 export const PLATFORM_PILLARS = [
@@ -33,7 +54,7 @@ export const HOME_VALUE_PROPS = [
   },
   {
     title: "Services",
-    description: "Angebote und Dienstleistungen anbieten.",
+    description: "Angebote und Services anbieten.",
     href: "/discover?tab=services",
   },
   {

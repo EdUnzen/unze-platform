@@ -1,3 +1,23 @@
 {
-  "regions": ["fra1"]
+  "regions": ["fra1"],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "unze.app" }],
+      "destination": "https://www.unze.app/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "unzeconnect.app" }],
+      "destination": "https://www.unzeconnect.app/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "unze-platform.vercel.app" }],
+      "destination": "https://www.unzeconnect.app/:path*",
+      "permanent": true
+    }
+  ]
 }

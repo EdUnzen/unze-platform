@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-const base = process.argv[2] ?? "https://unze-platform.vercel.app";
+const base = process.argv[2] ?? "https://www.unze.app";
 const r = await fetch(`${base}/discover`, { redirect: "follow" });
 const t = await r.text();
 console.log("status", r.status);

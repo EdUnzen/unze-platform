@@ -1,0 +1,11 @@
+{
+  "migratedFrom": "www.unze.app",
+  "assets": [
+    "unze-logo.png",
+    "hero-light.webp",
+    "about-people.webp",
+    "cta-community.webp",
+    "favicon.ico",
+    "apple-touch-icon.png"
+  ]
+}

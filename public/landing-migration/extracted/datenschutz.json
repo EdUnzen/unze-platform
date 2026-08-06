@@ -1,0 +1,166 @@
+{
+  "text": "UNZE\nCommunities\nUNZE Business\nApp nutzen\nDatenschutzerklärung\n1. Datenschutz auf einen Blick\nAllgemeine Hinweise\n\nDie folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.\n\nDatenerfassung auf dieser Website\n\nWer ist verantwortlich für die Datenerfassung auf dieser Website?\nDie Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie dem Impressum dieser Website entnehmen.\n\nWie erfassen wir Ihre Daten?\nIhre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen. Hierbei kann es sich z.B. um Daten handeln, die Sie in ein Kontaktformular eingeben. Andere Daten werden automatisch oder nach Ihrer Einwilligung beim Besuch der Website durch unsere IT-Systeme erfasst. Das sind vor allem technische Daten (z.B. Internetbrowser, Betriebssystem oder Uhrzeit des Seitenaufrufs).\n\nWofür nutzen wir Ihre Daten?\nEin Teil der Daten wird erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Andere Daten können zur Analyse Ihres Nutzerverhaltens verwendet werden.\n\n2. Hosting\n\nDiese Website wird bei einem externen Dienstleister gehostet (Hoster). Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert. Hierbei kann es sich v.a. um IP-Adressen, Kontaktanfragen, Meta- und Kommunikationsdaten, Vertragsdaten, Kontaktdaten, Namen, Websitezugriffe und sonstige Daten, die über eine Website generiert werden, handeln.\n\n3. Allgemeine Hinweise und Pflichtinformationen\nDatenschutz\n\nDie Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend den gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.\n\nHinweis zur verantwortlichen Stelle\n\nDie verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:\n\nUNZE\nPatrick Becker\nIm Funkenstück 6\n56567 Neuwied\nE-Mail: support@unze.app\n\nWiderruf Ihrer Einwilligung zur Datenverarbeitung\n\nViele Datenverarbeitungsvorgänge sind nur mit Ihrer ausdrücklichen Einwilligung möglich. Sie können eine bereits erteilte Einwilligung jederzeit widerrufen. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt vom Widerruf unberührt.\n\nRecht auf Datenübertragbarkeit\n\nSie haben das Recht, Daten, die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines Vertrags automatisiert verarbeiten, an sich oder an einen Dritten in einem gängigen, maschinenlesbaren Format aushändigen zu lassen.\n\nAuskunft, Löschung und Berichtigung\n\nSie haben im Rahmen der geltenden gesetzlichen Bestimmungen jederzeit das Recht auf unentgeltliche Auskunft über Ihre gespeicherten personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der Datenverarbeitung und ggf. ein Recht auf Berichtigung oder Löschung dieser Daten.\n\n4. Datenerfassung auf dieser Website\nServer-Log-Dateien\n\nDer Provider der Seiten erhebt und speichert automatisch Informationen in so genannten Server-Log-Dateien, die Ihr Browser automatisch an uns übermittelt. Dies sind:\n\nBrowsertyp und Browserversion\nVerwendetes Betriebssystem\nReferrer URL\nHostname des zugreifenden Rechners\nUhrzeit der Serveranfrage\nIP-Adresse\n\nEine Zusammenführung dieser Daten mit anderen Datenquellen wird nicht vorgenommen.\n\n5. Externe Dienste und APIs\n\nDiese Website nutzt eine API zur Anzeige von Community-Informationen. Beim Laden der Seite werden Daten von externen Servern abgerufen. Dabei kann Ihre IP-Adresse an den jeweiligen Server übermittelt werden. Zudem werden Bilder von externen Diensten geladen.\n\nUNZE\n\nDas Community-Verzeichnis für den deutschsprachigen Raum. Entdecke, verbinde und wachse gemeinsam.\n\nPLATTFORM\nCommunities\nUNZE Business\nApp nutzen\nRECHTLICHES\nImpressum\nDatenschutzerklärung\nAGB\nKONTAKT\nsupport@unze.app\nwww.unze.app\n\n© 2026 UNZE. Alle Rechte vorbehalten.",
+  "links": [
+    {
+      "href": "/",
+      "text": "UNZE"
+    },
+    {
+      "href": "/",
+      "text": "Communities"
+    },
+    {
+      "href": "/business",
+      "text": "UNZE Business"
+    },
+    {
+      "href": "https://www.unzeconnect.app",
+      "text": "App nutzen"
+    },
+    {
+      "href": "/",
+      "text": "Communities"
+    },
+    {
+      "href": "/business",
+      "text": "UNZE Business"
+    },
+    {
+      "href": "https://www.unzeconnect.app",
+      "text": "App nutzen"
+    },
+    {
+      "href": "/impressum",
+      "text": "Impressum"
+    },
+    {
+      "href": "/datenschutz",
+      "text": "Datenschutzerklärung"
+    },
+    {
+      "href": "/agb",
+      "text": "AGB"
+    },
+    {
+      "href": "mailto:support@unze.app",
+      "text": "support@unze.app"
+    },
+    {
+      "href": "https://unze.app",
+      "text": "www.unze.app"
+    }
+  ],
+  "images": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/unze-logo_69db6ea8.png",
+      "alt": "UNZE Logo"
+    },
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310419663031591105/Vvpir7UGi2ufSokDuyfwvf/unze-logo_69db6ea8.png",
+      "alt": "UNZE Logo"
+    }
+  ],
+  "headings": [
+    {
+      "tag": "H1",
+      "text": "Datenschutzerklärung"
+    },
+    {
+      "tag": "H2",
+      "text": "1. Datenschutz auf einen Blick"
+    },
+    {
+      "tag": "H3",
+      "text": "Allgemeine Hinweise"
+    },
+    {
+      "tag": "H3",
+      "text": "Datenerfassung auf dieser Website"
+    },
+    {
+      "tag": "H2",
+      "text": "2. Hosting"
+    },
+    {
+      "tag": "H2",
+      "text": "3. Allgemeine Hinweise und Pflichtinformationen"
+    },
+    {
+      "tag": "H3",
+      "text": "Datenschutz"
+    },
+    {
+      "tag": "H3",
+      "text": "Hinweis zur verantwortlichen Stelle"
+    },
+    {
+      "tag": "H3",
+      "text": "Widerruf Ihrer Einwilligung zur Datenverarbeitung"
+    },
+    {
+      "tag": "H3",
+      "text": "Recht auf Datenübertragbarkeit"
+    },
+    {
+      "tag": "H3",
+      "text": "Auskunft, Löschung und Berichtigung"
+    },
+    {
+      "tag": "H2",
+      "text": "4. Datenerfassung auf dieser Website"
+    },
+    {
+      "tag": "H3",
+      "text": "Server-Log-Dateien"
+    },
+    {
+      "tag": "H2",
+      "text": "5. Externe Dienste und APIs"
+    },
+    {
+      "tag": "H4",
+      "text": "Plattform"
+    },
+    {
+      "tag": "H4",
+      "text": "Rechtliches"
+    },
+    {
+      "tag": "H4",
+      "text": "Kontakt"
+    }
+  ],
+  "sections": [
+    {
+      "index": 0,
+      "className": "",
+      "text": ""
+    },
+    {
+      "index": 1,
+      "className": "",
+      "text": "1. Datenschutz auf einen Blick\nAllgemeine Hinweise\n\nDie folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.\n\nDatenerfassung auf dieser Website\n\nWer ist verantwortlich für die Datenerfassung auf dieser Website?\nDie Datenverarbeitung auf dieser Website erfolgt durch den Websitebetreiber. Dessen Kontaktdaten können Sie"
+    },
+    {
+      "index": 2,
+      "className": "",
+      "text": "2. Hosting\n\nDiese Website wird bei einem externen Dienstleister gehostet (Hoster). Die personenbezogenen Daten, die auf dieser Website erfasst werden, werden auf den Servern des Hosters gespeichert. Hierbei kann es sich v.a. um IP-Adressen, Kontaktanfragen, Meta- und Kommunikationsdaten, Vertragsdaten, Kontaktdaten, Namen, Websitezugriffe und sonstige Daten, die über eine Website generiert werden, handeln."
+    },
+    {
+      "index": 3,
+      "className": "",
+      "text": "3. Allgemeine Hinweise und Pflichtinformationen\nDatenschutz\n\nDie Betreiber dieser Seiten nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend den gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.\n\nHinweis zur verantwortlichen Stelle\n\nDie verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:\n\nUNZE\nPatrick Becker\nIm Funkenstück 6\n56567 Neuwied\nE-Mail: support@unze.app\n\nWiderruf Ihrer "
+    },
+    {
+      "index": 4,
+      "className": "",
+      "text": "4. Datenerfassung auf dieser Website\nServer-Log-Dateien\n\nDer Provider der Seiten erhebt und speichert automatisch Informationen in so genannten Server-Log-Dateien, die Ihr Browser automatisch an uns übermittelt. Dies sind:\n\nBrowsertyp und Browserversion\nVerwendetes Betriebssystem\nReferrer URL\nHostname des zugreifenden Rechners\nUhrzeit der Serveranfrage\nIP-Adresse\n\nEine Zusammenführung dieser Daten mit anderen Datenquellen wird nicht vorgenommen."
+    },
+    {
+      "index": 5,
+      "className": "",
+      "text": "5. Externe Dienste und APIs\n\nDiese Website nutzt eine API zur Anzeige von Community-Informationen. Beim Laden der Seite werden Daten von externen Servern abgerufen. Dabei kann Ihre IP-Adresse an den jeweiligen Server übermittelt werden. Zudem werden Bilder von externen Diensten geladen."
+    }
+  ],
+  "title": "UNZE – Finde deine Community"
+}

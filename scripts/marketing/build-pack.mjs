@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Marketing v2 Pipeline: Demo-Stats -> Capture -> Composites -> Animationen -> Validate
+ * Marketing Beta-Launch Pipeline:
+ * Enrich -> Pre-Flight -> Capture -> Composites -> Animationen -> Validate -> Report
  */
 import { spawnSync } from "child_process";
 import { existsSync } from "fs";
@@ -18,19 +19,30 @@ import { dirs } from "./config.mjs";
 const root = process.cwd();
 const args = new Set(process.argv.slice(2));
 
-function run(label, cmd, cmdArgs) {
+function run(label, cmd, cmdArgs, { optional = false } = {}) {
   console.log(`\n=== ${label} ===`);
   const r = spawnSync(cmd, cmdArgs, { stdio: "inherit", cwd: root, shell: process.platform === "win32" });
-  if (r.status !== 0) throw new Error(`${label} fehlgeschlagen (exit ${r.status})`);
+  if (r.status !== 0) {
+    if (optional) {
+      console.warn(`${label} uebersprungen (exit ${r.status})`);
+      return false;
+    }
+    throw new Error(`${label} fehlgeschlagen (exit ${r.status})`);
+  }
+  return true;
 }
 
 async function main() {
-  if (!args.has("--skip-seed") && existsSync(join(root, ".env.local"))) {
-    run("Demo-Stats", "node", ["scripts/marketing/patch-demo-stats.mjs"]);
+  if (!args.has("--skip-enrich") && existsSync(join(root, ".env.local"))) {
+    run("Demo-Anreicherung", "node", ["scripts/marketing/enrich-demo-content.mjs"]);
+  }
+
+  if (!args.has("--skip-preflight")) {
+    run("Pre-Flight Qualitaet", "node", ["scripts/marketing/preflight-routes.mjs"]);
   }
 
   if (!args.has("--skip-capture")) {
-    run("Screenshots", "node", ["scripts/marketing/capture-screens.mjs"]);
+    run("Screenshots (Marketing-Modus)", "node", ["scripts/marketing/capture-screens.mjs"]);
   }
 
   run("Pre-Check Config", "node", ["scripts/marketing/validate-marketing.mjs", "--config-only"]);
@@ -52,11 +64,19 @@ async function main() {
 
   if (!args.has("--skip-animations")) {
     console.log("\n=== Animationen ===");
-    const animBrowser = await launchBrowser();
     try {
-      await renderAnimations(animBrowser);
-    } finally {
-      await animBrowser.close().catch(() => {});
+      const animBrowser = await launchBrowser();
+      try {
+        await renderAnimations(animBrowser);
+      } finally {
+        await new Promise((r) => setTimeout(r, 500));
+        await animBrowser.close().catch(() => {});
+      }
+    } catch (err) {
+      const name = err?.name ?? "";
+      if (name !== "TargetClosedError") {
+        console.warn("Animationen Warnung:", err.message ?? err);
+      }
     }
   }
 
@@ -65,7 +85,9 @@ async function main() {
     run("Validierung", "node", ["scripts/marketing/validate-marketing.mjs"]);
   }
 
-  console.log("\n\u2713 Marketing v3 Build abgeschlossen: docs/marketing/output/");
+  run("Abschlussbericht", "node", ["scripts/marketing/beta-launch-report.mjs"], { optional: true });
+
+  console.log("\n\u2713 Beta-Launch Marketing Pipeline abgeschlossen: docs/marketing/output/");
 }
 
 main().catch((err) => {

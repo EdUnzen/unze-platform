@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: {{WIDTH}}px;
+      height: {{HEIGHT}}px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #030305;
+      overflow: hidden;
+      position: relative;
+    }
+    .ambient {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 100% 70% at 50% -10%, rgba(16, 185, 129, 0.2) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 100% 40%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+        linear-gradient(180deg, #0a0a0f 0%, #030305 100%);
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+    }
+    .slide-inner {
+      position: absolute;
+      inset: {{FRAME_INSET}}px;
+      border-radius: {{FRAME_RADIUS}}px;
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .slide-inner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      transform: scale(1);
+      animation: kenBurns {{SLIDE_MS}}ms ease-in-out forwards;
+    }
+    .headline-wrap {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      text-align: center;
+      width: 90%;
+      top: {{HEADLINE_TOP}}px;
+    }
+    .headline {
+      display: inline-block;
+      padding: 14px 28px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(20px);
+      font-size: {{HEADLINE_SIZE}}px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+    .subline {
+      margin-top: 14px;
+      font-size: {{SUBLINE_SIZE}}px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.62);
+    }
+    .cta {
+      position: absolute;
+      bottom: {{CTA_BOTTOM}}px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      padding: 12px 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #1DB872, #00C853);
+      color: #fff;
+      font-size: {{CTA_SIZE}}px;
+      font-weight: 650;
+      letter-spacing: -0.01em;
+      box-shadow: 0 8px 32px rgba(0, 200, 83, 0.35);
+      opacity: 0;
+      animation: ctaIn 800ms ease {{CTA_DELAY}}ms forwards;
+    }
+    .brand {
+      position: absolute;
+      top: {{BRAND_TOP}}px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 25;
+      font-size: {{BRAND_SIZE}}px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.35);
+    }
+    {{SLIDE_KEYFRAMES}}
+    @keyframes kenBurns {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.06); }
+    }
+    @keyframes ctaIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="ambient"></div>
+  <div class="brand">UNZE</div>
+  {{SLIDES_HTML}}
+  <div class="cta">{{CTA}}</div>
+</body>
+</html>

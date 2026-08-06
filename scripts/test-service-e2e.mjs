@@ -174,7 +174,7 @@ async function main() {
   );
 
   const base =
-    env.E2E_BASE_URL ?? env.NEXT_PUBLIC_APP_URL ?? "https://unze-platform.vercel.app";
+    env.E2E_BASE_URL ?? env.NEXT_PUBLIC_APP_URL ?? "https://www.unze.app";
 
   const urlChecks = [
     { path: "/discover?tab=services", label: "Discover Services" },

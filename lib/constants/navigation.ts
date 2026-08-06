@@ -1,4 +1,6 @@
 import type { LucideIcon } from "lucide-react";
+import { CONNECT_HOME_PATH } from "@/lib/constants/site";
+import { PLATFORM_PILLAR_LIST } from "@/lib/constants/platform-copy";
 import { Compass, Heart, Home, User } from "lucide-react";
 
 export type NavItemId = "home" | "discover" | "favorites" | "profile";
@@ -19,24 +21,24 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   {
     id: "home",
-    label: "Home",
-    href: "/",
+    label: "Start",
+    href: CONNECT_HOME_PATH,
     icon: Home,
-    description: "Verwaltungs-Hub: Communities, Gruppen, Events, Services, Auszeichnungen",
+    description: `Verwaltungs-Hub: ${PLATFORM_PILLAR_LIST}`,
   },
   {
     id: "discover",
-    label: "Discover",
+    label: "Entdecken",
     href: "/discover",
     icon: Compass,
-    description: "Communities, Gruppen, Events, Dienstleistungen",
+    description: PLATFORM_PILLAR_LIST,
   },
   {
     id: "favorites",
     label: "Favoriten",
     href: "/favorites",
     icon: Heart,
-    description: "Gefolgte Communities, Gruppen, Events und Dienstleistungen",
+    description: `Gefolgte ${PLATFORM_PILLAR_LIST}`,
   },
   {
     id: "profile",
@@ -51,7 +53,7 @@ export const PLUS_MENU_ITEMS = [
   {
     id: "post",
     label: "Ankündigung erstellen",
-    description: "News, Event oder Service für eine Community",
+    description: "Ankündigung, Event oder Service für eine Community",
     href: "/create/post",
   },
   {
@@ -82,5 +84,5 @@ export const DISCOVER_TAB_LABELS: Record<DiscoverTabId, string> = {
   communities: "Communities",
   groups: "Gruppen",
   events: "Events",
-  services: "Dienstleistungen",
+  services: "Services",
 };

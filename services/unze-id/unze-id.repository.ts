@@ -39,7 +39,7 @@ export async function verifyUnzeIdInDb(
 
   if (error) return { data: null, error: error.message };
   if (!data || typeof data !== "object") {
-    return { data: null, error: "Ungültige Verify-Antwort" };
+    return { data: null, error: "Ungültige Prüfantwort" };
   }
 
   const row = data as Record<string, unknown>;

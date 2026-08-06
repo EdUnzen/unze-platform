@@ -88,9 +88,9 @@ async function DiscoverContentInner({
     if (!groupTypesAvailable) {
       return (
         <section className="rounded-3xl bg-white p-8 text-center shadow-card">
-          <p className="text-sm font-medium text-unze-ink">Dienstleistungen noch nicht verfügbar</p>
+          <p className="text-sm font-medium text-unze-ink">Services noch nicht verfügbar</p>
           <p className="mt-1 text-sm text-unze-ink-secondary">
-            Dienstleistungen werden nach Plattform-Update freigeschaltet.
+            Services werden nach Plattform-Update freigeschaltet.
           </p>
         </section>
       );
@@ -100,9 +100,9 @@ async function DiscoverContentInner({
     if (filtered.length === 0 && services.length === 0) {
       return (
         <section className="rounded-3xl bg-white p-8 text-center shadow-card">
-          <p className="text-sm font-medium text-unze-ink">Noch keine Dienstleistungen</p>
+          <p className="text-sm font-medium text-unze-ink">Noch keine Services</p>
           <p className="mt-1 text-sm text-unze-ink-secondary">
-            Dienstleistungen werden als Gruppentyp „Service“ in Communities angelegt.
+            Services werden als Gruppentyp „Service“ in Communities angelegt.
           </p>
         </section>
       );
@@ -110,7 +110,7 @@ async function DiscoverContentInner({
     return (
       <CommunityGroupCardList
         groups={filtered}
-        title="Dienstleistungen"
+        title="Services"
         subtitle={
           query
             ? `${filtered.length} Ergebnis${filtered.length === 1 ? "" : "se"}`

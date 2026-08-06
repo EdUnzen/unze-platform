@@ -1,3 +1,4 @@
+import { getAppBaseUrl } from "@/lib/constants/site";
 import { notifyApplicant } from "@/lib/access/lifecycle-notifications";
 import { SYSTEM_MESSAGE_TEMPLATES } from "@/lib/constants/access";
 import { hasCommunityPermission } from "@/lib/permissions/community.permissions";
@@ -17,7 +18,7 @@ import {
 } from "./invite.repository";
 
 function withInviteUrl(link: CommunityInviteLink, baseUrl?: string): CommunityInviteLink {
-  const origin = baseUrl ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://unze.app";
+  const origin = baseUrl ?? getAppBaseUrl();
   return {
     ...link,
     inviteUrl: `${origin.replace(/\/$/, "")}/invite/${link.code}`,
@@ -151,6 +152,6 @@ export async function promoteNextWaitlisted(
 }
 
 export function buildInviteUrl(code: string): string {
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? "https://unze.app";
+  const origin = getAppBaseUrl();
   return `${origin.replace(/\/$/, "")}/invite/${code}`;
 }

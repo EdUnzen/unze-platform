@@ -1,0 +1,23 @@
+{
+  "text": "404\nPage Not Found\n\nSorry, the page you are looking for doesn't exist.\nIt may have been moved or deleted.\n\nGo Home",
+  "links": [],
+  "images": [],
+  "headings": [
+    {
+      "tag": "H1",
+      "text": "404"
+    },
+    {
+      "tag": "H2",
+      "text": "Page Not Found"
+    }
+  ],
+  "sections": [
+    {
+      "index": 0,
+      "className": "",
+      "text": ""
+    }
+  ],
+  "title": "UNZE – Finde deine Community"
+}

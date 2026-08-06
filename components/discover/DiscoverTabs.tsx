@@ -1,17 +1,13 @@
 "use client";
 
+import {
+  DISCOVER_TAB_IDS,
+  DISCOVER_TAB_LABELS,
+  type DiscoverTabId,
+} from "@/lib/constants/navigation";
 import { cn } from "@/lib/utils/cn";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-
-const TABS = [
-  { id: "communities", label: "Communities" },
-  { id: "groups", label: "Gruppen" },
-  { id: "events", label: "Events" },
-  { id: "services", label: "Dienstleistungen" },
-] as const;
-
-export type DiscoverTabId = (typeof TABS)[number]["id"];
 
 /** Legacy-Tabs aus alten Links → Communities */
 const LEGACY_TAB_MAP: Record<string, DiscoverTabId> = {
@@ -21,12 +17,17 @@ const LEGACY_TAB_MAP: Record<string, DiscoverTabId> = {
   creators: "communities",
 };
 
+export type { DiscoverTabId };
+
 export function DiscoverTabs() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const rawTab = searchParams.get("tab") ?? "communities";
   const active: DiscoverTabId =
-    LEGACY_TAB_MAP[rawTab] ?? (TABS.some((t) => t.id === rawTab) ? (rawTab as DiscoverTabId) : "communities");
+    LEGACY_TAB_MAP[rawTab] ??
+    (DISCOVER_TAB_IDS.includes(rawTab as DiscoverTabId)
+      ? (rawTab as DiscoverTabId)
+      : "communities");
 
   return (
     <div
@@ -34,12 +35,12 @@ export function DiscoverTabs() {
       role="tablist"
       aria-label="Discover-Bereiche"
     >
-      {TABS.map((tab) => {
-        const href = `${pathname}?tab=${tab.id}`;
-        const isActive = active === tab.id;
+      {DISCOVER_TAB_IDS.map((tabId) => {
+        const href = `${pathname}?tab=${tabId}`;
+        const isActive = active === tabId;
         return (
           <Link
-            key={tab.id}
+            key={tabId}
             href={href}
             role="tab"
             aria-selected={isActive}
@@ -50,7 +51,7 @@ export function DiscoverTabs() {
                 : "text-unze-ink-muted",
             )}
           >
-            {tab.label}
+            {DISCOVER_TAB_LABELS[tabId]}
           </Link>
         );
       })}

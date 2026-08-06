@@ -14,7 +14,7 @@ export const ACCESS_STATUS_OPTIONS: {
   {
     value: "open",
     label: "Offen",
-    description: "Beitritt gemäß konfigurierter Join-Logik möglich.",
+    description: "Beitritt gemäß konfigurierter Beitrittslogik möglich.",
   },
   {
     value: "closed",

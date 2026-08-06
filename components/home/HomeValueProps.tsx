@@ -1,4 +1,5 @@
 import { HOME_VALUE_PROPS } from "@/lib/constants/platform-copy";
+import { HOME_VALUE_SECTION_COPY } from "@/lib/constants/cta-copy";
 import {
   Award,
   Briefcase,
@@ -15,9 +16,9 @@ export function HomeValueProps() {
   return (
     <section>
       <header className="mb-3 px-0.5">
-        <h2 className="text-sm font-bold text-unze-ink">Was UNZE bietet</h2>
+        <h2 className="text-sm font-bold text-unze-ink">{HOME_VALUE_SECTION_COPY.title}</h2>
         <p className="mt-0.5 text-xs text-unze-ink-secondary">
-          Von der Community bis zum Zertifikat {"\u2014"} alles auf einer Plattform.
+          {HOME_VALUE_SECTION_COPY.subtitle}
         </p>
       </header>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">

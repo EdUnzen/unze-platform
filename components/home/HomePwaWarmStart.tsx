@@ -46,8 +46,8 @@ export function HomePwaWarmStart() {
       {(snapshot.pendingApplicationCount > 0 || snapshot.upcomingEventCount > 0) && (
         <p className="mt-2 text-[11px] text-unze-ink-secondary">
           {snapshot.pendingApplicationCount > 0 &&
-            `${snapshot.pendingApplicationCount} offene Antr\u00e4ge`}
-          {snapshot.pendingApplicationCount > 0 && snapshot.upcomingEventCount > 0 && " \u00b7 "}
+            `${snapshot.pendingApplicationCount} offene Anträge`}
+          {snapshot.pendingApplicationCount > 0 && snapshot.upcomingEventCount > 0 && " · "}
           {snapshot.upcomingEventCount > 0 &&
             `${snapshot.upcomingEventCount} kommende Events`}
         </p>

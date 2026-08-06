@@ -1,6 +1,7 @@
 # UNZE — Verbindliche Architektur & Nächste Entwicklungsphase
 
-> **Vorrang:** Bei Konflikten mit älteren Dokumenten oder Sprint-Planungen gilt **dieses Dokument**.
+> **Vorrang Connect-Plattform:** Bei Konflikten mit älteren Sprint-Planungen gilt **dieses Dokument** für UNZE Connect.  
+> **Vorrang Drei-Produkte-Modell:** Produktgrenzen, Business, Studio und Workflow → **`docs/THREE_PRODUCT_ARCHITECTURE.md`** (freigegeben Juni 2026).
 
 ## Grundprinzip
 

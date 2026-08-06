@@ -23,10 +23,10 @@ export function RequirementMemberStatus({
     title ??
     (evaluation.fulfilled
       ? isRequired
-        ? "Alle Pflicht-Voraussetzungen erf\u00fcllt"
-        : "Empfohlene Voraussetzungen erf\u00fcllt"
+        ? "Alle Pflicht-Voraussetzungen erfüllt"
+        : "Empfohlene Voraussetzungen erfüllt"
       : isRequired
-        ? "Noch nicht alle Pflicht-Voraussetzungen erf\u00fcllt"
+        ? "Noch nicht alle Pflicht-Voraussetzungen erfüllt"
         : "Empfohlene Voraussetzungen");
 
   return (
@@ -44,12 +44,12 @@ export function RequirementMemberStatus({
       {satisfied.length > 0 && (
         <div className="mt-3">
           <p className="text-xs font-semibold text-unze-green-dark">
-            {"\uD83D\uDFE2"} Bereits erf{"\u00fc"}llt
+            {"🟢"} Bereits erf{"ü"}llt
           </p>
           <ul className="mt-1 space-y-1 text-xs text-unze-ink-secondary">
             {satisfied.map((item, index) => (
               <li key={`ok-${item.predicate}-${index}`}>
-                {"\u2022"} {item.label}
+                {"•"} {item.label}
               </li>
             ))}
           </ul>
@@ -59,13 +59,13 @@ export function RequirementMemberStatus({
       {missing.length > 0 && (
         <div className={satisfied.length > 0 ? "mt-3" : "mt-2"}>
           <p className="text-xs font-semibold text-red-700">
-            {"\uD83D\uDD34"}{" "}
+            {"🔴"}{" "}
             {isRequired ? "Noch erforderlich" : "Noch empfohlen"}
           </p>
           <ul className="mt-1 space-y-1 text-xs text-unze-ink-secondary">
             {missing.map((item, index) => (
               <li key={`miss-${item.predicate}-${index}`}>
-                {"\u2022"} {item.label}
+                {"•"} {item.label}
               </li>
             ))}
           </ul>

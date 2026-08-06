@@ -28,6 +28,7 @@ const CATEGORY_PRESET_ID: Record<string, string> = {
   Creator: "creator-1",
   Entertainment: "creator-1",
   Coaching: "coaching-1",
+  Services: "coaching-1",
   Dienstleistungen: "coaching-1",
   Sport: "sport-1",
   Technologie: "tech-1",

@@ -14,8 +14,8 @@ export const COMMUNITY_TAB_LABELS: Record<CommunityTabId, string> = {
   groups: "Gruppen",
   events: "Events",
   services: "Services",
-  members: "Team",
-  feed: "Feed",
+  members: "Mitglieder",
+  feed: "Aktuelles",
 };
 
 export function isCommunityTabId(tab: string | undefined): tab is CommunityTabId {

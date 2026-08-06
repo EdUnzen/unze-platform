@@ -117,8 +117,8 @@ export function VerificationInfoTrigger({
             </dl>
 
             <p className="mt-4 rounded-2xl bg-unze-surface-muted/60 px-3 py-2.5 text-xs leading-relaxed text-unze-ink-secondary">
-              Verifizierungen werden von UNZE manuell geprüft. Sie bestätigen Identität oder
-              Community-Qualität — nicht automatisch bei Registrierung.
+              Verifizierungen werden von UNZE manuell geprüft — sie bestätigen Identität oder
+              Community-Qualität, nicht automatisch bei Registrierung.
             </p>
           </div>
         </div>

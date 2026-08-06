@@ -2,7 +2,7 @@ import { HomeContentSkeleton } from "@/components/home/HomeContentSkeleton";
 import { HomeGuestContent } from "@/components/home/HomeGuestContent";
 import { HomeMemberContent } from "@/components/home/HomeMemberContent";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
+import { MEMBER_HUB_SUBTITLE, PLATFORM_TAGLINE } from "@/lib/constants/platform-copy";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { Suspense } from "react";
 
@@ -13,11 +13,7 @@ export async function HomePageBody() {
     <>
       <PageHeader
         title={user ? "Mein UNZE" : "Willkommen bei UNZE"}
-        subtitle={
-          user
-            ? "Communities, Gruppen, Events, Services, Auszeichnungen & Zertifikate \u2014 dein Verwaltungs-Hub."
-            : PLATFORM_TAGLINE
-        }
+        subtitle={user ? MEMBER_HUB_SUBTITLE : PLATFORM_TAGLINE}
       />
 
       <Suspense

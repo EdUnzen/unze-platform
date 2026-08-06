@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Marketing-Demo Seed  erweitert seed:demo um 6 Vertical-Communities.
+ * Marketing-Demo Seed ï¿½ erweitert seed:demo um 6 Vertical-Communities.
  * Usage: npm run seed:marketing
  *
  * Voraussetzung: SUPABASE_SERVICE_ROLE_KEY in .env.local
@@ -279,7 +279,7 @@ async function main() {
   console.log("\n=== UNZE Marketing Demo Seed ===\n");
 
   if (process.env.UNZE_SKIP_BASE_SEED !== "true") {
-    console.log("1. Basis-Demo (seed:demo)");
+    console.log("1. Basis-Demo (seed:demo)ï¿½");
     const result = spawnSync(process.execPath, ["scripts/seed-demo-platform.mjs"], {
       cwd: root,
       stdio: "inherit",
@@ -306,7 +306,7 @@ async function main() {
 
   const creator = await findUserByEmail(admin, DEMO_CREATOR_EMAIL);
   if (!creator) {
-    console.error("Demo-Creator nicht gefunden  zuerst npm run seed:demo");
+    console.error("Demo-Creator nicht gefunden ï¿½ zuerst npm run seed:demo");
     process.exit(1);
   }
 
@@ -316,7 +316,7 @@ async function main() {
     .eq("username", "maxssl")
     .maybeSingle();
 
-  console.log("\n2. Marketing-Communities");
+  console.log("\n2. Marketing-Communitiesï¿½");
   const communityRows = [];
   for (const config of MARKETING_COMMUNITIES) {
     const row = await ensureCommunity(db, creator.id, config);
@@ -325,7 +325,7 @@ async function main() {
     console.log(`  ? ${config.slug} (${config.memberCount} Mitglieder simuliert)`);
   }
 
-  console.log("\n3. Gruppen, Services & Produkte");
+  console.log("\n3. Gruppen, Services & Produkteï¿½");
   for (const { row, config } of communityRows) {
     const groups = MARKETING_GROUPS_BY_SLUG[config.slug] ?? [];
     for (const [i, g] of groups.entries()) {
@@ -333,7 +333,7 @@ async function main() {
     }
   }
 
-  console.log("\n4. Events");
+  console.log("\n4. Eventsï¿½");
   const now = Date.now();
   const eventDefs = [
     {
@@ -409,7 +409,7 @@ async function main() {
     }
   }
 
-  console.log("\n5. Auszeichnungen & Zertifikate");
+  console.log("\n5. Auszeichnungen & Zertifikateï¿½");
   const credDefs = [
     {
       slug: "lens-masters-guild",
@@ -475,7 +475,7 @@ async function main() {
     }
   }
 
-  console.log("\n6. Bewertungen & Feed");
+  console.log("\n6. Bewertungen & Feedï¿½");
   for (const { row, config } of communityRows) {
     if (demoMember?.id) {
       await seedReview(
@@ -504,9 +504,9 @@ async function main() {
   console.log("\n=== Marketing Demo Seed ERFOLGREICH ===\n");
   console.log("Neue Communities:");
   for (const c of MARKETING_COMMUNITIES) {
-    console.log(`  https://unze-platform.vercel.app/community/${c.slug}`);
+    console.log(`  https://www.unze.app/community/${c.slug}`);
   }
-  console.log("\nDiscover: https://unze-platform.vercel.app/discover\n");
+  console.log("\nDiscover: https://www.unze.app/discover\n");
 }
 
 main().catch((err) => {

@@ -1,3 +1,4 @@
+import PlatformAreaLayout from "@/components/layout/PlatformAreaLayout";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { redirect } from "next/navigation";
 
@@ -11,5 +12,5 @@ export default async function DashboardLayout({
     redirect("/auth/login?next=/dashboard");
   }
 
-  return <>{children}</>;
+  return <PlatformAreaLayout>{children}</PlatformAreaLayout>;
 }

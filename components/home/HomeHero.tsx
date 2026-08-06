@@ -4,6 +4,7 @@ import {
   PLATFORM_PILLARS,
   PLATFORM_TAGLINE,
 } from "@/lib/constants/platform-copy";
+import { HERO_GUEST_COPY, HERO_MEMBER_COPY } from "@/lib/constants/cta-copy";
 import { cn } from "@/lib/utils/cn";
 import Image from "next/image";
 import Link from "next/link";
@@ -14,6 +15,7 @@ interface HomeHeroProps {
 
 export function HomeHero({ variant }: HomeHeroProps) {
   const isGuest = variant === "guest";
+  const copy = isGuest ? HERO_GUEST_COPY : HERO_MEMBER_COPY;
 
   return (
     <section
@@ -22,7 +24,6 @@ export function HomeHero({ variant }: HomeHeroProps) {
         "bg-gradient-to-br from-[#0c3d2e] via-unze-green-dark to-emerald-800",
       )}
     >
-      {/* Dezentes Motiv — keine Texte im Bild, nur Atmosphäre */}
       <div className="pointer-events-none absolute inset-0 opacity-[0.14]" aria-hidden>
         <Image
           src={isGuest ? GUEST_HERO_IMAGE : HOME_HERO_IMAGE}
@@ -34,7 +35,6 @@ export function HomeHero({ variant }: HomeHeroProps) {
         />
       </div>
 
-      {/* Einheitliche Lesbarkeit — kein zweiter Textlayer */}
       <div
         className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-black/10 to-black/45"
         aria-hidden
@@ -47,7 +47,7 @@ export function HomeHero({ variant }: HomeHeroProps) {
         )}
       >
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-100/90">
-          {isGuest ? "Willkommen bei UNZE" : "Mein UNZE"}
+          {copy.eyebrow}
         </p>
 
         <h2
@@ -56,9 +56,7 @@ export function HomeHero({ variant }: HomeHeroProps) {
             isGuest ? "text-2xl sm:text-3xl md:text-[2rem]" : "text-xl sm:text-2xl md:text-[1.75rem]",
           )}
         >
-          {isGuest
-            ? "Dein Netzwerk f\u00fcr Communities, Gruppen, Events & mehr"
-            : "Alles an einem Ort \u2014 entdecken, verwalten, wachsen"}
+          {copy.headline}
         </h2>
 
         <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/90 sm:text-[15px]">
@@ -83,13 +81,13 @@ export function HomeHero({ variant }: HomeHeroProps) {
                 href="/auth/login?mode=signup"
                 className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-2xl bg-unze-green px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-black/20 transition active:scale-[0.98] sm:flex-none sm:min-w-[180px]"
               >
-                Kostenlos starten
+                {HERO_GUEST_COPY.primary}
               </Link>
               <Link
                 href="/auth/login"
                 className="inline-flex min-h-[52px] flex-1 items-center justify-center rounded-2xl border-2 border-white/40 bg-white/10 px-6 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition active:scale-[0.98] sm:flex-none sm:min-w-[140px]"
               >
-                Anmelden
+                {HERO_GUEST_COPY.secondary}
               </Link>
             </>
           ) : (
@@ -97,7 +95,7 @@ export function HomeHero({ variant }: HomeHeroProps) {
               href="/discover"
               className="inline-flex min-h-[52px] w-full items-center justify-center rounded-2xl bg-unze-green px-8 py-3.5 text-base font-bold text-white shadow-lg shadow-black/25 transition active:scale-[0.98] sm:min-w-[240px] sm:w-auto"
             >
-              Discover {"\u00f6"}ffnen
+              {HERO_MEMBER_COPY.primary}
             </Link>
           )}
         </div>
@@ -107,7 +105,7 @@ export function HomeHero({ variant }: HomeHeroProps) {
             href="/discover"
             className="mt-4 text-xs font-semibold text-emerald-100/90 underline-offset-2 hover:text-white hover:underline"
           >
-            Erst einmal st\u00f6bern {"\u2192"}
+            {HERO_GUEST_COPY.tertiaryLink}
           </Link>
         )}
       </div>

@@ -39,13 +39,13 @@ export const DASHBOARD_DRAWER_SECTIONS: DashboardDrawerSection[] = [
     items: [
       {
         id: "overview",
-        label: "\u00dcbersicht",
+        label: "Übersicht",
         href: (slug) => `/dashboard/community/${slug}`,
         icon: LayoutDashboard,
       },
       {
         id: "scanner",
-        label: "Scanner",
+        label: "QR-Scanner",
         href: (slug) => `/dashboard/community/${slug}/scanner`,
         icon: ScanLine,
         minRole: "moderator",
@@ -66,7 +66,7 @@ export const DASHBOARD_DRAWER_SECTIONS: DashboardDrawerSection[] = [
       },
       {
         id: "requests",
-        label: "Antr\u00e4ge",
+        label: "Anträge",
         href: (slug) => `/dashboard/community/${slug}/requests`,
         icon: ClipboardList,
         minRole: "moderator",
@@ -143,7 +143,7 @@ export const DASHBOARD_DRAWER_SECTIONS: DashboardDrawerSection[] = [
       },
       {
         id: "audit",
-        label: "Audit",
+        label: "Protokoll",
         href: (slug) => `/dashboard/community/${slug}/audit`,
         icon: ScrollText,
         minRole: "admin",

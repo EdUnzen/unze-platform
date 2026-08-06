@@ -54,7 +54,7 @@ export function SubscribeCommunityPanel({
     <div className="space-y-2 rounded-xl border border-unze-green/30 bg-unze-green-muted/20 p-3">
       {checkoutCancelled && (
         <p className="rounded-lg bg-amber-50 px-2.5 py-2 text-[11px] text-amber-900">
-          Checkout abgebrochen — du kannst jederzeit erneut ein Abo abschließen.
+          Zahlungsvorgang abgebrochen — du kannst jederzeit erneut ein Abo abschließen.
         </p>
       )}
       {checkoutError && (
@@ -67,7 +67,7 @@ export function SubscribeCommunityPanel({
         Abo abschließen
       </p>
       <p className="text-[11px] text-unze-ink-secondary">
-        Preis vor Checkout — Zahlung über Stripe.
+        Preis vor der Zahlung — Abwicklung über Stripe.
       </p>
       <div className="flex flex-col gap-2">
         {plans.map(({ interval, buttonLabel }) => (

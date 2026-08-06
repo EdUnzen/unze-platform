@@ -4,10 +4,15 @@ import {
   UnzeOnboardingDialog,
   useOnboardingDialog,
 } from "@/components/onboarding/UnzeOnboardingDialog";
+import { ONBOARDING_PILLAR_LIST_SHORT } from "@/lib/constants/onboarding-copy";
+import { useMarketingMode } from "@/hooks/useMarketingMode";
 import { ChevronRight, Download, HelpCircle } from "lucide-react";
 
 export function ProfileHelpMenu() {
   const dialog = useOnboardingDialog();
+  const marketingMode = useMarketingMode();
+
+  if (marketingMode) return null;
 
   return (
     <>
@@ -26,7 +31,7 @@ export function ProfileHelpMenu() {
           <span className="min-w-0 flex-1">
             <span className="block text-sm font-semibold text-unze-ink">Was ist UNZE?</span>
             <span className="mt-0.5 block text-xs text-unze-ink-secondary">
-              Communities, Gruppen, Events &amp; Services erklärt
+              {ONBOARDING_PILLAR_LIST_SHORT}
             </span>
           </span>
           <ChevronRight className="h-4 w-4 shrink-0 text-unze-ink-muted" aria-hidden />

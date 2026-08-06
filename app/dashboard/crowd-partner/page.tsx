@@ -39,23 +39,23 @@ export default async function DashboardCrowdPartnerPage({
 
   const banner =
     params.checkout === "success"
-      ? "Sandbox-Zahlung erfolgreich \u2014 Ledger-Eintrag folgt per Webhook."
+      ? "Sandbox-Zahlung erfolgreich — Ledger-Eintrag folgt per Webhook."
       : params.stripe === "complete"
-        ? "Stripe-Onboarding abgeschlossen \u2014 Status wird aktualisiert."
+        ? "Stripe-Onboarding abgeschlossen — Status wird aktualisiert."
         : null;
 
   return (
     <div className="page-padding pb-8">
       <PageHeader
         title="Crowd Partner"
-        subtitle="Du unterst\u00fctzt UNZE beim Wachstum \u2014 mit transparentem Anteil an der Plattformgeb\u00fchr."
+        subtitle="Du unterstützt UNZE beim Wachstum — mit transparentem Anteil an der Plattformgebühr."
       />
 
       <CrowdPartnerExplainer />
 
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Link href="/dashboard" className="text-sm font-medium text-unze-green">
-          {"\u2190"} Dashboard
+          {"←"} Dashboard
         </Link>
         <CommercialInfoDialog />
       </div>

@@ -139,7 +139,7 @@ export function PermissionOverridesPanel({
       }
 
       if (changes.length === 0) {
-        setFeedback({ variant: "success", message: "Keine \u00c4nderungen zum Speichern." });
+        setFeedback({ variant: "success", message: "Keine Änderungen zum Speichern." });
         return;
       }
 
@@ -185,16 +185,16 @@ export function PermissionOverridesPanel({
           className="inline-flex items-center gap-2 rounded-xl bg-unze-green px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Save className="h-4 w-4" aria-hidden />
-          {pending ? "Speichert\u2026" : "Rechte speichern"}
+          {pending ? "Speichert…" : "Rechte speichern"}
         </button>
       </div>
 
       <p className="mb-4 text-xs text-unze-ink-secondary">
-        {"\u00c4nderungen werden erst nach \"Rechte speichern\" wirksam. Creator-Rechte bleiben gesch\u00fctzt."}
+        {"Änderungen werden erst nach \"Rechte speichern\" wirksam. Creator-Rechte bleiben geschützt."}
       </p>
 
       <CreatorHelpTip title="So funktioniert es" className="mb-4">
-        Standardrechte gelten pro Rolle. Aktiviere hier nur Abweichungen {"\u2014"} z. B.
+        Standardrechte gelten pro Rolle. Aktiviere hier nur Abweichungen {"—"} z. B.
         Moderator darf Mitglieder verwalten, aber keine Finanzen sehen.
       </CreatorHelpTip>
 

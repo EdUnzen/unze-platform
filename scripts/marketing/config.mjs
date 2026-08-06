@@ -1,12 +1,19 @@
 import { join } from "path";
 
 export const root = process.cwd();
-export const base = process.env.E2E_BASE_URL ?? "https://unze-platform.vercel.app";
+/** Connect-Plattform fuer App-Captures (nicht www.unze.app Landing). */
+export const base = process.env.E2E_BASE_URL ?? "https://www.unzeconnect.app";
 export const demoEmail = process.env.DEMO_EMAIL ?? "edubek89@icloud.com";
 export const demoPassword = process.env.DEMO_PASSWORD ?? "UnzeDemo2026!";
 
+/** URL-Query fuer Marketing-Modus (?marketing=1) */
+export const MARKETING_MODE_QUERY = "marketing";
+
 export const dirs = {
-  raw: join(root, "docs", "marketing", "raw-screens"),
+  raw: join(root, "docs", "marketing", "raw-screens", "marketing"),
+  rawDoc: join(root, "docs", "marketing", "raw-screens", "documentation"),
+  screenshotsMarketing: join(root, "docs", "marketing", "screenshots", "marketing"),
+  screenshotsDocumentation: join(root, "docs", "marketing", "screenshots", "documentation"),
   output: join(root, "docs", "marketing", "output"),
   engine: join(root, "docs", "marketing", "engine"),
   animations: join(root, "docs", "marketing", "animations"),

@@ -38,8 +38,8 @@ function buildCheckInMessage(rewards?: {
 }
 
 const VERIFY_LABELS: Record<UnzeVerifyResultCode, string> = {
-  allowed: "Zugang best\u00e4tigt \u2014 UNZE-ID verifiziert.",
-  denied: "Zugang abgelehnt \u2014 Voraussetzungen nicht erf\u00fcllt.",
+  allowed: "Zugang bestätigt — UNZE-ID verifiziert.",
+  denied: "Zugang abgelehnt — Voraussetzungen nicht erfüllt.",
   identity_not_found: "UNZE-ID nicht erkannt.",
   scanner_not_authorized: "Keine Berechtigung zum Scannen.",
 };
@@ -58,7 +58,7 @@ export function DashboardScannerPanel({
     (raw: string) => {
       const parsed = parseScannedPayload(raw);
       if (!parsed) {
-        setLastResult({ kind: "error", message: "Leerer oder ung\u00fcltiger Code." });
+        setLastResult({ kind: "error", message: "Leerer oder ungültiger Code." });
         return;
       }
 
@@ -66,7 +66,7 @@ export function DashboardScannerPanel({
         if (parsed.type === "unze_id") {
           const result = await verifyUnzeIdAction(parsed.token, "community", communityId);
           if (result.error || !("allowed" in result)) {
-            setLastResult({ kind: "error", message: result.error ?? "Verify fehlgeschlagen" });
+            setLastResult({ kind: "error", message: result.error ?? "Prüfung fehlgeschlagen" });
             return;
           }
           const code = result.resultCode ?? (result.allowed ? "allowed" : "denied");
@@ -103,7 +103,7 @@ export function DashboardScannerPanel({
           <div>
             <h2 className="text-sm font-bold text-unze-ink">Scanner</h2>
             <p className="text-xs text-unze-ink-secondary">
-              {communityTitle} {"\u2014"} erkennt UNZE-ID & Event-Tickets automatisch
+              {communityTitle} {"—"} erkennt UNZE-ID & Event-Tickets automatisch
             </p>
           </div>
         </div>
@@ -133,7 +133,7 @@ export function DashboardScannerPanel({
             disabled={pending || !manualCode.trim()}
             className="w-full rounded-xl bg-unze-green py-2.5 text-sm font-semibold text-white disabled:opacity-60"
           >
-            {pending ? "Pr\u00fcfe\u2026" : "Code pr\u00fcfen"}
+            {pending ? "Prüfe…" : "Code prüfen"}
           </button>
         </form>
       </section>
@@ -143,14 +143,14 @@ export function DashboardScannerPanel({
           <IdCard className="mb-2 h-5 w-5 text-unze-green" aria-hidden />
           <p className="text-xs font-semibold text-unze-ink">UNZE-ID</p>
           <p className="mt-1 text-[11px] leading-relaxed text-unze-ink-secondary">
-            {"Pers\u00f6nlicher Verify-Code \u2014 Zugang wird serverseitig gepr\u00fcft."}
+            {"Persönlicher Prüfcode — Zugang wird serverseitig geprüft."}
           </p>
         </div>
         <div className="rounded-2xl border border-unze-border bg-unze-surface-muted/50 p-3">
           <Ticket className="mb-2 h-5 w-5 text-unze-green" aria-hidden />
           <p className="text-xs font-semibold text-unze-ink">Event-Ticket</p>
           <p className="mt-1 text-[11px] leading-relaxed text-unze-ink-secondary">
-            {"Einmaliger Check-in-Code f\u00fcr ein gebuchtes Event."}
+            {"Einmaliger Check-in-Code für ein gebuchtes Event."}
           </p>
         </div>
       </section>

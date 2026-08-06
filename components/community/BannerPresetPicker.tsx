@@ -49,8 +49,8 @@ export function BannerPresetPicker({
         <p className="mb-2 text-sm font-medium text-unze-ink">Standardbanner wählen</p>
         <p className="mb-3 text-xs text-unze-ink-muted">
           {hasUpload
-            ? "Dein Upload wird verwendet \u2014 oder w\u00e4hle einen neutralen Platzhalter."
-            : "Neutrale Platzhalter \u2014 am besten eigenes Banner hochladen."}
+            ? "Dein Upload wird verwendet — oder wähle einen neutralen Platzhalter."
+            : "Neutrale Platzhalter — am besten eigenes Banner hochladen."}
         </p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {presets.map((preset) => {

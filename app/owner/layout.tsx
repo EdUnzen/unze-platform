@@ -1,3 +1,4 @@
+import PlatformAreaLayout from "@/components/layout/PlatformAreaLayout";
 import { requirePlatformOwner } from "@/services/platform/owner-access.service";
 
 export default async function OwnerLayout({
@@ -6,5 +7,5 @@ export default async function OwnerLayout({
   children: React.ReactNode;
 }) {
   await requirePlatformOwner();
-  return <>{children}</>;
+  return <PlatformAreaLayout>{children}</PlatformAreaLayout>;
 }

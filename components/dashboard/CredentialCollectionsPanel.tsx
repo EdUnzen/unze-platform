@@ -70,7 +70,7 @@ export function CredentialCollectionsPanel({
             <h3 className="text-sm font-semibold text-unze-ink">Auszeichnungs-Sammlungen</h3>
           </div>
           <p className="text-xs text-unze-ink-secondary">
-            B{"\u00fc"}ndle mehrere Auszeichnungen zu einer Sammlung f{"\u00fc"}r
+            B{"ü"}ndle mehrere Auszeichnungen zu einer Sammlung f{"ü"}r
             UND-Regeln in der Requirement-Engine.
           </p>
         </div>
@@ -136,7 +136,7 @@ export function CredentialCollectionsPanel({
               disabled={formPending}
               className="rounded-xl bg-unze-green px-3 py-2 text-xs font-semibold text-white disabled:opacity-60"
             >
-              {formPending ? "Speichern\u2026" : editId ? "Aktualisieren" : "Anlegen"}
+              {formPending ? "Speichern…" : editId ? "Aktualisieren" : "Anlegen"}
             </button>
             <button
               type="button"
@@ -187,7 +187,7 @@ export function CredentialCollectionsPanel({
                     })
                   }
                   className="text-red-600"
-                  aria-label="Sammlung l\u00f6schen"
+                  aria-label="Sammlung löschen"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>

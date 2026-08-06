@@ -48,7 +48,7 @@ export function getDiscoverSearchPlaceholder(tab: string): string {
     case "groups":
       return "Gruppe suchen…";
     case "services":
-      return "Dienstleistung suchen…";
+      return "Service suchen…";
     case "events":
       return "Event suchen…";
     default:

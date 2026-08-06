@@ -1,29 +1,29 @@
-import { HomeContentSkeleton } from "@/components/home/HomeContentSkeleton";
-import { HomePageBody } from "@/components/home/HomePageBody";
-import { HomePwaWarmStart } from "@/components/home/HomePwaWarmStart";
-import { Suspense } from "react";
+import { MarketingShell } from "@/components/landing/MarketingShell";
+import { SITE_HEADER, isLocalDevHost, type SiteMode } from "@/lib/constants/site";
+import { headers } from "next/headers";
 
 export const revalidate = 60;
 
-function HomePageFallback() {
-  return (
-    <>
-      <div className="mb-6 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-unze-border/60" />
-        <div className="mt-2 h-4 w-full max-w-sm rounded bg-unze-border/40" />
-      </div>
-      <HomeContentSkeleton variant="member" />
-    </>
-  );
-}
+export default async function HomePage() {
+  const headerList = await headers();
+  const siteMode = headerList.get(SITE_HEADER) as SiteMode | null;
+  const host = headerList.get("host");
 
-export default function HomePage() {
+  // Marketing-Domain oder localhost: Community-Landing (nicht Connect-App)
+  if (siteMode === "marketing" || isLocalDevHost(host)) {
+    const { LandingPage } = await import("@/components/landing/LandingPage");
+    return (
+      <MarketingShell>
+        <LandingPage />
+      </MarketingShell>
+    );
+  }
+
+  const { PlatformHome } = await import("@/components/home/PlatformHome");
+  const { PlatformShell } = await import("@/components/layout/PlatformShell");
   return (
-    <div className="page-padding">
-      <HomePwaWarmStart />
-      <Suspense fallback={<HomePageFallback />}>
-        <HomePageBody />
-      </Suspense>
-    </div>
+    <PlatformShell>
+      <PlatformHome />
+    </PlatformShell>
   );
 }

@@ -143,10 +143,11 @@ export function CommunityForm({
             <p className="rounded-xl bg-unze-surface-muted px-3 py-2.5 text-xs text-unze-ink-secondary">
               Adresse:{" "}
               <span className="font-semibold text-unze-ink">
-                unze.app/community/{values.slug}
+                www.unze.app/community/{values.slug}
               </span>
               <span className="mt-1 block text-unze-ink-muted">
-                Wird automatisch aus dem Titel erzeugt.
+                Vorschau auf der Landingpage. Plattform: www.unzeconnect.app/community/
+                {values.slug}
               </span>
             </p>
           ) : null}
@@ -157,7 +158,7 @@ export function CommunityForm({
             URL-Slug
           </label>
           <div className="flex items-center gap-1 rounded-xl border border-unze-border bg-unze-surface-muted px-3 py-2 text-sm">
-            <span className="text-unze-ink-muted">unze.app/community/</span>
+            <span className="text-unze-ink-muted">www.unzeconnect.app/community/</span>
             <input
               id="slug"
               name="slug"

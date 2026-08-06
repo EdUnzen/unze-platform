@@ -71,6 +71,7 @@ export interface Community {
   description: string;
   bannerGradient: string;
   bannerUrl?: string | null;
+  bannerPresetId?: string;
   platformType: PlatformType;
   category: string;
   focusTags: string[];

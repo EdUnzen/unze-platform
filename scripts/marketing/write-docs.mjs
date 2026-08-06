@@ -61,7 +61,7 @@ npm run marketing:build
 npm run marketing:validate
 \`\`\`
 
-URL: https://unze-platform.vercel.app
+URL: https://www.unze.app
 `;
 
 writeFileSync(join(root, "README.md"), readme, "utf8");

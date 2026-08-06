@@ -31,7 +31,7 @@ export function FavoritesSections({ bundle }: FavoritesSectionsProps) {
       {services.length > 0 && (
         <CommunityGroupCardList
           groups={services}
-          title="Dienstleistungen"
+          title="Services"
           subtitle="Services, denen du folgst"
         />
       )}

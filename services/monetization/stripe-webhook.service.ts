@@ -147,6 +147,35 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
+  if (checkoutType === "analysis_business") {
+    const inquiryId = meta.unze_inquiry_id;
+    if (inquiryId && session.payment_status === "paid") {
+      const { markAnalysisInquiryPaid } = await import("@/lib/business/analysis-inquiry.service");
+      await markAnalysisInquiryPaid({
+        inquiryId,
+        stripeSessionId: session.id,
+      });
+    }
+    return;
+  }
+
+  if (checkoutType === "quote_business") {
+    const { handleQuoteCheckoutCompleted } = await import("@/lib/studio/quote-payment.service");
+    await handleQuoteCheckoutCompleted(session);
+    return;
+  }
+
+  if (checkoutType === "shop_business") {
+    const metaLine = meta.unze_product_line;
+    if (metaLine !== "business") {
+      console.warn("[stripe-webhook] shop_business ohne unze_product_line=business — ignoriert");
+      return;
+    }
+    const { handleShopCheckoutCompleted } = await import("@/lib/business/shop-payment.service");
+    await handleShopCheckoutCompleted(session);
+    return;
+  }
+
   const creatorUserId = meta.unze_user_id;
   const grossCents = session.amount_total ?? 0;
   if (creatorUserId && grossCents > 0 && meta.sandbox === "true") {
@@ -233,8 +262,6 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
-  if (await paymentExistsForInvoice(invoice.id)) return;
-
   const subId = invoiceSubscriptionId(invoice);
   if (!subId) return;
 
@@ -242,6 +269,17 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   if (!stripe) throw new Error("Stripe nicht konfiguriert");
 
   const subscription = await stripe.subscriptions.retrieve(subId);
+
+  if (subscription.metadata?.unze_quote_id) {
+    const { handleQuoteInstallmentInvoicePaid } = await import(
+      "@/lib/studio/quote-payment.service"
+    );
+    await handleQuoteInstallmentInvoicePaid(invoice);
+    return;
+  }
+
+  if (await paymentExistsForInvoice(invoice.id)) return;
+
   const { userId, communityId } = await upsertAndSyncSubscription(subscription);
 
   const supabase = createAdminClient();

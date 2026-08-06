@@ -1,4 +1,4 @@
-/** Auszeichnungs-Kategorien (UNZE-003) \u2014 erweiterbar ohne Schema-Umbau. */
+/** Auszeichnungs-Kategorien (UNZE-003) — erweiterbar ohne Schema-Umbau. */
 export type CredentialCategory =
   | "certificate"
   | "community_award"

@@ -1,0 +1,40 @@
+{
+  "capturedAt": "2026-07-22T07:41:03.138Z",
+  "filter": {
+    "category": "template",
+    "id": null,
+    "priority": null,
+    "overload": false
+  },
+  "localBase": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase",
+  "files": [
+    {
+      "id": "business-core",
+      "viewport": "mobile",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-core.png",
+      "category": "template",
+      "url": "http://localhost:3000/business/business-core?marketing=1"
+    },
+    {
+      "id": "business-branchen",
+      "viewport": "mobile",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-branchen.png",
+      "category": "template",
+      "url": "http://localhost:3000/business/branchenloesungen?marketing=1"
+    },
+    {
+      "id": "business-core",
+      "viewport": "desktop",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-core-desktop.png",
+      "category": "template",
+      "url": "http://localhost:3000/business/business-core?marketing=1"
+    },
+    {
+      "id": "business-branchen",
+      "viewport": "desktop",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-branchen-desktop.png",
+      "category": "template",
+      "url": "http://localhost:3000/business/branchenloesungen?marketing=1"
+    }
+  ]
+}

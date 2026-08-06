@@ -8,7 +8,7 @@ export const REQUIREMENT_SEVERITY_OPTIONS: {
   value: RequirementSeverity;
   label: string;
 }[] = [
-  { value: "none", label: "Keine Pr\u00fcfung" },
+  { value: "none", label: "Keine Prüfung" },
   { value: "recommended", label: "Empfohlen (Hinweis)" },
   { value: "required", label: "Pflicht (Zugang blockiert)" },
 ];
@@ -28,7 +28,7 @@ export const REQUIREMENT_PREDICATE_OPTIONS: {
   needsRef: "credential" | "event" | "collection" | "role" | "none";
 }[] = [
   { value: "credential", label: "Auszeichnung vorhanden", needsRef: "credential" },
-  { value: "collection", label: "Sammlung erf\u00fcllt", needsRef: "collection" },
+  { value: "collection", label: "Sammlung erfüllt", needsRef: "collection" },
   { value: "membership", label: "Community-Mitglied", needsRef: "none" },
   { value: "premium", label: "Premium aktiv", needsRef: "none" },
   { value: "verification", label: "Profil verifiziert", needsRef: "none" },

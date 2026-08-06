@@ -1,5 +1,7 @@
 import { FavoritesSections } from "@/components/favorites/FavoritesSections";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { FAVORITES_SUBTITLE } from "@/lib/constants/platform-copy";
+import { CTA_PLATFORM_DISCOVER } from "@/lib/constants/cta-copy";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import {
   getFavoritesBundle,
@@ -16,7 +18,7 @@ export default async function FavoritesPage() {
     <div className="page-padding">
       <PageHeader
         title="Favoriten"
-        subtitle="Communities, Gruppen, Events und Dienstleistungen, denen du folgst"
+        subtitle={FAVORITES_SUBTITLE}
       />
 
       {!user ? (
@@ -26,7 +28,7 @@ export default async function FavoritesPage() {
           </div>
           <p className="text-sm font-medium text-unze-ink">Anmelden erforderlich</p>
           <p className="mt-1 max-w-xs text-center text-sm text-unze-ink-secondary">
-            Folge Communities und Gruppen in Discover — sie erscheinen hier.
+            Folge Communities und Gruppen unter Entdecken — sie erscheinen hier.
           </p>
           <Link
             href="/auth/login"
@@ -44,14 +46,14 @@ export default async function FavoritesPage() {
           </div>
           <p className="text-sm font-medium text-unze-ink">Noch keine Favoriten</p>
           <p className="mt-1 max-w-xs text-center text-sm text-unze-ink-secondary">
-            Folge Communities und Gruppen in Discover. Events aus gefolgten
+            Folge Communities und Gruppen unter Entdecken. Events aus gefolgten
             Communities erscheinen hier automatisch.
           </p>
           <Link
             href="/discover"
             className="mt-4 text-sm font-medium text-unze-green"
           >
-            Discover öffnen
+            {CTA_PLATFORM_DISCOVER}
           </Link>
         </div>
       )}

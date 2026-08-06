@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Blockiert Mojibake / ungueltige UTF-8 in Quelltext.
+ * Blockiert Mojibake, ungueltige UTF-8 und literale \\uXXXX-Escapes in Quelltext.
  * Usage: npm run check:utf8
  */
 import { readFileSync, readdirSync, statSync } from "fs";
@@ -11,6 +11,7 @@ import { dirname } from "path";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const EXTS = new Set([".ts", ".tsx"]);
 const SKIP = new Set(["node_modules", ".next", ".git"]);
+const SCAN_DIRS = ["app", "components", "lib", "services", "types"];
 
 const MOJIBAKE = [
   /\uFFFD/,
@@ -29,6 +30,9 @@ const MOJIBAKE = [
   /Antr[\u009D\uFFFD]ge/,
   /Men[\u009D\uFFFD] /,
 ];
+
+/** Literale Escapes — in JSX-Text unsichtbar kaputt, in .ts unnötig. */
+const UNICODE_ESCAPE = /\\u[0-9a-fA-F]{4}/;
 
 /** @type {string[]} */
 const failures = [];
@@ -50,15 +54,20 @@ function walk(dir) {
       }
       for (const re of MOJIBAKE) {
         if (re.test(text)) {
-          failures.push(`${p}: matches ${re}`);
+          failures.push(`${p}: mojibake matches ${re}`);
           break;
         }
+      }
+      if (UNICODE_ESCAPE.test(text)) {
+        failures.push(`${p}: contains literal \\uXXXX escape (use UTF-8 characters)`);
       }
     }
   }
 }
 
-walk(root);
+for (const dir of SCAN_DIRS) {
+  walk(join(root, dir));
+}
 
 if (failures.length > 0) {
   console.error("UTF-8 check failed:\n" + failures.join("\n"));

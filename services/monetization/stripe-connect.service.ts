@@ -126,7 +126,7 @@ export async function createSandboxCheckoutSession(input: {
   }
 
   if (getStripeMode() === "live") {
-    return { url: null, error: "Sandbox-Checkout nur im Testmodus verfügbar." };
+    return { url: null, error: "Sandbox-Zahlung nur im Testmodus verfügbar." };
   }
 
   const session = await stripe.checkout.sessions.create({

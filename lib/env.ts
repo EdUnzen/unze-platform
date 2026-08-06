@@ -113,7 +113,12 @@ export function getSupabaseAnonKey(): string {
 }
 
 export function getAppUrl(): string {
-  return readEnv("NEXT_PUBLIC_APP_URL") ?? "http://localhost:3000";
+  const url = readEnv("NEXT_PUBLIC_APP_URL");
+  if (url) return url.replace(/\/$/, "");
+  if (process.env.NODE_ENV === "production") {
+    return "https://www.unzeconnect.app";
+  }
+  return "http://localhost:3000";
 }
 
 /** Für Logs / Health-Check — gibt Hinweis bei Invalid API key */

@@ -43,7 +43,7 @@ export default async function DashboardAccessPage({
           Zugang & Governance
         </h2>
         <p className="mt-1 text-sm text-unze-ink-secondary">
-          Community-Typ, Einladungslinks, Join-Logik und Beitrittsfragen.
+          Community-Typ, Einladungslinks, Beitrittslogik und Beitrittsfragen.
         </p>
         <Link
           href={`/dashboard/community/${slug}/requests`}

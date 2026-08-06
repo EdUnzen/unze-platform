@@ -8,7 +8,7 @@ export function buildEngagementPills(
   const pills: EngagementPill[] = [];
 
   if (metrics.isTrending) {
-    pills.push({ key: "trending", label: "Trending", highlight: true });
+    pills.push({ key: "trending", label: "Beliebt", highlight: true });
   }
 
   if ((metrics.networkFollowCount ?? 0) >= 1) {

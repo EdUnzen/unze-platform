@@ -264,7 +264,7 @@ _Via \`npm run test:stabilization\` generiert._
 
 async function main() {
   const env = { ...loadEnvLocal(), ...process.env };
-  const base = env.E2E_BASE_URL ?? "https://unze-platform.vercel.app";
+  const base = env.E2E_BASE_URL ?? "https://www.unze.app";
 
   console.log("\n=== UNZE Stabilization Audit ===\n");
 

@@ -19,7 +19,7 @@ export const PERMISSION_DEFINITIONS: PermissionDefinition[] = [
   { key: "manage_members", label: "Mitglieder", description: "Entfernen/Wiederherstellen", defaultMinRole: "admin", category: "members" },
   { key: "manage_roles", label: "Rollen", description: "Rollen zuweisen", defaultMinRole: "admin", category: "members" },
   { key: "manage_settings", label: "Einstellungen", description: "Community-Einstellungen", defaultMinRole: "admin", category: "settings" },
-  { key: "manage_access", label: "Zugang", description: "Join-Logik & Status", defaultMinRole: "admin", category: "access" },
+  { key: "manage_access", label: "Zugang", description: "Beitrittslogik & Status", defaultMinRole: "admin", category: "access" },
   { key: "manage_join_questions", label: "Bewerbungsfragen", description: "Antragsfragen", defaultMinRole: "admin", category: "access" },
   { key: "manage_permissions", label: "Rechte", description: "Rollen-Rechte konfigurieren", defaultMinRole: "admin", category: "governance" },
   { key: "manage_monetization", label: "Monetarisierung", description: "Stripe vorbereitet", defaultMinRole: "creator", category: "monetization" },

@@ -73,7 +73,7 @@ function CommunityCardInner({
               {community.isTrending && (
                 <span className="inline-flex items-center gap-1 rounded-xl bg-white/25 px-2.5 py-1.5 text-xs font-bold text-white backdrop-blur-md">
                   <TrendingUp className="h-3.5 w-3.5" aria-hidden />
-                  Trending
+                  Beliebt
                 </span>
               )}
               {isDemoCommunitySlug(community.slug) && (

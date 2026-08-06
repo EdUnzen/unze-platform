@@ -1,0 +1,39 @@
+---
+description: Strikte Trennung Business / Marketing / App — keine doppelten Navigationen
+globs:
+  - app/**
+  - components/business/**
+  - components/landing/**
+  - components/layout/**
+alwaysApply: false
+---
+
+# UNZE — Business / Marketing / App Trennung
+
+## Drei getrennte Bereiche (Route Groups)
+
+| Bereich | Route Group | Shell | URL-Beispiele |
+|---------|-------------|-------|----------------|
+| **Business** | `app/(business)/` | `BusinessShell` nur | `/business`, `/business/kontakt` |
+| **Marketing / Community** | `app/(marketing)/` | `MarketingShell` nur | `/communities`, `/events`, `/services` |
+| **Connect App** | `app/` (discover, dashboard, …) | `PlatformShell` via `SiteShell` | `/discover`, `/dashboard` |
+
+## Regeln (verbindlich)
+
+1. **Business-Seiten** dürfen **niemals** `MarketingShell`, `MarketingHeader` oder `MarketingBetaBanner` haben.
+2. **Marketing-Seiten** dürfen **niemals** `BusinessShell` oder `PlatformShell` (Bottom-Nav) haben.
+3. **Kein zentrales Shell-Switching** in `layout.tsx` oder `template.tsx` für diese drei Bereiche — die Route Groups übernehmen das.
+4. Wechsel Business ↔ Community nur über **„← Zur Community“** (`getUnzeCommunityExitHref`) bzw. **„UNZE Business“** in der Marketing-Nav.
+5. Neue Business-Routen **nur** unter `app/(business)/business/…` anlegen.
+6. Neue Landing-Routen **nur** unter `app/(marketing)/…` anlegen.
+7. Neue App-Routen unter `app/` anlegen — `SiteShell` in `template.tsx` liefert nur dort `PlatformShell`.
+
+## Startseite `/`
+
+Dual: `app/page.tsx` wählt Inhalt + Shell per `siteMode` (Marketing-Landing vs. Connect-Home).
+
+## Verboten
+
+- `MarketingSiteShell` mit Client-`usePathname` für Shell-Wechsel
+- Business-Routen außerhalb von `(business)/`
+- MarketingShell über Business legen (auch nicht auf localhost)

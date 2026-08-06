@@ -8,7 +8,7 @@ interface CreatorHelpTipProps {
   className?: string;
 }
 
-/** Kurzer Kontext f\u00fcr Creator-Einstellungen ohne Handbuch. */
+/** Kurzer Kontext für Creator-Einstellungen ohne Handbuch. */
 export function CreatorHelpTip({ title, children, className }: CreatorHelpTipProps) {
   return (
     <div

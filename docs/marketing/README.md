@@ -2,34 +2,47 @@
 
 Premium-Produktmarketing: echte App-Screenshots, immersive iPhone-Mockups, keine Textfolien.
 
+## Ordnerstruktur
+
+| Ordner | Rolle | Inhalt |
+|--------|------|--------|
+| `raw-screens/marketing/` | **Pipeline-Quelle** | Saubere App-Captures (`?marketing=1`) |
+| `raw-screens/documentation/` | *Reserviert* | Tutorials/Onboarding erlaubt |
+| `engine/` | **Compositor** | HTML-Templates fuer Mockups |
+| `animations/` | **Quellen** | HTML fuer GIF-Render |
+| `output/` | **Export** | Fertige PNG/GIF (automatisch) |
+| `graphics/` | **Manuell** | Kuratierte Mockups & Social-Assets |
+| `screenshots/marketing/` | **Portfolio** | Marketing-Screens (3 Viewports) |
+| `screenshots/documentation/` | **Portfolio** | Login, Gast-Flows, Doku |
+| `templates/` | *Reserviert* | Noch leer |
+
+**Regel:** Social-Exports nur aus `output/` und freigegeben aus `graphics/`. Keine Login-Screens in Marketing.
+
 ## Pipeline
 
 ```bash
+# Vollstaendiger Build (Connect-App, Default: www.unzeconnect.app):
 npm run marketing:build
+
+# Nur Validierung:
+npm run marketing:validate
+
+# Portfolio (Marketing, saubere UI):
+npm run screenshots:marketing
+
+# Portfolio (Dokumentation, Login erlaubt):
+npm run screenshots:documentation
 ```
 
-## Ausgabe (`docs/marketing/output/`)
+## Marketing-Modus
 
-| Pfad | Kanal |
-|------|-------|
-| `tiktok/`, `reels/`, `youtube-shorts/`, `instagram/stories/` | 9:16 Story (7 Slides) |
-| `features/` | Feature Ads (1 Botschaft) |
-| `carousel/`, `instagram/feed/` | Instagram Carousel / Feed |
-| `creator-beta/` | Creator Kampagne |
-| `animations/*.gif` | TikTok, Reels, Landing |
-| `hero-landing.png`, `website-header.png`, `creator-beta-banner.png` | Web |
-| `linkedin-creator.png`, `facebook-creator.png`, `press-kit-hero.png` | Social / Presse |
+Plattform-Routen mit `?marketing=1`: blendet Onboarding, PWA und Hilfe-UI aus. Siehe `lib/marketing/marketing-mode.ts`.
 
-## TikTok Story
+## Domains
 
-1. Mitglieder-Screen + Problem-Hook
-2. Home + UNZE
-3. Discover + Feature-Chips
-4. Creator Dashboard
-5. Monetarisierung
-6. Crowd Partner
-7. CTA Create Community
+| Bereich | URL |
+|--------|-----|
+| Marketing / Business | https://www.unze.app |
+| Plattform (Captures) | https://www.unzeconnect.app |
 
-## Demo-Communities (Live)
-
-Rocket League Deutschland 12.400 | Fotografie Deutschland 8.400 | Programmier Community 7.200 | Mathe Akademie 4.900 | Street Photography Europe 5.600 | Creator Lounge 4.100 | Fitness Community 3.800 | Handwerker Netzwerk 2.900 | Business Creator Club 2.300
+Audit: `PROJEKTE/UNZE/Berichte/2026-06-20_MARKETING_STRUKTUR_AUDIT_UNZE.md`

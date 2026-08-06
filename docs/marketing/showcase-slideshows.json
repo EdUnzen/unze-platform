@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "defaults": {
+    "slideDurationMs": 3500,
+    "transitionMs": 500,
+    "vertical": { "width": 1080, "height": 1920 },
+    "horizontal": { "width": 1920, "height": 1080 }
+  },
+  "slideshows": [
+    {
+      "id": "business-reel",
+      "title": "UNZE Business — Werbevideo",
+      "description": "Hub, Analyse, Business Core, Webseiten, Preise",
+      "format": "vertical",
+      "category": "business",
+      "cta": "unze.app/business",
+      "slides": [
+        { "showcaseId": "business-start", "viewport": "mobile", "headline": "UNZE Business", "subline": "Websites · Apps · Automatisierung" },
+        { "showcaseId": "business-analyse", "viewport": "mobile", "headline": "Projektanalyse", "subline": "In Minuten zum Angebot" },
+        { "showcaseId": "business-core", "viewport": "mobile", "headline": "Business Core", "subline": "Professionelles Template" },
+        { "showcaseId": "business-webseiten", "viewport": "mobile", "headline": "Webseiten", "subline": "Responsive & modern" },
+        { "showcaseId": "business-preise", "viewport": "mobile", "headline": "Transparente Preise", "subline": "Pakete für jeden Bedarf" }
+      ]
+    },
+    {
+      "id": "studio-reel",
+      "title": "UNZE Studio — Internes Cockpit",
+      "description": "Übersicht, Leads, Angebote",
+      "format": "vertical",
+      "category": "studio",
+      "cta": "Studio by UNZE",
+      "slides": [
+        { "showcaseId": "studio-overview", "viewport": "mobile", "headline": "Studio Cockpit", "subline": "Alles auf einen Blick" },
+        { "showcaseId": "studio-leads", "viewport": "mobile", "headline": "Lead-Pipeline", "subline": "Anfragen im Griff" },
+        { "showcaseId": "studio-angebote", "viewport": "desktop", "headline": "Angebote", "subline": "Schätzung · PDF · Zahlung" },
+        { "showcaseId": "studio-kunden", "viewport": "desktop", "headline": "Kunden", "subline": "Verträge & Hosting" }
+      ]
+    },
+    {
+      "id": "connect-reel",
+      "title": "UNZE Connect — Community App",
+      "description": "Discover, Community, Dashboard",
+      "format": "vertical",
+      "category": "connect",
+      "cta": "unzeconnect.app",
+      "slides": [
+        { "showcaseId": "connect-home", "viewport": "mobile", "headline": "UNZE Connect", "subline": "Dein Netzwerk" },
+        { "showcaseId": "connect-discover", "viewport": "mobile", "headline": "Discover", "subline": "Communities finden" },
+        { "showcaseId": "connect-community-gaming", "viewport": "mobile", "headline": "Community", "subline": "Mitglieder · Events · Services" },
+        { "showcaseId": "connect-dashboard", "viewport": "mobile", "headline": "Creator Dashboard", "subline": "Verwalten & wachsen" }
+      ]
+    },
+    {
+      "id": "unze-overview-reel",
+      "title": "UNZE — Gesamtüberblick",
+      "description": "Business + Studio + Connect Highlights",
+      "format": "vertical",
+      "category": "all",
+      "cta": "UNZE — Business · Studio · Connect",
+      "slides": [
+        { "showcaseId": "business-start", "viewport": "mobile", "headline": "UNZE Business", "subline": "Websites & Digitalisierung" },
+        { "showcaseId": "studio-overview", "viewport": "mobile", "headline": "UNZE Studio", "subline": "Internes Arbeitsportal" },
+        { "showcaseId": "connect-discover", "viewport": "mobile", "headline": "UNZE Connect", "subline": "Community-Plattform" },
+        { "showcaseId": "business-core", "viewport": "mobile", "headline": "Templates", "subline": "Sofort startklar" }
+      ]
+    },
+    {
+      "id": "business-linkedin",
+      "title": "UNZE Business — LinkedIn",
+      "description": "Horizontal für LinkedIn / YouTube Banner",
+      "format": "horizontal",
+      "category": "business",
+      "cta": "unze.app/business",
+      "slides": [
+        { "showcaseId": "business-start", "viewport": "desktop", "headline": "UNZE Business", "subline": "Websites · Analyse · Automatisierung" },
+        { "showcaseId": "business-analyse", "viewport": "desktop", "headline": "Projektanalyse", "subline": "Schnell zum Angebot" },
+        { "showcaseId": "business-webseiten", "viewport": "desktop", "headline": "Webseiten", "subline": "Modern & responsive" }
+      ]
+    }
+  ]
+}

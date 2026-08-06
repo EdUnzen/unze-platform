@@ -7,7 +7,7 @@ export async function getStripeClient() {
 
   const Stripe = (await import("stripe")).default;
   return new Stripe(secret, {
-    apiVersion: "2026-04-22.dahlia",
+    apiVersion: "2026-06-24.dahlia",
     typescript: true,
   });
 }

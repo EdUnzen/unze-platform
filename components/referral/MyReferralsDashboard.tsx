@@ -15,20 +15,20 @@ export function MyReferralsDashboard({ summary }: MyReferralsDashboardProps) {
         <h2 className="text-base font-semibold text-unze-ink">Deine Crowd-Partner-Wirkung</h2>
       </div>
       <p className="mb-4 text-xs text-unze-ink-secondary">
-        Direkte Empfehlungen nur {"\u2014"} kein Multi-Level. Beteiligung: 11&nbsp;% vom
-        Netto-Plattformanteil (nicht von fremden Stripe-Ums\u00e4tzen).
+        Direkte Empfehlungen nur {"—"} kein Multi-Level. Beteiligung: 11&nbsp;% vom
+        Netto-Plattformanteil (nicht von fremden Stripe-Umsätzen).
       </p>
 
       <div className="mb-4 grid grid-cols-3 gap-2 text-center">
-        <Stat label="Unterst\u00fctzt" value={String(summary.referralsMade.length)} />
+        <Stat label="Unterstützt" value={String(summary.referralsMade.length)} />
         <Stat label="Aktiv" value={String(active.length)} />
         <Stat label="Konflikte" value={String(summary.conflictCount)} />
       </div>
 
       {summary.referralsMade.length === 0 ? (
         <p className="rounded-2xl bg-unze-surface-muted/50 px-3 py-4 text-sm text-unze-ink-secondary">
-          Noch keine empfohlenen Creator. Teile UNZE {"\u2014"} andere Creator k\u00f6nnen dich als
-          Crowd Partner w\u00e4hlen.
+          Noch keine empfohlenen Creator. Teile UNZE {"—"} andere Creator können dich als
+          Crowd Partner wählen.
         </p>
       ) : (
         <ul className="space-y-2">

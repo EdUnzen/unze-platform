@@ -1,6 +1,7 @@
 "use client";
 
 import { ONBOARDING_COPY, ONBOARDING_STORAGE_KEY } from "@/lib/constants/onboarding-copy";
+import { isMarketingModeActive } from "@/lib/marketing/marketing-mode";
 import { cn } from "@/lib/utils/cn";
 import {
   BadgeCheck,
@@ -87,7 +88,7 @@ export function UnzeOnboardingDialog({
     setDeferredPrompt(null);
   }, [deferredPrompt]);
 
-  if (!open) return null;
+  if (!open || isMarketingModeActive()) return null;
 
   const showIntro = mode === "full" || mode === "intro";
   const showInstall = mode === "full" || mode === "install";
@@ -101,6 +102,7 @@ export function UnzeOnboardingDialog({
   return (
     <div
       className="fixed inset-0 z-[60] flex items-end justify-center bg-black/45 p-4 sm:items-center"
+      data-marketing-overlay
       onClick={finish}
       role="presentation"
     >

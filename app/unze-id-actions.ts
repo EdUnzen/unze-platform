@@ -13,7 +13,7 @@ export async function verifyUnzeIdAction(
 
   const result = await verifyUnzeId(token, resourceType, resourceId);
   if (result.error) return { error: result.error };
-  if (!result.data) return { error: "Verify fehlgeschlagen" };
+  if (!result.data) return { error: "Prüfung fehlgeschlagen" };
 
   return { success: true, ...result.data };
 }

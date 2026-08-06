@@ -1,3 +1,4 @@
+import { CONNECT_HOME_PATH } from "@/lib/constants/site";
 import { UnzeLogo } from "@/components/brand/UnzeLogo";
 import { PlatformTopBarActions } from "@/components/layout/PlatformTopBarActions";
 import { getPlatformShellContext } from "@/services/shell/platform-shell.service";
@@ -11,7 +12,7 @@ export async function PlatformTopBar() {
       style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
     >
       <div className="mx-auto flex max-w-lg items-center justify-between gap-4">
-        <UnzeLogo href="/" size="sm" className="-ml-0.5" />
+        <UnzeLogo href={CONNECT_HOME_PATH} size="sm" className="-ml-0.5" />
 
         <PlatformTopBarActions userId={user?.id ?? null} />
       </div>

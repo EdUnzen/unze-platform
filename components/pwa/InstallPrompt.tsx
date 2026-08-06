@@ -1,5 +1,6 @@
 "use client";
 
+import { isMarketingModeActive } from "@/lib/marketing/marketing-mode";
 import { cn } from "@/lib/utils/cn";
 import { Download, Share, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -33,6 +34,7 @@ export function InstallPrompt() {
   const [isIosDevice, setIsIosDevice] = useState(false);
 
   useEffect(() => {
+    if (isMarketingModeActive()) return;
     if (isStandalone()) return;
     if (!localStorage.getItem(ONBOARDING_KEY)) return;
     if (localStorage.getItem(DISMISS_KEY)) return;
@@ -71,7 +73,7 @@ export function InstallPrompt() {
     setDeferredPrompt(null);
   }, [deferredPrompt]);
 
-  if (!visible) return null;
+  if (!visible || isMarketingModeActive()) return null;
 
   return (
     <div
@@ -79,6 +81,7 @@ export function InstallPrompt() {
         "fixed left-4 right-4 z-50 mx-auto max-w-lg animate-slide-up",
         "bottom-[calc(var(--nav-height)+env(safe-area-inset-bottom)+0.75rem)]",
       )}
+      data-marketing-overlay
       role="region"
       aria-label="App installieren"
     >

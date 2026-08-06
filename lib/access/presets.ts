@@ -24,7 +24,7 @@ export const COMMUNITY_ACCESS_MODE_PRESETS: CommunityAccessPreset[] = [
     joinApprovalMode: "auto_accept",
     admissionsPaused: false,
     label: "Offene Community",
-    description: "Öffentlich sichtbar, Beitritt nach Join-Logik.",
+    description: "Öffentlich sichtbar, Beitritt nach Beitrittslogik.",
   },
   {
     accessMode: "private",

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Phase 0 smoke test ù schema + RPC stubs (no auth session required for DB checks).
+ * Phase 0 smoke test ÔøΩ schema + RPC stubs (no auth session required for DB checks).
  * Usage: npm run test:phase0
  */
 import { readFileSync, existsSync } from "fs";
@@ -9,7 +9,7 @@ import { fileURLToPath } from "url";
 import pg from "pg";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const BASE = process.env.E2E_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://unze-platform.vercel.app";
+const BASE = process.env.E2E_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://www.unze.app";
 
 function loadEnvLocal() {
   const paths = [join(root, ".env.local"), join(root, ".env.vercel")];
@@ -44,7 +44,7 @@ const results = [];
 
 function record(name, ok, note = "") {
   results.push({ name, ok, note });
-  console.log(`${ok ? "?" : "?"} ${name}${note ? ` ù ${note}` : ""}`);
+  console.log(`${ok ? "?" : "?"} ${name}${note ? ` ÔøΩ ${note}` : ""}`);
 }
 
 async function checkDb(client) {
@@ -81,7 +81,7 @@ async function checkDb(client) {
     SELECT unze_public_id FROM public.profiles LIMIT 1
   `);
   const token = sample[0]?.unze_public_id;
-  record("Sample UNZE-ID vorhanden", Boolean(token), token ? token.slice(0, 12) + "ù" : "keine Profile");
+  record("Sample UNZE-ID vorhanden", Boolean(token), token ? token.slice(0, 12) + "ÔøΩ" : "keine Profile");
 
   if (token) {
     const { rows: resolved } = await client.query(
@@ -151,7 +151,7 @@ async function main() {
   const dbUrl = buildDbUrl(env);
 
   if (!dbUrl) {
-    record("DB-Verbindung", false, "Credentials fehlen ù nur HTTP-Checks");
+    record("DB-Verbindung", false, "Credentials fehlen ÔøΩ nur HTTP-Checks");
     await checkHttp();
   } else {
     const client = new pg.Client({

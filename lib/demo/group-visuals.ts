@@ -36,7 +36,7 @@ const GROUP_VISUALS: Record<string, GroupVisual> = {
   },
   "creator-lounge/feed": {
     visualSeed: "creator-feed",
-    activityLabel: "Trending · 56 Likes heute",
+    activityLabel: "Beliebt · 56 Likes heute",
   },
   "creator-lounge/collabs": {
     visualSeed: "creator-collab",

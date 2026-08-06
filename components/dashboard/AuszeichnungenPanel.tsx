@@ -25,10 +25,10 @@ export function AuszeichnungenPanel({ slug, badges }: AuszeichnungenPanelProps) 
           </h3>
         </div>
         <p className="text-xs leading-relaxed text-unze-ink-secondary">
-          {"Ein System f\u00fcr Auszeichnungen, Zertifikate und Qualifikationen \u2014 je nach Kategorie wird automatisch die passende Bezeichnung angezeigt."}
+          {"Ein System für Auszeichnungen, Zertifikate und Qualifikationen — je nach Kategorie wird automatisch die passende Bezeichnung angezeigt."}
         </p>
         <p className="mt-2 text-xs text-unze-ink-muted">
-          Vergabe an Mitglieder: Mitgliederliste {"\u2192"} Auszeichnung vergeben.
+          Vergabe an Mitglieder: Mitgliederliste {"→"} Auszeichnung vergeben.
         </p>
       </section>
 
@@ -51,7 +51,7 @@ export function AuszeichnungenPanel({ slug, badges }: AuszeichnungenPanelProps) 
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-unze-ink">{badge.name}</p>
                 <p className="text-xs text-unze-ink-muted">
-                  {getCredentialDisplayTerm(badge.category)} {"\u00b7"} {badge.grantedCount}{" "}
+                  {getCredentialDisplayTerm(badge.category)} {"·"} {badge.grantedCount}{" "}
                   vergeben
                 </p>
                 {badge.description && (

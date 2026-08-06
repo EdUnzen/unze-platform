@@ -120,7 +120,7 @@ export function MemberListClient({
                     <RoleBadge role={member.role} active size="sm" />
                     {member.roleTitle?.trim() && (
                       <span className="text-xs text-unze-ink-muted">
-                        {" \u00b7 "}
+                        {" · "}
                         {member.roleTitle.trim()}
                       </span>
                     )}
@@ -146,7 +146,7 @@ export function MemberListClient({
                         placeholder="z. B. SSL Coach, Turnierleiter"
                         onBlur={(e) => handleRoleTitleBlur(member.id, e.target.value)}
                         className="mt-1 w-full rounded-lg border border-unze-border bg-unze-surface-muted px-2 py-1 text-[11px]"
-                        aria-label={`Anzeigename f\u00fcr ${name}`}
+                        aria-label={`Anzeigename für ${name}`}
                       />
                     )}
                 </div>
@@ -159,7 +159,7 @@ export function MemberListClient({
                       handleRoleChange(member.id, e.target.value as CommunityRole)
                     }
                     className="rounded-lg border border-unze-border bg-unze-surface-muted px-2 py-1.5 text-xs"
-                    aria-label={`Rolle f\u00fcr ${name}`}
+                    aria-label={`Rolle für ${name}`}
                   >
                     {ASSIGNABLE_ROLES.map((r) => (
                       <option key={r} value={r}>
@@ -210,7 +210,7 @@ export function MemberListClient({
                       }))
                     }
                     className="min-w-0 flex-1 rounded-lg border border-unze-border bg-unze-surface-muted px-2 py-1.5 text-xs"
-                    aria-label={`Auszeichnung f\u00fcr ${name}`}
+                    aria-label={`Auszeichnung für ${name}`}
                   >
                     {communityBadges.map((badge) => (
                       <option key={badge.id} value={badge.id}>

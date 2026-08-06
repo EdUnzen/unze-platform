@@ -62,3 +62,6 @@ Landigpage und app inspiration/
 
 # --- Supabase CLI (falls lokal genutzt) ---
 .supabase/
+
+# --- Marketing Pipeline (temporaere Render-Artefakte) ---
+docs/marketing/output/animations/_tmp/

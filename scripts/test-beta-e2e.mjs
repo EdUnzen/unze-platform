@@ -12,7 +12,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BASE =
   process.env.E2E_BASE_URL ??
   process.env.NEXT_PUBLIC_APP_URL ??
-  "https://unze-platform.vercel.app";
+  "https://www.unze.app";
 
 function loadEnvLocal() {
   const paths = [join(root, ".env.local"), join(root, ".env.vercel")];
@@ -46,7 +46,7 @@ function buildDbUrl(env) {
 const results = [];
 function record(name, ok, note = "") {
   results.push({ name, ok, note });
-  console.log(`${ok ? "OK" : "FAIL"} ${name}${note ? ` — ${note}` : ""}`);
+  console.log(`${ok ? "OK" : "FAIL"} ${name}${note ? ` ï¿½ ${note}` : ""}`);
 }
 
 const PUBLIC_ROUTES = [

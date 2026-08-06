@@ -5,13 +5,15 @@ import { existsSync, readFileSync } from "fs";
 import { join } from "path";
 
 const root = process.cwd();
-const PRODUCTION_APP_URL = "https://unze-platform.vercel.app";
+const PRODUCTION_APP_URL = "https://www.unzeconnect.app";
+const PRODUCTION_MARKETING_URL = "https://www.unze.app";
 
 const SYNC_KEYS = [
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
   "SUPABASE_SERVICE_ROLE_KEY",
   "NEXT_PUBLIC_APP_URL",
+  "NEXT_PUBLIC_MARKETING_URL",
 ];
 
 function parseEnv(path) {
@@ -86,6 +88,7 @@ async function main() {
     NEXT_PUBLIC_SUPABASE_ANON_KEY: local.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     SUPABASE_SERVICE_ROLE_KEY: local.SUPABASE_SERVICE_ROLE_KEY ?? "",
     NEXT_PUBLIC_APP_URL: PRODUCTION_APP_URL,
+    NEXT_PUBLIC_MARKETING_URL: PRODUCTION_MARKETING_URL,
   };
 
   if (!values.SUPABASE_SERVICE_ROLE_KEY) {

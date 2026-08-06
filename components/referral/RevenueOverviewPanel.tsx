@@ -39,7 +39,7 @@ export function RevenueOverviewPanel({ ledger, userId }: RevenueOverviewPanelPro
 
       {ledger.length === 0 ? (
         <p className="rounded-2xl bg-unze-surface-muted/50 p-4 text-sm text-unze-ink-muted">
-          Noch keine Buchungen. Sandbox-Checkout oder Demo-Seed erzeugen Beispieldaten.
+          Noch keine Buchungen. Sandbox-Zahlung oder Demo-Seed erzeugen Beispieldaten.
         </p>
       ) : (
         <ul className="space-y-2">

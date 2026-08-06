@@ -10,7 +10,7 @@ export const CREDENTIAL_CATEGORY_OPTIONS: {
     value: "certificate",
     label: "Zertifikat",
     displayTerm: "Zertifikat",
-    description: "Qualifikationen, Abschl\u00fcsse, Nachweise",
+    description: "Qualifikationen, Abschlüsse, Nachweise",
   },
   {
     value: "community_award",
@@ -22,7 +22,7 @@ export const CREDENTIAL_CATEGORY_OPTIONS: {
     value: "group_award",
     label: "Gruppen-Auszeichnung",
     displayTerm: "Gruppen-Auszeichnung",
-    description: "Auszeichnungen f\u00fcr Gruppen oder Bereiche",
+    description: "Auszeichnungen für Gruppen oder Bereiche",
   },
   {
     value: "event_award",
@@ -40,19 +40,19 @@ export const CREDENTIAL_CATEGORY_OPTIONS: {
     value: "service_award",
     label: "Service-Auszeichnung",
     displayTerm: "Service-Nachweis",
-    description: "Dienstleistungen und Services",
+    description: "Services",
   },
   {
     value: "product_award",
     label: "Produkt-Auszeichnung",
     displayTerm: "Kauf-Nachweis",
-    description: "Produkte und K\u00e4ufe",
+    description: "Produkte und Käufe",
   },
   {
     value: "verification",
     label: "Verifizierung",
     displayTerm: "Verifizierungsnachweis",
-    description: "Best\u00e4tigte Identit\u00e4t oder Status",
+    description: "Bestätigte Identität oder Status",
   },
   {
     value: "achievement",
@@ -64,7 +64,7 @@ export const CREDENTIAL_CATEGORY_OPTIONS: {
     value: "legacy",
     label: "Legacy",
     displayTerm: "Auszeichnung",
-    description: "Import aus fr\u00fcherem Badge-System",
+    description: "Import aus früherem Badge-System",
   },
 ];
 
@@ -77,7 +77,7 @@ export function getCredentialCategoryLabel(
   );
 }
 
-/** Fachliche Bezeichnung f\u00fcr Nutzer-Oberfl\u00e4che (Auszeichnung / Zertifikat / Qualifikation / Nachweis). */
+/** Fachliche Bezeichnung für Nutzer-Oberfläche (Auszeichnung / Zertifikat / Qualifikation / Nachweis). */
 export function getCredentialDisplayTerm(
   category: CredentialCategory | string | null | undefined,
   options?: { isCollectionQualification?: boolean },

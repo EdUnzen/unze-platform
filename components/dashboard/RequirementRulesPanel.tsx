@@ -95,7 +95,7 @@ export function RequirementRulesPanel({
   if (!canManage) {
     return (
       <p className="text-sm text-unze-ink-muted">
-        Keine Berechtigung f{"\u00fc"}r Zugangsvoraussetzungen.
+        Keine Berechtigung f{"ü"}r Zugangsvoraussetzungen.
       </p>
     );
   }
@@ -138,7 +138,7 @@ export function RequirementRulesPanel({
         Zugangsvoraussetzungen
       </h3>
       <p className="mb-3 text-xs text-unze-ink-secondary">
-        {"Lege fest, wer Zugang erh\u00e4lt. Gilt f\u00fcr Beitritt, Scanner und Buchungen."}
+        {"Lege fest, wer Zugang erhält. Gilt für Beitritt, Scanner und Buchungen."}
       </p>
 
       <RequirementHelpBox />
@@ -212,12 +212,12 @@ export function RequirementRulesPanel({
             </select>
             {severity === "required" && (
               <span className="mt-1 block text-[10px] text-unze-ink-muted">
-                Pflicht: ohne Erf{"\u00fc"}llung kein Zugang.
+                Pflicht: ohne Erf{"ü"}llung kein Zugang.
               </span>
             )}
             {severity === "recommended" && (
               <span className="mt-1 block text-[10px] text-unze-ink-muted">
-                {"Empfohlen: Hinweis f\u00fcr Mitglieder, Zugang bleibt m\u00f6glich."}
+                {"Empfohlen: Hinweis für Mitglieder, Zugang bleibt möglich."}
               </span>
             )}
           </label>
@@ -238,7 +238,7 @@ export function RequirementRulesPanel({
             </select>
             {rules.length > 1 && rootOperator === "AND" && (
               <span className="mt-1 block text-[10px] text-unze-ink-muted">
-                UND: alle Regeln m{"\u00fc"}ssen erf{"\u00fc"}llt sein.
+                UND: alle Regeln m{"ü"}ssen erf{"ü"}llt sein.
               </span>
             )}
             {rules.length > 1 && rootOperator === "OR" && (
@@ -272,7 +272,7 @@ export function RequirementRulesPanel({
                 >
                   <div className="grid gap-2 sm:grid-cols-2">
                     <label className="block text-xs">
-                      <span className="mb-1 block text-unze-ink-muted">Pr{"\u00e4"}dikat</span>
+                      <span className="mb-1 block text-unze-ink-muted">Pr{"ä"}dikat</span>
                       <select
                         value={rule.predicateType}
                         onChange={(e) =>
@@ -304,7 +304,7 @@ export function RequirementRulesPanel({
                           }
                           className={inputClass}
                         >
-                          <option value="">Ausw{"\u00e4"}hlen</option>
+                          <option value="">Ausw{"ä"}hlen</option>
                           {credentials.map((c) => (
                             <option key={c.id} value={c.id}>
                               {c.label}
@@ -326,7 +326,7 @@ export function RequirementRulesPanel({
                           }
                           className={inputClass}
                         >
-                          <option value="">Ausw{"\u00e4"}hlen</option>
+                          <option value="">Ausw{"ä"}hlen</option>
                           {collections.map((c) => (
                             <option key={c.id} value={c.id}>
                               {c.label}
@@ -398,7 +398,7 @@ export function RequirementRulesPanel({
               className="inline-flex items-center gap-1 rounded-xl border border-unze-border px-3 py-2 text-xs font-medium text-unze-ink"
             >
               <Plus className="h-3.5 w-3.5" aria-hidden />
-              Regel hinzuf{"\u00fc"}gen
+              Regel hinzuf{"ü"}gen
             </button>
           </div>
         )}
@@ -412,7 +412,7 @@ export function RequirementRulesPanel({
               savePending && "opacity-60",
             )}
           >
-            {savePending ? "Speichern\u2026" : "Voraussetzungen speichern"}
+            {savePending ? "Speichern…" : "Voraussetzungen speichern"}
           </button>
 
           {currentSet?.id && (
@@ -426,7 +426,7 @@ export function RequirementRulesPanel({
               }
               className="rounded-xl border border-red-200 px-4 py-2.5 text-sm font-medium text-red-700"
             >
-              Zur{"\u00fc"}cksetzen
+              Zur{"ü"}cksetzen
             </button>
           )}
         </div>

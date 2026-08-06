@@ -18,7 +18,7 @@ export const ROLE_DISPLAY: Record<
     muted: "bg-unze-surface-muted text-unze-ink-muted ring-unze-border",
   },
   expert: {
-    emoji: "\u2B50",
+    emoji: "⭐",
     label: "Experte",
     color: "bg-sky-100 text-sky-900 ring-sky-200",
     muted: "bg-unze-surface-muted text-unze-ink-muted ring-unze-border",
@@ -30,7 +30,7 @@ export const ROLE_DISPLAY: Record<
     muted: "bg-unze-surface-muted text-unze-ink-muted ring-unze-border",
   },
   verified_member: {
-    emoji: "\u2705",
+    emoji: "✅",
     label: "Verifiziert",
     color: "bg-unze-green-muted text-unze-green-dark ring-unze-green/20",
     muted: "bg-unze-surface-muted text-unze-ink-muted ring-unze-border",

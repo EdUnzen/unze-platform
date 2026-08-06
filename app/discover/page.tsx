@@ -6,6 +6,7 @@ import {
 import { DiscoverMigrationBanner } from "@/components/discover/DiscoverMigrationBanner";
 import { DiscoverTabs } from "@/components/discover/DiscoverTabs";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { DISCOVER_SUBTITLE } from "@/lib/constants/platform-copy";
 import { Suspense } from "react";
 
 export const revalidate = 120;
@@ -27,8 +28,8 @@ export default async function DiscoverPage({ searchParams }: DiscoverPageProps) 
   return (
     <div className="page-padding">
       <PageHeader
-        title="Discover"
-        subtitle="Communities, Gruppen, Events und Dienstleistungen entdecken"
+        title="Entdecken"
+        subtitle={DISCOVER_SUBTITLE}
       />
 
       <Suspense fallback={null}>

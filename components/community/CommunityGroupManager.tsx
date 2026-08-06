@@ -255,7 +255,7 @@ export function CommunityGroupManager({
           Typ
           <select name="groupType" className={`${inputClass} mt-1`} defaultValue="group">
             <option value="group">Gruppe</option>
-            <option value="service">Service / Dienstleistung</option>
+            <option value="service">Service</option>
           </select>
         </label>
         <input

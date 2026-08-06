@@ -1,0 +1,166 @@
+{
+  "checkedAt": "2026-06-21T19:37:54.930Z",
+  "mode": "both",
+  "marketingUrl": "https://www.unze.app",
+  "platformUrl": "https://www.unzeconnect.app",
+  "databaseNote": "Keine DB-Aenderung � gleiche Supabase-Produktionsinstanz",
+  "routes": [
+    {
+      "id": "landing",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "communities",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "events",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "services",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "studio",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "community-preview",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "verzeichnis-redirect",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "impressum",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "public-api-communities",
+      "base": "https://www.unze.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "home",
+      "base": "https://www.unzeconnect.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "discover",
+      "base": "https://www.unzeconnect.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "login",
+      "base": "https://www.unzeconnect.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "community",
+      "base": "https://www.unzeconnect.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "service",
+      "base": "https://www.unzeconnect.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "dashboard",
+      "base": "https://www.unzeconnect.app",
+      "ok": true,
+      "issues": []
+    },
+    {
+      "id": "manifest",
+      "base": "https://www.unzeconnect.app",
+      "ok": true,
+      "issues": []
+    }
+  ],
+  "redirects": [
+    {
+      "url": "https://unze.app",
+      "ok": true,
+      "status": 307,
+      "location": "https://www.unze.app/",
+      "expectHost": "www.unze.app"
+    },
+    {
+      "url": "https://unzeconnect.app/discover",
+      "ok": true,
+      "status": 307,
+      "location": "https://www.unzeconnect.app/discover",
+      "expectHost": "www.unzeconnect.app"
+    },
+    {
+      "url": "https://unze-platform.vercel.app/discover",
+      "ok": true,
+      "status": 308,
+      "location": "https://www.unzeconnect.app/discover",
+      "expectHost": "www.unzeconnect.app"
+    },
+    {
+      "url": "https://www.unze.app/discover",
+      "ok": true,
+      "status": 308,
+      "location": "https://www.unzeconnect.app/discover",
+      "expectHost": "www.unzeconnect.app"
+    },
+    {
+      "url": "https://www.unze.app/dashboard",
+      "ok": true,
+      "status": 308,
+      "location": "https://www.unzeconnect.app/dashboard",
+      "expectHost": "www.unzeconnect.app"
+    },
+    {
+      "url": "https://www.unzeconnect.app/communities",
+      "ok": true,
+      "status": 308,
+      "location": "https://www.unze.app/communities",
+      "expectHost": "www.unze.app"
+    },
+    {
+      "url": "https://www.unzeconnect.app/impressum",
+      "ok": true,
+      "status": 308,
+      "location": "https://www.unze.app/impressum",
+      "expectHost": "www.unze.app"
+    },
+    {
+      "url": "https://www.unzeconnect.app/",
+      "ok": true,
+      "status": 200,
+      "finalUrl": "https://www.unzeconnect.app/",
+      "expectHost": "www.unzeconnect.app"
+    }
+  ],
+  "sourceScanClean": true,
+  "sourceHits": [],
+  "allPassed": true
+}

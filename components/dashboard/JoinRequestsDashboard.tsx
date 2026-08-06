@@ -77,7 +77,7 @@ export function JoinRequestsDashboard({
   if (!canReview) {
     return (
       <p className="text-sm text-unze-ink-muted">
-        Keine Berechtigung zur Antragspr{"\u00fc"}fung.
+        Keine Berechtigung zur Antragspr{"ü"}fung.
       </p>
     );
   }
@@ -126,7 +126,7 @@ export function JoinRequestsDashboard({
         setError(result.error);
         return;
       }
-      setSuccess("N\u00e4chster Wartelisten-Platz wurde angenommen.");
+      setSuccess("Nächster Wartelisten-Platz wurde angenommen.");
       router.refresh();
     });
   };
@@ -152,7 +152,7 @@ export function JoinRequestsDashboard({
           data-testid="join-promote-waitlist"
           className="w-full rounded-xl border border-unze-green bg-unze-green-muted/30 py-2.5 text-sm font-medium text-unze-green-dark disabled:opacity-60"
         >
-          N{"\u00e4"}chsten von Warteliste annehmen (wenn Platz frei)
+          N{"ä"}chsten von Warteliste annehmen (wenn Platz frei)
         </button>
       )}
 
@@ -208,10 +208,10 @@ export function JoinRequestsDashboard({
         <div className="rounded-2xl bg-white py-10 text-center shadow-card">
           <p className="text-sm font-medium text-unze-ink">
             {primary === "pending"
-              ? "Keine offenen Antr\u00e4ge"
+              ? "Keine offenen Anträge"
               : primary === "waitlisted"
-                ? "Keine Eintr\u00e4ge auf der Warteliste"
-                : `Keine Antr\u00e4ge: ${APPLICATION_STATUS_LABELS[doneStatus]}`}
+                ? "Keine Einträge auf der Warteliste"
+                : `Keine Anträge: ${APPLICATION_STATUS_LABELS[doneStatus]}`}
           </p>
           <p className="mt-1 text-xs text-unze-ink-muted">
             Bewerbungen erscheinen hier, sobald Nutzer sich bewerben.
@@ -248,7 +248,7 @@ export function JoinRequestsDashboard({
                     </div>
                     <p className="text-xs text-unze-ink-muted">
                       {APPLICATION_SOURCE_LABELS[app.source] ?? app.source}
-                      {" \u00b7 "}
+                      {" · "}
                       {new Date(app.createdAt).toLocaleDateString("de-DE")}
                     </p>
                     {app.systemMessage && (
@@ -293,7 +293,7 @@ export function JoinRequestsDashboard({
                             data-testid={`join-request-reject-${app.id}`}
                             className="flex-1 rounded-lg bg-red-50 py-2 text-xs font-medium text-red-700"
                           >
-                            Ablehnen best{"\u00e4"}tigen
+                            Ablehnen best{"ä"}tigen
                           </button>
                           <button
                             type="button"

@@ -54,8 +54,8 @@ export function CreatorReferralPanel({ summary }: CreatorReferralPanelProps) {
         <h2 className="text-base font-semibold text-unze-ink">Crowd Partner</h2>
       </div>
       <p className="mb-4 text-sm text-unze-ink-secondary">
-        W\u00e4hle den Creator, der dich zu UNZE gebracht hat. Pro Person nur ein Partner
-        {" \u2014 "} danach nicht mehr \u00e4nderbar.
+        Wähle den Creator, der dich zu UNZE gebracht hat. Pro Person nur ein Partner
+        {" — "} danach nicht mehr änderbar.
       </p>
 
       {summary.myReferral ? (
@@ -144,7 +144,7 @@ export function CreatorReferralPanel({ summary }: CreatorReferralPanelProps) {
         <div className="mt-4 flex items-start gap-2 rounded-2xl bg-amber-50 p-3 text-xs text-amber-800">
           <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <p>
-            {summary.conflictCount} Crowd-Partner-Konflikt(e) {"\u2014"} manuelle Pr\u00fcfung erforderlich.
+            {summary.conflictCount} Crowd-Partner-Konflikt(e) {"—"} manuelle Prüfung erforderlich.
             Es wird kein automatischer Missbrauch angenommen.
           </p>
         </div>

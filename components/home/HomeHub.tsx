@@ -3,6 +3,11 @@ import { CommunityGroupCardList } from "@/components/community/CommunityGroupCar
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeValueProps } from "@/components/home/HomeValueProps";
 import { GuestOnboardingHint } from "@/components/onboarding/GuestOnboardingHint";
+import {
+  CTA_COMMUNITIES_DISCOVER,
+  CTA_PLATFORM_DISCOVER_LINK,
+  HOME_GUEST_FOOTER_COPY,
+} from "@/lib/constants/cta-copy";
 import type { HomePendingApplication } from "@/services/home/home.service";
 import type { Community } from "@/types/community";
 import type { CommunityEvent } from "@/types/event";
@@ -52,7 +57,7 @@ export function HomeHub({
         {discoverCommunities.length > 0 && (
           <CommunityCardList
             communities={discoverCommunities.slice(0, 6)}
-            title="Communities entdecken"
+            title={CTA_COMMUNITIES_DISCOVER}
             subtitle="Organisierte Netzwerke auf UNZE"
           />
         )}
@@ -65,26 +70,22 @@ export function HomeHub({
           />
         )}
         <section className="rounded-3xl border border-unze-green/20 bg-unze-green-muted/20 p-4 text-center sm:p-5">
-          <p className="text-sm font-medium text-unze-ink">
-            Von der Startseite in die App
-          </p>
+          <p className="text-sm font-medium text-unze-ink">{HOME_GUEST_FOOTER_COPY.title}</p>
           <p className="mt-1 text-xs text-unze-ink-secondary sm:text-sm">
-            Registriere dich oder melde dich an {"\u2014"} dann findest du Communities unter{" "}
-            <strong className="font-semibold text-unze-ink">Entdecken</strong>, verwaltest dein
-            Netzwerk, sammelst Auszeichnungen und kannst UNZE als App installieren.
+            {HOME_GUEST_FOOTER_COPY.body}
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <Link
               href="/auth/login?mode=signup"
               className="inline-flex rounded-xl bg-unze-green px-4 py-2.5 text-sm font-semibold text-white"
             >
-              Jetzt starten
+              {HOME_GUEST_FOOTER_COPY.primary}
             </Link>
             <Link
               href="/discover"
               className="inline-flex rounded-xl border border-unze-green/40 bg-white px-4 py-2.5 text-sm font-semibold text-unze-green"
             >
-              Communities entdecken
+              {HOME_GUEST_FOOTER_COPY.secondary}
             </Link>
           </div>
         </section>
@@ -102,7 +103,7 @@ export function HomeHub({
           className="flex flex-col items-center gap-2 rounded-2xl border border-unze-border bg-white px-3 py-4 text-center active:scale-[0.98]"
         >
           <Compass className="h-5 w-5 text-unze-green" aria-hidden />
-          <span className="text-xs font-semibold text-unze-ink">Discover</span>
+          <span className="text-xs font-semibold text-unze-ink">Entdecken</span>
         </Link>
         {managedCount > 0 && (
           <Link
@@ -168,7 +169,7 @@ export function HomeHub({
         <CommunityGroupCardList
           groups={followedGroups.slice(0, 6)}
           title="Meine Gruppen"
-          subtitle="Gruppen und Dienstleistungen, denen du folgst"
+          subtitle="Gruppen und Services, denen du folgst"
           layout="horizontal"
         />
       )}
@@ -230,7 +231,7 @@ export function HomeHub({
               href="/discover"
               className="mt-4 inline-block text-sm font-semibold text-unze-green"
             >
-              Discover öffnen →
+              {CTA_PLATFORM_DISCOVER_LINK}
             </Link>
           </section>
         )}

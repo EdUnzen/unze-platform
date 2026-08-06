@@ -21,7 +21,7 @@ const DISCOVER_EVENT_SELECT = `
     discover_enabled,
     visibility
   ),
-  group:community_groups (
+  group:community_groups!group_id (
     title
   )
 `;

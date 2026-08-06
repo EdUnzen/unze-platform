@@ -11,7 +11,7 @@ interface ProfileAwardsPanelProps {
 
 const BADGE_TYPE_LABELS: Record<string, string> = {
   permanent: "Dauerhaft",
-  temporary: "Tempor\u00e4r",
+  temporary: "Temporär",
   event: "Event",
 };
 
@@ -66,9 +66,9 @@ export function ProfileAwardsPanel({ awards }: ProfileAwardsPanelProps) {
                 </div>
                 <p className="mt-0.5 text-xs text-unze-ink-muted">
                   {displayTerm}
-                  {" \u00b7 "}
+                  {" · "}
                   {BADGE_TYPE_LABELS[award.badgeType] ?? award.badgeType}
-                  {" \u00b7 "}
+                  {" · "}
                   <Link
                     href={`/community/${award.communitySlug}`}
                     className="font-medium text-unze-green hover:underline"
@@ -88,13 +88,13 @@ export function ProfileAwardsPanel({ awards }: ProfileAwardsPanelProps) {
                   Vergeben am {formatGrantDate(award.grantedAt)}
                   {award.grantedByName && (
                     <>
-                      {" \u00b7 "}
+                      {" · "}
                       durch {award.grantedByName}
                     </>
                   )}
                   {sourceLabel && (
                     <>
-                      {" \u00b7 "}
+                      {" · "}
                       {sourceLabel}
                     </>
                   )}

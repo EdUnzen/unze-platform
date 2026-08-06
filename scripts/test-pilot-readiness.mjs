@@ -9,7 +9,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const root = process.cwd();
 const REPORT = join(root, "docs", "sprints", "PILOT_START_REPORT.md");
-const BASE = process.env.E2E_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://unze-platform.vercel.app";
+const BASE = process.env.E2E_BASE_URL ?? process.env.NEXT_PUBLIC_APP_URL ?? "https://www.unze.app";
 const OWNER_USERNAME = "edudemo";
 
 function loadEnv() {

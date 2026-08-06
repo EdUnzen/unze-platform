@@ -1,5 +1,5 @@
 -- Phase 0: UNZE-ID + Requirement-Engine + Credential skeleton (UNZE-003/004/005)
--- Business logic intentionally minimal ù schema + RPC stubs only.
+-- Business logic intentionally minimal ÔøΩ schema + RPC stubs only.
 
 -- =============================================================================
 -- UNZE public identity token (one per user)
@@ -9,8 +9,9 @@ CREATE OR REPLACE FUNCTION public.generate_unze_public_id()
 RETURNS TEXT
 LANGUAGE sql
 VOLATILE
+SET search_path = public, extensions
 AS $$
-  SELECT 'UZ' || encode(gen_random_bytes(16), 'hex');
+  SELECT 'UZ' || encode(extensions.gen_random_bytes(16), 'hex');
 $$;
 
 ALTER TABLE public.profiles
@@ -31,7 +32,7 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = public, extensions
 AS $$
 BEGIN
   INSERT INTO public.profiles (id, display_name, avatar_url, unze_public_id)
@@ -175,7 +176,7 @@ CREATE INDEX IF NOT EXISTS idx_unze_id_verifications_subject
   ON public.unze_id_verifications(subject_user_id, created_at DESC);
 
 -- =============================================================================
--- RLS (skeleton ù community-scoped where applicable)
+-- RLS (skeleton ÔøΩ community-scoped where applicable)
 -- =============================================================================
 
 ALTER TABLE public.requirement_sets ENABLE ROW LEVEL SECURITY;
@@ -353,7 +354,7 @@ BEGIN
     );
   END IF;
 
-  -- Phase 0: no predicate evaluation yet ù report as pending engine wiring
+  -- Phase 0: no predicate evaluation yet ÔøΩ report as pending engine wiring
   RETURN jsonb_build_object(
     'fulfilled', TRUE,
     'severity', v_set.severity,
@@ -368,7 +369,7 @@ GRANT EXECUTE ON FUNCTION public.evaluate_requirements(UUID, public.requirement_
 GRANT EXECUTE ON FUNCTION public.evaluate_requirements(UUID, public.requirement_resource_type, UUID) TO service_role;
 
 -- =============================================================================
--- RPC: verify_unze_id (Phase 0 ù identity + stub evaluation + audit)
+-- RPC: verify_unze_id (Phase 0 ÔøΩ identity + stub evaluation + audit)
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION public.verify_unze_id(

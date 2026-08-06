@@ -9,7 +9,7 @@ import { allRequiredOutputs, allRequiredScreens, dirs, root, TIKTOK_STORY, FEATU
 
 const MARKETING_ROOT = join(root, "docs", "marketing");
 const TEXT_EXTS = new Set([".md", ".html", ".json", ".mjs"]);
-const SKIP_DIRS = new Set(["templates", "graphics", "screenshots", "_tmp"]);
+const SKIP_DIRS = new Set(["templates", "graphics", "screenshots", "_tmp", "documentation"]);
 
 const MOJIBAKE = [/\uFFFD/, /f\uFFFDr/, /\uFFFDffnen/, /Men\uFFFD/, /Schlie\uFFFDen/];
 

@@ -168,7 +168,7 @@ export async function createGroupOneTimeCheckout(input: {
           unit_amount: input.priceCents,
           product_data: {
             name: input.groupTitle,
-            description: `Dienstleistung · ${ctx?.community.title ?? "Community"}`,
+            description: `Service · ${ctx?.community.title ?? "Community"}`,
           },
         },
         quantity: 1,
