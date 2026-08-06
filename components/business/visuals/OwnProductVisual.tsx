@@ -5,7 +5,7 @@ import {
 import { MockScreen } from "@/components/business/visuals/MockScreen";
 import { ProductBrandPanel } from "@/components/business/visuals/ProductBrandPanel";
 import { ProductMockupFrame } from "@/components/business/visuals/ProductMockupFrame";
-import { ReferencePhoneScreenshot } from "@/components/business/visuals/ReferenceScreenshot";
+import { ReferencePhoneScreenshot, ReferenceScreenshot } from "@/components/business/visuals/ReferenceScreenshot";
 import { CONNECT_PLATFORM_SHOWCASE } from "@/lib/constants/business-connect-showcase";
 import {
   MY_ORGANIZER_AI_HERO,
@@ -18,18 +18,50 @@ const PRODUCT_BRAND = {
   "unze-connect": {
     src: UNZE_CONNECT_LOGO.src,
     alt: UNZE_CONNECT_LOGO.alt,
-    caption: "UNZE Connect — Community-Plattform aus eigener Entwicklung",
-    phones: CONNECT_PLATFORM_SHOWCASE,
+    productName: "UNZE Connect",
+    caption: "Community-Plattform aus eigener Entwicklung",
+    phones: CONNECT_PLATFORM_SHOWCASE as readonly PhoneShowcaseItem[],
+    screens: [] as readonly { src: string; alt: string; label: string }[],
     priorityIndex: 1,
   },
   "my-organizer-ai": {
     src: MY_ORGANIZER_AI_HERO.src,
     alt: MY_ORGANIZER_AI_HERO.alt,
-    caption: "My Organizer AI — offizielles App-Icon",
-    phones: ORGANIZER_PHONE_SHOWCASE,
+    productName: "My Organizer AI",
+    caption: "Offizielles App-Icon — Assistent, Dokumente & Kalender",
+    phones: [] as readonly PhoneShowcaseItem[],
+    screens: ORGANIZER_PHONE_SHOWCASE.map((s) => ({
+      src: s.src,
+      alt: s.alt,
+      label: s.title,
+    })),
     priorityIndex: 0,
   },
 } as const;
+
+function OrganizerDesktopStage({
+  screens,
+}: {
+  screens: readonly { src: string; alt: string; label: string }[];
+}) {
+  return (
+    <div className="grid gap-6 sm:grid-cols-1 lg:gap-8" data-export="organizer-desktop-stage">
+      {screens.slice(0, 2).map((screen) => (
+        <figure key={screen.src} className="min-w-0">
+          <ProductMockupFrame device="laptop" label={screen.label} presentation="standard" fillContainer>
+            <ReferenceScreenshot
+              src={screen.src}
+              alt={screen.alt}
+              embedded
+              mockupPresentation="standard"
+              fallback={<MockScreen variant="ai" bare showcase />}
+            />
+          </ProductMockupFrame>
+        </figure>
+      ))}
+    </div>
+  );
+}
 
 function ProductShowcaseLayout({
   productId,
@@ -40,58 +72,76 @@ function ProductShowcaseLayout({
 }) {
   const brand = PRODUCT_BRAND[productId];
   const hasPhones = brand.phones.length > 0;
-  const phoneStage = hasPhones ? (
+  const hasScreens = brand.screens.length > 0;
+
+  const visual = hasPhones ? (
     <AppPhoneStageShowcase
       items={brand.phones}
       priorityIndex={brand.priorityIndex}
       showLabels={layout === "card"}
     />
+  ) : hasScreens ? (
+    <OrganizerDesktopStage screens={brand.screens} />
   ) : null;
 
   if (layout === "compact") {
     return (
-      <div className="flex h-full min-h-[360px] flex-col sm:min-h-[400px]">
-        {hasPhones ? (
-          <div className="grid flex-1 grid-cols-1 md:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)]">
-            <ProductBrandPanel
-              src={brand.src}
-              alt={brand.alt}
-              size="compact"
-              className="md:min-h-full"
-            />
-            <div className="flex items-center justify-center border-t border-gray-100 bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 px-3 py-8 md:border-l md:border-t-0 md:px-4 md:py-10">
-              {phoneStage}
+      <div className="flex h-full min-h-[360px] flex-col">
+        {visual ? (
+          <div className="grid flex-1 grid-cols-1 md:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)]">
+            <div className="flex items-center justify-center bg-white">
+              <ProductBrandPanel
+                src={brand.src}
+                alt={brand.alt}
+                productName={brand.productName}
+                size="compact"
+              />
+            </div>
+            <div className="flex items-center justify-center border-t border-gray-100 bg-gray-50/80 px-4 py-6 md:border-l md:border-t-0 md:px-6 md:py-8">
+              {visual}
             </div>
           </div>
         ) : (
-          <ProductBrandPanel
-            src={brand.src}
-            alt={brand.alt}
-            caption={brand.caption}
-            size="compact"
-            className="min-h-[360px]"
-          />
+          <div className="flex flex-1 items-center justify-center bg-white">
+            <ProductBrandPanel
+              src={brand.src}
+              alt={brand.alt}
+              productName={brand.productName}
+              caption={brand.caption}
+              size="compact"
+            />
+          </div>
         )}
       </div>
     );
   }
 
-  if (!hasPhones) {
+  if (!visual) {
     return (
-      <div className="flex min-h-[420px] items-center justify-center bg-gradient-to-br from-gray-50 via-white to-emerald-50/40 p-10 md:p-14">
-        <ProductBrandPanel src={brand.src} alt={brand.alt} caption={brand.caption} size="card" />
+      <div className="flex min-h-[380px] items-center justify-center bg-white p-10 md:p-14">
+        <ProductBrandPanel
+          src={brand.src}
+          alt={brand.alt}
+          productName={brand.productName}
+          caption={brand.caption}
+          size="card"
+        />
       </div>
     );
   }
 
   return (
-    <div className="grid md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
-      <div className="bg-gradient-to-br from-gray-50 via-white to-emerald-50/30">
-        <ProductBrandPanel src={brand.src} alt={brand.alt} caption={brand.caption} size="card" />
+    <div className="grid md:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
+      <div className="flex items-center justify-center border-b border-gray-100 bg-white md:border-b-0 md:border-r">
+        <ProductBrandPanel
+          src={brand.src}
+          alt={brand.alt}
+          productName={brand.productName}
+          caption={brand.caption}
+          size="card"
+        />
       </div>
-      <div className="border-t border-gray-100 bg-white p-6 md:border-l md:border-t-0 md:p-8 lg:p-10 xl:p-12">
-        {phoneStage}
-      </div>
+      <div className="bg-gray-50/70 p-5 md:p-7 lg:p-9">{visual}</div>
     </div>
   );
 }
@@ -110,7 +160,7 @@ function SinglePhoneMock({
   );
 }
 
-/** Visuelle Darstellung eigener Produkte — Logo + Dreier-Smartphone-Bühne */
+/** Visuelle Darstellung eigener Produkte */
 export function OwnProductVisual({
   productId,
   layout = "card",

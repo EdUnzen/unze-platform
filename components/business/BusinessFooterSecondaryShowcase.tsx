@@ -61,7 +61,7 @@ export function BusinessFooterSecondaryShowcase() {
                       <ArrowRight className="h-4 w-4" aria-hidden />
                     </span>
                   </div>
-                  <div className="hidden shrink-0 items-center justify-center gap-2 sm:flex">
+                  <div className="hidden shrink-0 items-center justify-center gap-3 sm:flex">
                     {isKi ? (
                       <ProductBrandPanel
                         src={MY_ORGANIZER_AI_HERO.src}

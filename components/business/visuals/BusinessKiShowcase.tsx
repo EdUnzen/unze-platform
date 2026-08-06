@@ -10,29 +10,20 @@ import { MY_ORGANIZER_AI_HERO } from "@/lib/constants/business-product-assets";
 import Link from "next/link";
 import { ArrowRight, FileSearch, MessageSquare, Workflow } from "lucide-react";
 
-/** KI-Seite — Logo klar im Vordergrund, keine Fake-Phone-Mocks */
+/** KI-Seite — Final-Logo (Bildmarke), ohne Fake-Phone-Mocks / Wordmark-Doppelung */
 export function BusinessKiHeroShowcase() {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-gray-200/80 bg-gradient-to-br from-slate-950 via-slate-900 to-gray-950 shadow-2xl shadow-gray-900/20">
-      <div
-        className="pointer-events-none absolute -left-24 top-8 h-56 w-56 rounded-full bg-emerald-500/10 blur-3xl"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute -right-16 bottom-0 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl"
-        aria-hidden
-      />
-      <div className="relative grid items-center gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:gap-10 md:p-12 lg:p-14">
+    <div className="relative overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-lg shadow-gray-900/5">
+      <div className="relative grid items-center gap-8 p-8 md:grid-cols-[0.9fr_1.1fr] md:gap-10 md:p-12">
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+          <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
             Eigene KI-Produkte
           </p>
-          <h3 className="mt-5 font-[family-name:var(--font-display)] text-2xl font-bold text-white md:text-3xl">
+          <h3 className="mt-5 font-[family-name:var(--font-display)] text-2xl font-bold text-gray-900 md:text-3xl">
             My Organizer AI
           </h3>
-          <p className="mt-4 max-w-md text-sm leading-relaxed text-pretty text-white/65 md:text-base">
-            Offizielles Produkt von UNZE Business — Dokumente, Termine und Aufgaben mit KI-Unterstützung.
-            Keine Platzhalter-Oberfläche: das Icon ist das echte Produktlogo.
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-pretty text-gray-600 md:text-base">
+            Offizielles Produkt von UNZE Business — Original-App-Icon und echte Oberflächen.
           </p>
         </div>
         <div className="flex justify-center md:justify-end">
@@ -40,7 +31,6 @@ export function BusinessKiHeroShowcase() {
             src={MY_ORGANIZER_AI_HERO.src}
             alt={MY_ORGANIZER_AI_HERO.alt}
             size="hero"
-            className="!bg-transparent !p-0"
           />
         </div>
       </div>

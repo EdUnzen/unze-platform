@@ -3,75 +3,70 @@ import { cn } from "@/lib/utils/cn";
 
 export type ProductBrandPanelSize = "footer" | "compact" | "card" | "hero";
 
+/** Icon-Größe — bündig, ohne zusätzlichen weißen Innenrahmen */
 const SHELL_SIZE: Record<ProductBrandPanelSize, string> = {
-  footer: "h-24 w-24 sm:h-28 sm:w-28",
-  compact: "h-36 w-36 sm:h-40 sm:w-40 md:h-44 md:w-44",
-  card: "h-44 w-44 sm:h-48 sm:w-48 md:h-56 md:w-56",
-  hero: "h-40 w-40 sm:h-48 sm:w-48 md:h-56 md:w-56",
+  footer: "h-20 w-20 sm:h-24 sm:w-24",
+  compact: "h-28 w-28 sm:h-32 sm:w-32",
+  card: "h-36 w-36 sm:h-40 sm:w-40 md:h-44 md:w-44",
+  hero: "h-36 w-36 sm:h-40 sm:w-40 md:h-44 md:w-44",
 };
 
-const PANEL_PADDING: Record<ProductBrandPanelSize, string> = {
-  footer: "",
-  compact: "min-h-[240px] px-5 pb-8 pt-12 sm:min-h-[260px] sm:pt-14",
-  card: "min-h-[300px] px-8 pb-12 pt-14 md:min-h-[340px] md:pt-16 lg:min-h-[380px]",
-  hero: "px-6 pb-8 pt-10 md:px-8 md:pt-12",
-};
-
-/** Quadratisches Produktlogo — heller Hintergrund, gleiche Maße, Luft nach oben */
+/**
+ * Produktlogo bündig — App-Icons haben bereits eigenen Rahmen.
+ * Kein zweites weißes Padding-Feld und kein gestapeltes Wordmark-PNG
+ * (Wordmark enthält die Bildmarke bereits → doppelte Flächen/„Flüsse“).
+ */
 export function ProductBrandPanel({
   src,
   alt,
   caption,
+  productName,
   size = "card",
   className,
 }: {
   src: string;
   alt: string;
   caption?: string;
+  /** Native Typografie statt Wordmark-PNG (Logo-Usage) */
+  productName?: string;
   size?: ProductBrandPanelSize;
   className?: string;
 }) {
   const isInline = size === "footer";
 
+  const icon = (
+    <div
+      className={cn(
+        "relative shrink-0 overflow-hidden rounded-[22%]",
+        SHELL_SIZE[size],
+        className,
+      )}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        width={512}
+        height={512}
+        priority={size === "hero" || size === "card"}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
+
   if (isInline) {
-    return (
-      <div
-        className={cn(
-          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-lg",
-          SHELL_SIZE.footer,
-          className,
-        )}
-      >
-        <Image
-          src={src}
-          alt={alt}
-          width={512}
-          height={512}
-          className="aspect-square h-full w-full object-contain p-2"
-        />
-      </div>
-    );
+    return icon;
   }
 
   return (
-    <div className={cn("flex flex-col items-center justify-center", PANEL_PADDING[size], className)}>
-      <div
-        className={cn(
-          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-xl shadow-gray-900/10",
-          SHELL_SIZE[size],
-        )}
-      >
-        <Image
-          src={src}
-          alt={alt}
-          width={1024}
-          height={1024}
-          priority={size === "hero" || size === "card"}
-          className="aspect-square h-full w-full object-contain p-3 md:p-4"
-        />
-      </div>
+    <div className="flex flex-col items-center justify-center px-4 py-6 sm:px-6 sm:py-8">
+      {icon}
+      {productName ? (
+        <p className="mt-4 text-center font-[family-name:var(--font-display)] text-base font-semibold tracking-tight text-gray-900 sm:text-lg">
+          {productName}
+        </p>
+      ) : null}
       {caption ? (
-        <p className="mt-6 max-w-xs text-center text-xs leading-relaxed text-pretty text-gray-500">
+        <p className="mt-2 max-w-[16rem] text-center text-xs leading-relaxed text-pretty text-gray-500">
           {caption}
         </p>
       ) : null}
