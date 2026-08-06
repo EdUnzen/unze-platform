@@ -28,9 +28,9 @@ export const DEVICE_VIEWPORT_ASPECT: Record<DeviceVariant, string> = {
 
 /** Mindesthöhen — Lesbarkeit vor Dekoration */
 export const PRESENTATION_MIN_HEIGHT: Record<MockupPresentation, string> = {
-  hero: "min-h-[240px] sm:min-h-[300px] md:min-h-[380px] lg:min-h-[440px]",
-  standard: "min-h-[200px] md:min-h-[280px]",
-  card: "min-h-[160px] md:min-h-[200px]",
+  hero: "min-h-[280px] sm:min-h-[340px] md:min-h-[420px] lg:min-h-[480px]",
+  standard: "min-h-[220px] md:min-h-[320px]",
+  card: "min-h-[180px] md:min-h-[220px]",
   thumbnail: "min-h-[120px] max-h-[200px]",
   compact: "min-h-[80px] md:min-h-[100px]",
 };

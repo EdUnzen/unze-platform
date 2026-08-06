@@ -7,6 +7,7 @@ import { BUSINESS_VISUAL } from "@/lib/constants/business-visual-tokens";
 import { BUSINESS_COPY } from "@/lib/constants/business-copy";
 import {
   CONNECT_ADMIN_SHOWCASE,
+  CONNECT_CREATOR_SHOWCASE,
   CONNECT_PLATFORM_SHOWCASE,
   CONNECT_PROFILE_SHOWCASE,
 } from "@/lib/constants/business-connect-showcase";
@@ -14,7 +15,7 @@ import { DEVELOPMENT_PORTFOLIO } from "@/lib/constants/business-industry-templat
 import { cn } from "@/lib/utils/cn";
 
 const PORTFOLIO_SCREENSHOT: Record<string, (typeof CONNECT_PLATFORM_SHOWCASE)[number] | undefined> = {
-  community: CONNECT_PLATFORM_SHOWCASE[2],
+  community: CONNECT_CREATOR_SHOWCASE,
   admin: CONNECT_ADMIN_SHOWCASE,
   profile: CONNECT_PROFILE_SHOWCASE,
 };

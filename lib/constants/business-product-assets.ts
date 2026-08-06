@@ -3,13 +3,13 @@
  * Keine Unsplash-Platzhalter für eigene Produkte.
  */
 
-/** UNZE-Markenzeichen — auch Marke von UNZE Connect */
+/** Klares UNZE Connect Markenzeichen (weiß auf schwarz) */
 export const UNZE_CONNECT_LOGO = {
-  src: "/brand/unze-logo.png",
-  alt: "UNZE — Logo der Plattform UNZE Connect",
+  src: "/brand/unze-connect-logo.png",
+  alt: "UNZE Connect — offizielles Logo",
 } as const;
 
-/** Offizielles My Organizer AI Produktbild (App-Icon) */
+/** Offizielles My Organizer AI App-Icon */
 export const MY_ORGANIZER_AI_HERO = {
   src: "/media/products/my-organizer-ai.png",
   alt: "My Organizer AI — offizielles App-Icon",
@@ -25,8 +25,5 @@ export type ProductPhoneShowcaseItem = {
   mockOnly?: boolean;
 };
 
-/**
- * My Organizer AI — bis echte App-Captures vorliegen:
- * keine Fake-Phone-UIs als Produktbeweis. Präsentation über Logo.
- */
+/** Bis echte Organizer-App-Captures vorliegen: nur Logo, keine Fake-Phones */
 export const ORGANIZER_PHONE_SHOWCASE: ProductPhoneShowcaseItem[] = [];

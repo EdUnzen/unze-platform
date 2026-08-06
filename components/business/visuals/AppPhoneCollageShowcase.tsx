@@ -41,10 +41,10 @@ export function AppPhoneShowcaseTile({
   const fallbackVariant = item.fallbackVariant ?? DEFAULT_FALLBACK[item.id] ?? "community";
   const widthClass =
     stage === "hero"
-      ? "w-[200px] sm:w-[220px] md:w-[240px]"
+      ? "w-[170px] sm:w-[190px] md:w-[210px]"
       : stage === "side"
-        ? "w-[180px] sm:w-[200px] md:w-[220px]"
-        : "w-full max-w-[240px]";
+        ? "w-[150px] sm:w-[170px] md:w-[190px]"
+        : "w-full max-w-[200px]";
 
   return (
     <div className="flex flex-col items-center">
@@ -100,7 +100,7 @@ export function AppPhoneStageShowcase({
   return (
     <div
       className={cn(
-        "flex min-w-0 items-end justify-center gap-4 overflow-x-auto px-2 pb-1 sm:gap-5 md:gap-6 md:overflow-visible md:px-0",
+        "flex min-w-0 items-end justify-center gap-5 overflow-x-auto px-3 pb-2 sm:gap-6 md:gap-8 md:overflow-visible md:px-2",
         className,
       )}
       data-export="app-phone-stage"

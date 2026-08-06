@@ -86,8 +86,10 @@ function ProductShowcaseLayout({
 
   return (
     <div className="grid md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
-      <ProductBrandPanel src={brand.src} alt={brand.alt} caption={brand.caption} size="card" />
-      <div className="border-t border-gray-100 bg-gradient-to-br from-gray-50 via-white to-emerald-50/40 p-6 md:border-l md:border-t-0 md:p-8 lg:p-10 xl:p-12">
+      <div className="bg-gradient-to-br from-gray-50 via-white to-emerald-50/30">
+        <ProductBrandPanel src={brand.src} alt={brand.alt} caption={brand.caption} size="card" />
+      </div>
+      <div className="border-t border-gray-100 bg-white p-6 md:border-l md:border-t-0 md:p-8 lg:p-10 xl:p-12">
         {phoneStage}
       </div>
     </div>

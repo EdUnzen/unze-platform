@@ -4,27 +4,20 @@ import { cn } from "@/lib/utils/cn";
 export type ProductBrandPanelSize = "footer" | "compact" | "card" | "hero";
 
 const SHELL_SIZE: Record<ProductBrandPanelSize, string> = {
-  footer: "h-28 w-28 sm:h-32 sm:w-32",
-  compact: "h-40 w-40 sm:h-44 sm:w-44 md:h-48 md:w-48",
-  card: "h-48 w-48 sm:h-52 sm:w-52 md:h-60 md:w-60 lg:h-64 lg:w-64",
-  hero: "h-44 w-44 sm:h-52 sm:w-52 md:h-60 md:w-60 lg:h-72 lg:w-72",
+  footer: "h-24 w-24 sm:h-28 sm:w-28",
+  compact: "h-36 w-36 sm:h-40 sm:w-40 md:h-44 md:w-44",
+  card: "h-44 w-44 sm:h-48 sm:w-48 md:h-56 md:w-56",
+  hero: "h-40 w-40 sm:h-48 sm:w-48 md:h-56 md:w-56",
 };
 
 const PANEL_PADDING: Record<ProductBrandPanelSize, string> = {
   footer: "",
-  compact: "min-h-[220px] px-5 py-8 sm:min-h-[240px] sm:py-10",
-  card: "min-h-[280px] px-8 py-12 md:min-h-[320px] md:py-16 lg:min-h-[360px]",
-  hero: "px-6 py-8 md:px-8 md:py-10",
+  compact: "min-h-[240px] px-5 pb-8 pt-12 sm:min-h-[260px] sm:pt-14",
+  card: "min-h-[300px] px-8 pb-12 pt-14 md:min-h-[340px] md:pt-16 lg:min-h-[380px]",
+  hero: "px-6 pb-8 pt-10 md:px-8 md:pt-12",
 };
 
-const IMAGE_PADDING: Record<ProductBrandPanelSize, string> = {
-  footer: "p-2.5",
-  compact: "p-3 sm:p-3.5",
-  card: "p-4 md:p-5",
-  hero: "p-4 sm:p-5",
-};
-
-/** Quadratisches Produktlogo — zentriert, proportional, mit ausreichend Raum */
+/** Quadratisches Produktlogo — heller Hintergrund, gleiche Maße, Luft nach oben */
 export function ProductBrandPanel({
   src,
   alt,
@@ -44,7 +37,7 @@ export function ProductBrandPanel({
     return (
       <div
         className={cn(
-          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-2xl",
+          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-lg",
           SHELL_SIZE.footer,
           className,
         )}
@@ -52,25 +45,19 @@ export function ProductBrandPanel({
         <Image
           src={src}
           alt={alt}
-          width={1024}
-          height={1024}
-          className={cn("aspect-square h-full w-full object-contain", IMAGE_PADDING.footer)}
+          width={512}
+          height={512}
+          className="aspect-square h-full w-full object-contain p-2"
         />
       </div>
     );
   }
 
   return (
-    <div
-      className={cn(
-        "flex flex-col items-center justify-center bg-gradient-to-br from-gray-950 via-slate-900 to-gray-950",
-        PANEL_PADDING[size],
-        className,
-      )}
-    >
+    <div className={cn("flex flex-col items-center justify-center", PANEL_PADDING[size], className)}>
       <div
         className={cn(
-          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl shadow-black/30",
+          "relative flex shrink-0 items-center justify-center overflow-hidden rounded-[1.75rem] border border-gray-200 bg-white shadow-xl shadow-gray-900/10",
           SHELL_SIZE[size],
         )}
       >
@@ -80,11 +67,11 @@ export function ProductBrandPanel({
           width={1024}
           height={1024}
           priority={size === "hero" || size === "card"}
-          className={cn("aspect-square h-full w-full object-contain", IMAGE_PADDING[size])}
+          className="aspect-square h-full w-full object-contain p-3 md:p-4"
         />
       </div>
       {caption ? (
-        <p className="mt-5 max-w-xs text-center text-xs leading-relaxed text-pretty text-white/60">
+        <p className="mt-6 max-w-xs text-center text-xs leading-relaxed text-pretty text-gray-500">
           {caption}
         </p>
       ) : null}
