@@ -6,12 +6,14 @@ import {
 } from "@/components/business/BusinessUi";
 import { BUSINESS_VISUAL } from "@/lib/constants/business-visual-tokens";
 import { AppReferenceShowcase } from "@/components/business/visuals/AppReferenceShowcase";
+import { AppPhoneStageShowcase } from "@/components/business/visuals/AppPhoneCollageShowcase";
 import { BusinessKiHeroShowcase, BusinessKiShowcaseSection } from "@/components/business/visuals/BusinessKiShowcase";
 import { PremiumCta } from "@/components/business/visuals/PremiumCta";
 import { IndustryMockStage } from "@/components/business/visuals/IndustryMockStage";
 import { WebsiteReferenceShowcase } from "@/components/business/visuals/WebsiteReferenceShowcase";
 import { type MockVariant } from "@/components/business/visuals/MockScreen";
 import { BUSINESS_COPY } from "@/lib/constants/business-copy";
+import { CONNECT_PLATFORM_SHOWCASE } from "@/lib/constants/business-connect-showcase";
 import { tbcReference } from "@/lib/constants/business-reference-showcase";
 import { ReferenceBrowserShowcase } from "@/components/business/visuals/ReferenceShowcase";
 import { WebsitePreview } from "@/components/business/visuals/previews/WebsitePreview";
@@ -153,6 +155,11 @@ export function BusinessWebAppsPage() {
       mockVariant="webapp"
       mockDevice="phone"
       salesLine="Individuelle Apps ersetzen Excel, E-Mail-Chaos und Insellösungen — Referenzqualität wie UNZE Connect und unsere Plattform."
+      salesVisual={
+        <div className="rounded-3xl border border-gray-100 bg-gradient-to-br from-gray-50 via-white to-emerald-50/40 p-6 md:p-8">
+          <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} showLabels />
+        </div>
+      }
       wow={<WebAppScrollWow />}
     />
   );

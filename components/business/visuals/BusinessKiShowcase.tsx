@@ -4,18 +4,13 @@ import {
   BusinessShowcaseCard,
 } from "@/components/business/BusinessUi";
 import { BusinessScrollReveal } from "@/components/business/BusinessScrollReveal";
-import {
-  AppPhoneStageShowcase,
-} from "@/components/business/visuals/AppPhoneCollageShowcase";
-import { ProductMockupFrame } from "@/components/business/visuals/ProductMockupFrame";
-import { MockScreen } from "@/components/business/visuals/MockScreen";
 import { BUSINESS_VISUAL } from "@/lib/constants/business-visual-tokens";
 import { ProductBrandPanel } from "@/components/business/visuals/ProductBrandPanel";
-import { ORGANIZER_PHONE_SHOWCASE, MY_ORGANIZER_AI_HERO } from "@/lib/constants/business-product-assets";
+import { MY_ORGANIZER_AI_HERO } from "@/lib/constants/business-product-assets";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, FileSearch, MessageSquare, Workflow } from "lucide-react";
 
-/** KI-Seite — visuell starke Hero-Darstellung mit Produktbezug */
+/** KI-Seite — Logo klar im Vordergrund, keine Fake-Phone-Mocks */
 export function BusinessKiHeroShowcase() {
   return (
     <div className="relative overflow-hidden rounded-3xl border border-gray-200/80 bg-gradient-to-br from-slate-950 via-slate-900 to-gray-950 shadow-2xl shadow-gray-900/20">
@@ -27,34 +22,49 @@ export function BusinessKiHeroShowcase() {
         className="pointer-events-none absolute -right-16 bottom-0 h-48 w-48 rounded-full bg-violet-500/10 blur-3xl"
         aria-hidden
       />
-      <div className="relative grid items-stretch lg:grid-cols-2">
-        <div className="flex flex-col justify-center border-b border-white/10 lg:border-b-0 lg:border-r">
-          <div className="p-6 md:p-8">
-            <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
-              <Sparkles className="h-3.5 w-3.5" aria-hidden />
-              Eigene KI-Produkte
-            </p>
-            <div className="mt-6 flex justify-center lg:justify-start">
-              <ProductBrandPanel
-                src={MY_ORGANIZER_AI_HERO.src}
-                alt={MY_ORGANIZER_AI_HERO.alt}
-                size="hero"
-                className="!bg-transparent !p-0"
-              />
-            </div>
-            <p className="mt-6 max-w-md text-center text-sm leading-relaxed text-pretty text-white/65 lg:text-left">
-              KI-Assistent aus eigener Entwicklung — Dokumente, Workflows und Entscheidungen in
-              Business Core und My Organizer AI.
-            </p>
-          </div>
+      <div className="relative grid items-center gap-8 p-8 md:grid-cols-[1.1fr_0.9fr] md:gap-10 md:p-12 lg:p-14">
+        <div>
+          <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-300">
+            Eigene KI-Produkte
+          </p>
+          <h3 className="mt-5 font-[family-name:var(--font-display)] text-2xl font-bold text-white md:text-3xl">
+            My Organizer AI
+          </h3>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-pretty text-white/65 md:text-base">
+            Offizielles Produkt von UNZE Business — Dokumente, Termine und Aufgaben mit KI-Unterstützung.
+            Keine Platzhalter-Oberfläche: das Icon ist das echte Produktlogo.
+          </p>
         </div>
-        <div className="flex items-center justify-center p-6 md:p-8 lg:py-12">
-          <AppPhoneStageShowcase items={ORGANIZER_PHONE_SHOWCASE} priorityIndex={1} />
+        <div className="flex justify-center md:justify-end">
+          <ProductBrandPanel
+            src={MY_ORGANIZER_AI_HERO.src}
+            alt={MY_ORGANIZER_AI_HERO.alt}
+            size="hero"
+            className="!bg-transparent !p-0"
+          />
         </div>
       </div>
     </div>
   );
 }
+
+const KI_CARDS = [
+  {
+    title: "Dokumente verstehen",
+    text: "Scan, Strukturierung und durchsuchbare Ablage — transparent für Teams.",
+    icon: FileSearch,
+  },
+  {
+    title: "Assistenten statt Klickarbeit",
+    text: "Angebote, Antworten und Workflows per natürlicher Sprache anstoßen.",
+    icon: MessageSquare,
+  },
+  {
+    title: "Prozesse verbinden",
+    text: "CRM, E-Mail, WhatsApp und APIs — Automatisierung dort, wo sie entlastet.",
+    icon: Workflow,
+  },
+] as const;
 
 export function BusinessKiShowcaseSection() {
   return (
@@ -68,31 +78,11 @@ export function BusinessKiShowcaseSection() {
         />
 
         <div className={`${BUSINESS_VISUAL.sectionContentMt} grid gap-8 md:grid-cols-3`}>
-          {[
-            {
-              title: "Dokumente verstehen",
-              text: "Scan, Strukturierung und durchsuchbare Ablage — transparent für Teams.",
-            },
-            {
-              title: "Assistenten statt Klickarbeit",
-              text: "Angebote, Antworten und Workflows per natürlicher Sprache anstoßen.",
-            },
-            {
-              title: "Prozesse verbinden",
-              text: "CRM, E-Mail, WhatsApp und APIs — Automatisierung dort, wo sie entlastet.",
-            },
-          ].map((item, index) => (
+          {KI_CARDS.map((item, index) => (
             <BusinessScrollReveal key={item.title} delay={index * 60}>
               <BusinessShowcaseCard className="h-full !p-8">
-                <div className="mx-auto w-[160px]">
-                  <ProductMockupFrame device="phone" presentation="card" synthetic>
-                    <MockScreen
-                      variant={index === 0 ? "documents" : index === 1 ? "ai" : "webapp"}
-                      device="phone"
-                      bare
-                      showcase
-                    />
-                  </ProductMockupFrame>
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#00C853]">
+                  <item.icon className="h-6 w-6" aria-hidden />
                 </div>
                 <h3 className="mt-6 font-[family-name:var(--font-display)] text-lg font-semibold text-balance text-gray-900">
                   {item.title}

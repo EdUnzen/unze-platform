@@ -13,22 +13,21 @@ import {
   UNZE_CONNECT_LOGO,
 } from "@/lib/constants/business-product-assets";
 import type { OwnProductId } from "@/lib/constants/business-own-products";
-import { cn } from "@/lib/utils/cn";
 
 const PRODUCT_BRAND = {
   "unze-connect": {
     src: UNZE_CONNECT_LOGO.src,
     alt: UNZE_CONNECT_LOGO.alt,
-    caption: "Offizielles UNZE Connect Logo — Community-Plattform aus eigener Entwicklung",
+    caption: "UNZE Connect — Community-Plattform aus eigener Entwicklung",
     phones: CONNECT_PLATFORM_SHOWCASE,
     priorityIndex: 1,
   },
   "my-organizer-ai": {
     src: MY_ORGANIZER_AI_HERO.src,
     alt: MY_ORGANIZER_AI_HERO.alt,
-    caption: "My Organizer AI — KI-Organizer für Dokumente, Termine und Aufgaben",
+    caption: "My Organizer AI — offizielles App-Icon",
     phones: ORGANIZER_PHONE_SHOWCASE,
-    priorityIndex: 1,
+    priorityIndex: 0,
   },
 } as const;
 
@@ -40,34 +39,47 @@ function ProductShowcaseLayout({
   layout: "card" | "compact";
 }) {
   const brand = PRODUCT_BRAND[productId];
-  const items: PhoneShowcaseItem[] = brand.phones;
-  const phoneStage = (
+  const hasPhones = brand.phones.length > 0;
+  const phoneStage = hasPhones ? (
     <AppPhoneStageShowcase
-      items={items}
+      items={brand.phones}
       priorityIndex={brand.priorityIndex}
       showLabels={layout === "card"}
     />
-  );
+  ) : null;
 
   if (layout === "compact") {
     return (
-      <div className="flex h-full min-h-[440px] flex-col sm:min-h-[460px]">
-        <div className="grid flex-1 grid-cols-1 md:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)]">
+      <div className="flex h-full min-h-[360px] flex-col sm:min-h-[400px]">
+        {hasPhones ? (
+          <div className="grid flex-1 grid-cols-1 md:grid-cols-[minmax(0,0.4fr)_minmax(0,1fr)]">
+            <ProductBrandPanel
+              src={brand.src}
+              alt={brand.alt}
+              size="compact"
+              className="md:min-h-full"
+            />
+            <div className="flex items-center justify-center border-t border-gray-100 bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 px-3 py-8 md:border-l md:border-t-0 md:px-4 md:py-10">
+              {phoneStage}
+            </div>
+          </div>
+        ) : (
           <ProductBrandPanel
             src={brand.src}
             alt={brand.alt}
-            caption={layout === "compact" ? undefined : brand.caption}
+            caption={brand.caption}
             size="compact"
-            className="md:min-h-full"
+            className="min-h-[360px]"
           />
-          <div
-            className={cn(
-              "flex items-center justify-center border-t border-gray-100 bg-gradient-to-br from-gray-50 via-white to-emerald-50/30 px-3 py-8 md:border-l md:border-t-0 md:px-4 md:py-10",
-            )}
-          >
-            {phoneStage}
-          </div>
-        </div>
+        )}
+      </div>
+    );
+  }
+
+  if (!hasPhones) {
+    return (
+      <div className="flex min-h-[420px] items-center justify-center bg-gradient-to-br from-gray-50 via-white to-emerald-50/40 p-10 md:p-14">
+        <ProductBrandPanel src={brand.src} alt={brand.alt} caption={brand.caption} size="card" />
       </div>
     );
   }

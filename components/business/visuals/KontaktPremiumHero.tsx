@@ -27,24 +27,11 @@ export function KontaktPremiumHero({
           </p>
         </div>
         <div className="relative hidden md:block" data-export="kontakt-hero-visual">
-          <div className="relative z-10">
-            <ProductMockupFrame device="laptop" presentation="hero" fillContainer synthetic>
-              <MockScreen variant="dashboard" bare showcase />
-            </ProductMockupFrame>
-          </div>
-          <div className="absolute -bottom-6 -right-4 z-20 w-[160px] motion-safe:animate-[float_6s_ease-in-out_infinite]">
-            <ProductMockupFrame device="phone" presentation="standard" synthetic>
-              <MockScreen variant="ai" device="phone" bare showcase />
-            </ProductMockupFrame>
-          </div>
+          <ProductMockupFrame device="laptop" presentation="hero" fillContainer synthetic>
+            <MockScreen variant="dashboard" bare showcase />
+          </ProductMockupFrame>
         </div>
       </div>
-      <style>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-10px); }
-        }
-      `}</style>
     </section>
   );
 }

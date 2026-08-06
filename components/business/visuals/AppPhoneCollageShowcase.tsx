@@ -19,6 +19,9 @@ const DEFAULT_FALLBACK: Record<string, MockVariant> = {
   discover: "community",
   dashboard: "dashboard",
   community: "community",
+  admin: "admin",
+  profile: "profile",
+  login: "community",
   documents: "documents",
   assistant: "ai",
   calendar: "calendar",
@@ -38,10 +41,10 @@ export function AppPhoneShowcaseTile({
   const fallbackVariant = item.fallbackVariant ?? DEFAULT_FALLBACK[item.id] ?? "community";
   const widthClass =
     stage === "hero"
-      ? "w-[220px] sm:w-[250px] md:w-[280px] lg:w-[300px]"
+      ? "w-[200px] sm:w-[220px] md:w-[240px]"
       : stage === "side"
-        ? "w-[190px] sm:w-[210px] md:w-[230px] lg:w-[250px]"
-        : "w-full max-w-[280px]";
+        ? "w-[180px] sm:w-[200px] md:w-[220px]"
+        : "w-full max-w-[240px]";
 
   return (
     <div className="flex flex-col items-center">
@@ -50,8 +53,9 @@ export function AppPhoneShowcaseTile({
           device="phone"
           label={showLabels ? item.title : undefined}
           presentation={stage === "hero" ? "hero" : "standard"}
+          className="!w-full [&_[data-export=device-phone]]:!w-full"
         >
-          {item.mockOnly ? (
+          {item.mockOnly || !item.src ? (
             <MockScreen variant={fallbackVariant} device="phone" bare showcase />
           ) : (
             <ReferencePhoneScreenshot
@@ -59,16 +63,14 @@ export function AppPhoneShowcaseTile({
               alt={item.alt}
               priority={priority}
               embedded
-              fillFrame={!item.mockOnly}
-              fallback={
-                <MockScreen variant={fallbackVariant} device="phone" bare showcase />
-              }
+              fillFrame
+              fallback={<MockScreen variant={fallbackVariant} device="phone" bare showcase />}
             />
           )}
         </ProductMockupFrame>
       </div>
       {showLabels ? (
-        <div className="mt-5 max-w-[220px] text-center">
+        <div className="mt-4 max-w-[200px] text-center">
           <p className="text-sm font-semibold text-gray-900">{item.title}</p>
           <p className="mt-1 text-xs leading-relaxed text-gray-500">{item.subtitle}</p>
         </div>
@@ -77,7 +79,10 @@ export function AppPhoneShowcaseTile({
   );
 }
 
-/** Drei Smartphones — zentrales Hauptgerät, seitliche leicht zurückgesetzt */
+/**
+ * Drei Smartphones nebeneinander — gleiche Größe, kein Scale/Overlap.
+ * Auf schmalen Viewports: horizontales Scrollen statt Quetschen.
+ */
 export function AppPhoneStageShowcase({
   items,
   className,
@@ -89,46 +94,39 @@ export function AppPhoneStageShowcase({
   priorityIndex?: number;
   showLabels?: boolean;
 }) {
-  const [left, center, right] = items;
-
-  if (!center) return null;
+  const phones = items.slice(0, 3);
+  if (phones.length === 0) return null;
 
   return (
     <div
       className={cn(
-        "relative flex min-w-0 items-end justify-center gap-2 overflow-x-auto px-2 pb-2 sm:gap-5 md:gap-6 md:overflow-visible md:px-0 md:pb-0",
+        "flex min-w-0 items-end justify-center gap-4 overflow-x-auto px-2 pb-1 sm:gap-5 md:gap-6 md:overflow-visible md:px-0",
         className,
       )}
       data-export="app-phone-stage"
     >
-      {left ? (
-        <div className="hidden shrink-0 translate-y-5 scale-[0.92] opacity-90 sm:block md:translate-y-8 md:scale-[0.94]">
-          <AppPhoneShowcaseTile item={left} showLabels={showLabels} stage="side" />
+      {phones.map((item, index) => (
+        <div key={item.id} className="shrink-0">
+          <AppPhoneShowcaseTile
+            item={item}
+            priority={index === priorityIndex}
+            showLabels={showLabels}
+            stage={index === 1 ? "hero" : "side"}
+          />
         </div>
-      ) : null}
-      <div className="relative z-10 shrink-0">
-        <AppPhoneShowcaseTile
-          item={center}
-          priority={priorityIndex === 1}
-          showLabels={showLabels}
-          stage="hero"
-        />
-      </div>
-      {right ? (
-        <div className="hidden shrink-0 translate-y-5 scale-[0.92] opacity-90 sm:block md:translate-y-8 md:scale-[0.94]">
-          <AppPhoneShowcaseTile item={right} showLabels={showLabels} stage="side" />
-        </div>
-      ) : null}
+      ))}
     </div>
   );
 }
 
-/** Flache 3er-Reihe — für schmalere Kontexte */
+/** Flache 3er-Reihe in Showcase-Karte */
 export function AppPhoneCollageShowcase({ className }: { className?: string }) {
   return (
     <div data-export="app-phone-collage">
-      <BusinessShowcaseCard className={cn("bg-gradient-to-br from-gray-50 via-white to-emerald-50/30", className)}>
-        <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} />
+      <BusinessShowcaseCard
+        className={cn("bg-gradient-to-br from-gray-50 via-white to-emerald-50/30", className)}
+      >
+        <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} showLabels />
       </BusinessShowcaseCard>
     </div>
   );

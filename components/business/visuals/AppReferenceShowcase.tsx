@@ -19,7 +19,7 @@ export function AppReferenceShowcase() {
       />
 
       <BusinessScrollReveal>
-        <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} />
+        <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} showLabels />
       </BusinessScrollReveal>
 
       <div className={`${BUSINESS_VISUAL.sectionContentMt} ${BUSINESS_VISUAL.cardGrid} md:grid-cols-3`}>

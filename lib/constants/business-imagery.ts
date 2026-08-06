@@ -92,8 +92,8 @@ export const BUSINESS_IMAGERY = {
       alt: "Webdesign und moderne Website-Gestaltung",
     },
     apps: {
-      src: u("photo-1512941937669-90a1b58e7e9c", 900),
-      alt: "Mobile App und digitale Kundenerlebnisse",
+      src: "/media/showcase/connect/discover.png",
+      alt: "UNZE Connect — mobile App-Ansicht Discover",
     },
     ki: {
       src: u("photo-1677442136019-21780ecad995", 900),

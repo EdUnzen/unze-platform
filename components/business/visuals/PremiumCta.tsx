@@ -57,16 +57,21 @@ export function PremiumCta({
           </div>
         </div>
         <div className="relative flex justify-center lg:justify-end">
-          <ProductMockupFrame
-            device={mockDevice}
-            presentation="hero"
-            fillContainer={mockDevice !== "phone"}
-            synthetic
-            className={mockDevice === "phone" ? "max-w-[280px]" : "[&_figure]:shadow-2xl"}
-          >
-            <MockScreen variant={mockVariant} device={mockDevice === "phone" ? "phone" : "laptop"} bare showcase />
-          </ProductMockupFrame>
-          <div className="absolute -bottom-4 -left-4 h-24 w-24 rounded-full bg-[#00C853]/20 blur-2xl" aria-hidden />
+          <div className={mockDevice === "phone" ? "w-full max-w-[260px]" : "w-full"}>
+            <ProductMockupFrame
+              device={mockDevice}
+              presentation="hero"
+              fillContainer={mockDevice !== "phone"}
+              synthetic
+            >
+              <MockScreen
+                variant={mockVariant}
+                device={mockDevice === "phone" ? "phone" : "laptop"}
+                bare
+                showcase
+              />
+            </ProductMockupFrame>
+          </div>
         </div>
       </div>
     </section>

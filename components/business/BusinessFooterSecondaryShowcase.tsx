@@ -1,5 +1,6 @@
 import { ArrowRight, Sparkles } from "lucide-react";
-import { BusinessLink } from "@/components/business/BusinessLink";import { BUSINESS_NAV_SECONDARY } from "@/lib/constants/business-site";
+import { BusinessLink } from "@/components/business/BusinessLink";
+import { BUSINESS_NAV_SECONDARY } from "@/lib/constants/business-site";
 import { MY_ORGANIZER_AI_HERO, UNZE_CONNECT_LOGO } from "@/lib/constants/business-product-assets";
 import { ProductBrandPanel } from "@/components/business/visuals/ProductBrandPanel";
 
@@ -21,10 +22,7 @@ const SECONDARY_META = {
 /** Visuell starke Footer-Navigation für KI & Produkte */
 export function BusinessFooterSecondaryShowcase() {
   return (
-    <section
-      className="border-t border-gray-100 bg-white"
-      aria-label="Weitere Leistungen"
-    >
+    <section className="border-t border-gray-100 bg-white" aria-label="Weitere Leistungen">
       <div className="container mx-auto max-w-6xl px-4 py-10 md:py-12">
         <p className="text-center text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
           Mehr entdecken
@@ -63,12 +61,27 @@ export function BusinessFooterSecondaryShowcase() {
                       <ArrowRight className="h-4 w-4" aria-hidden />
                     </span>
                   </div>
-                  <div className="hidden shrink-0 items-center justify-center sm:flex">
-                    <ProductBrandPanel
-                      src={isKi ? MY_ORGANIZER_AI_HERO.src : UNZE_CONNECT_LOGO.src}
-                      alt=""
-                      size="footer"
-                    />
+                  <div className="hidden shrink-0 items-center justify-center gap-2 sm:flex">
+                    {isKi ? (
+                      <ProductBrandPanel
+                        src={MY_ORGANIZER_AI_HERO.src}
+                        alt={MY_ORGANIZER_AI_HERO.alt}
+                        size="footer"
+                      />
+                    ) : (
+                      <>
+                        <ProductBrandPanel
+                          src={UNZE_CONNECT_LOGO.src}
+                          alt={UNZE_CONNECT_LOGO.alt}
+                          size="footer"
+                        />
+                        <ProductBrandPanel
+                          src={MY_ORGANIZER_AI_HERO.src}
+                          alt={MY_ORGANIZER_AI_HERO.alt}
+                          size="footer"
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               </BusinessLink>
