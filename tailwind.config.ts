@@ -4,6 +4,32 @@ const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./lib/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  /** Klassen aus lib/constants (Mockup-SSOT) — Fallback falls JIT sie sonst verpasst */
+  safelist: [
+    "aspect-[9/19]",
+    "aspect-[16/10]",
+    "aspect-[3/4]",
+    "inset-2",
+    "min-h-[80px]",
+    "min-h-[100px]",
+    "min-h-[120px]",
+    "min-h-[180px]",
+    "min-h-[200px]",
+    "min-h-[220px]",
+    "min-h-[280px]",
+    "min-h-[320px]",
+    "min-h-[340px]",
+    "min-h-[420px]",
+    "min-h-[480px]",
+    "sm:min-h-[340px]",
+    "md:min-h-[100px]",
+    "md:min-h-[220px]",
+    "md:min-h-[320px]",
+    "md:min-h-[420px]",
+    "lg:min-h-[480px]",
+    "max-h-[200px]",
   ],
   theme: {
     extend: {

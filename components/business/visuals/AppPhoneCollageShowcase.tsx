@@ -47,13 +47,13 @@ export function AppPhoneShowcaseTile({
         : "w-full max-w-[200px]";
 
   return (
-    <div className="flex flex-col items-center">
-      <div className={cn("mx-auto", widthClass)}>
+    <div className="flex w-full flex-col items-center">
+      <div className={cn("w-full", widthClass)}>
         <ProductMockupFrame
           device="phone"
           label={showLabels ? item.title : undefined}
           presentation={stage === "hero" ? "hero" : "standard"}
-          className="!w-full [&_[data-export=device-phone]]:!w-full"
+          className="!max-w-none !w-full [&_[data-export=device-phone]]:!max-w-none [&_[data-export=device-phone]]:!w-full"
         >
           {item.mockOnly || !item.src ? (
             <MockScreen variant={fallbackVariant} device="phone" bare showcase />
@@ -63,7 +63,6 @@ export function AppPhoneShowcaseTile({
               alt={item.alt}
               priority={priority}
               embedded
-              fillFrame
               fallback={<MockScreen variant={fallbackVariant} device="phone" bare showcase />}
             />
           )}

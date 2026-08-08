@@ -24,10 +24,10 @@ export const CONNECT_PLATFORM_SHOWCASE: ConnectShowcaseImage[] = [
   },
   {
     id: "community",
-    src: "/media/showcase/connect/community.png",
-    alt: "UNZE Connect — Community",
+    src: "/media/showcase/connect/creator.png",
+    alt: "UNZE Connect — Community erstellen",
     title: "Community",
-    subtitle: "Öffentliche Community-Seite",
+    subtitle: "Community aufbauen & gestalten",
   },
 ];
 

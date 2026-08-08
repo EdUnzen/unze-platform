@@ -193,7 +193,6 @@ export function PortfolioPhoneShowcase({
           alt={screenshot.alt}
           priority={priority}
           embedded
-          fillFrame
           fallback={<MockScreen variant={variant} device="phone" bare showcase />}
         />
       </ProductMockupFrame>

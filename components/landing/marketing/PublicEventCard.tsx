@@ -1,4 +1,7 @@
-import { platformUrl } from "@/lib/constants/site";
+"use client";
+
+import { AppNutzenButton } from "@/components/landing/marketing/MarketingAppEntryGate";
+import { CTA_APP_USE } from "@/lib/constants/cta-copy";
 import type { PublicEventCard } from "@/lib/marketing/public-directory.service";
 import { Calendar, MapPin } from "lucide-react";
 
@@ -13,17 +16,14 @@ function formatDate(iso: string) {
   });
 }
 
+/** Marketing-Vorschau — kein Deep-Link in die Connect-App. */
 export function PublicEventCardView({ event }: { event: PublicEventCard }) {
-  const href = event.communitySlug
-    ? platformUrl(`/community/${event.communitySlug}/event/${event.slug ?? event.id}`)
-    : platformUrl("/discover?tab=events");
+  const returnTo = event.communitySlug
+    ? `/community/${event.communitySlug}/event/${event.slug ?? event.id}`
+    : undefined;
 
   return (
-    <a
-      href={href}
-      rel="noopener noreferrer"
-      className="block rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:border-[#00C853]/40 hover:shadow-md"
-    >
+    <article className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
           {event.isFeatured ? (
@@ -32,7 +32,14 @@ export function PublicEventCardView({ event }: { event: PublicEventCard }) {
             </span>
           ) : null}
           <h3 className="font-semibold text-gray-900">{event.title}</h3>
-          {event.communityTitle ? (
+          {event.communityTitle && event.communitySlug ? (
+            <a
+              href={`/community/${event.communitySlug}`}
+              className="mt-1 inline-block text-xs text-[#00C853] hover:underline"
+            >
+              {event.communityTitle}
+            </a>
+          ) : event.communityTitle ? (
             <p className="mt-1 text-xs text-[#00C853]">{event.communityTitle}</p>
           ) : null}
         </div>
@@ -48,6 +55,16 @@ export function PublicEventCardView({ event }: { event: PublicEventCard }) {
           </p>
         ) : null}
       </div>
-    </a>
+      <p className="mt-4 text-xs text-gray-500">
+        Teilnahme in der App —{" "}
+        <AppNutzenButton
+          tone="event"
+          returnTo={returnTo}
+          className="font-medium text-[#00C853] hover:underline"
+        >
+          {CTA_APP_USE}
+        </AppNutzenButton>
+      </p>
+    </article>
   );
 }

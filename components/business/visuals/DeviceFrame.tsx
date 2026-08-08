@@ -33,9 +33,9 @@ export function DeviceFrame({
     return (
       <div className={cn("mx-auto w-full max-w-[260px]", className)} data-export="device-phone">
         {/* Moderne Smartphone-Optik (iPhone-ähnlich) — kein Watch-Format */}
-        <div className="relative rounded-[2.35rem] border-[7px] border-[#1c1c1e] bg-[#1c1c1e] p-[3px] shadow-2xl shadow-gray-900/30 ring-1 ring-black/20">
-          <div className="absolute left-1/2 top-[10px] z-10 h-[22px] w-[90px] -translate-x-1/2 rounded-full bg-black" />
-          <div className="overflow-hidden rounded-[1.9rem] bg-white">{children}</div>
+        <div className="relative w-full rounded-[2.35rem] border-[7px] border-[#1c1c1e] bg-[#1c1c1e] p-[3px] shadow-2xl shadow-gray-900/30 ring-1 ring-black/20">
+          <div className="pointer-events-none absolute left-1/2 top-[7px] z-10 h-[16px] w-[72px] -translate-x-1/2 rounded-full bg-black" />
+          <div className="w-full overflow-hidden rounded-[1.9rem] bg-[#1c1c1e]">{children}</div>
         </div>
         {displayLabel ? (
           <p className="mt-4 max-w-full px-2 text-center text-xs font-medium leading-snug text-gray-500 break-words">

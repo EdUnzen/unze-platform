@@ -50,6 +50,11 @@ export function shouldWrapPlatformShellForPath(
     return false;
   }
 
+  // unze.app: Community-Detail = Marketing-Vorschau, nie Connect-BottomNav
+  if (isMarketingHost(host) && COMMUNITY_PREVIEW_RE.test(pathname)) {
+    return false;
+  }
+
   if (isLocalDevHost(host) && pathname === "/") {
     return false;
   }
@@ -62,6 +67,7 @@ export function shouldWrapPlatformShellForPath(
     return true;
   }
 
+  // Connect-Host: /community/[slug] gehört zur App
   if (COMMUNITY_PREVIEW_RE.test(pathname)) {
     return true;
   }

@@ -80,7 +80,7 @@ export function ReferenceScreenshot({
   );
 }
 
-/** Screenshot im Smartphone-Viewport — füllt den Rahmen ohne Letterboxing */
+/** Screenshot im Smartphone-Viewport — proportional, vollständig sichtbar (contain) */
 export function ReferencePhoneScreenshot({
   src,
   alt,
@@ -88,7 +88,8 @@ export function ReferencePhoneScreenshot({
   priority = false,
   presentation = "standard" as MockupPresentation,
   embedded = false,
-  fillFrame = true,
+  /** @deprecated — immer contain; nur Abwärtskompatibilität */
+  fillFrame = false,
 }: {
   src: string;
   alt: string;
@@ -96,10 +97,11 @@ export function ReferencePhoneScreenshot({
   priority?: boolean;
   presentation?: MockupPresentation;
   embedded?: boolean;
-  /** object-cover statt contain — entfernt weiße Seitenränder in Captures */
+  /** @deprecated — ignoriert; immer object-contain laut Mockup-Standard */
   fillFrame?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
+  void fillFrame;
 
   const imageContent = failed ? (
     fallback
@@ -110,12 +112,8 @@ export function ReferencePhoneScreenshot({
       fill
       priority={priority}
       quality={BUSINESS_MOCKUP_STANDARD.screenshotQuality}
-      sizes="260px"
-      className={
-        fillFrame
-          ? "object-cover object-top"
-          : "object-contain object-center"
-      }
+      sizes="(max-width: 640px) 40vw, 280px"
+      className="object-contain object-center"
       onError={() => setFailed(true)}
       onLoad={(event) => {
         const img = event.currentTarget;

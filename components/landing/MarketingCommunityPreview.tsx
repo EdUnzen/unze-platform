@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import { MarketingLink } from "@/components/landing/MarketingLink";
 import { CommunityVisualBanner } from "@/components/landing/marketing/CommunityVisualBanner";
+import { MarketingAppNutzenCta } from "@/components/landing/marketing/MarketingGroupPreviewList";
 import { MarketingCtaBar } from "@/components/landing/marketing/MarketingCtaBar";
+import { MarketingGroupPreviewList } from "@/components/landing/marketing/MarketingGroupPreviewList";
 import { PwaInstallHint } from "@/components/landing/marketing/PwaInstallHint";
 import { isDemoCommunitySlug } from "@/lib/constants/demo";
-import { getCommunityJoinUrl, platformUrl } from "@/lib/constants/site";
 import { fetchPublicCommunityPreview } from "@/lib/marketing/public-client";
 import { formatMemberCount } from "@/lib/marketing/format";
 import {
@@ -148,7 +149,6 @@ export async function MarketingCommunityPreview({ slug }: MarketingCommunityPrev
   if (!preview) notFound();
 
   const { community, events, services, groups, reviews, awards } = preview;
-  const joinUrl = getCommunityJoinUrl(slug);
   const isActive = community.isTrending || community.memberCount > 0;
   const isDemo = isDemoCommunitySlug(slug);
 
@@ -288,13 +288,7 @@ export async function MarketingCommunityPreview({ slug }: MarketingCommunityPrev
             count={groups.length}
             emptyMessage="Gruppen und Unterbereiche werden auf UNZE Connect verwaltet."
           >
-            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {groups.slice(0, 9).map((group) => (
-                <li key={group.id}>
-                  <ItemCard title={group.title} description={group.description} />
-                </li>
-              ))}
-            </ul>
+            <MarketingGroupPreviewList communitySlug={slug} groups={groups} />
           </ContentSection>
 
           <div className="grid gap-6 lg:grid-cols-2">
@@ -319,11 +313,15 @@ export async function MarketingCommunityPreview({ slug }: MarketingCommunityPrev
                             })
                           : undefined
                       }
-                      href={platformUrl(`/community/${slug}/event/${event.slug ?? event.id}`)}
                     />
                   </li>
                 ))}
               </ul>
+              {events.length > 0 ? (
+                <p className="mt-4 text-sm text-gray-500">
+                  Events ansehen und teilnehmen geht in der App — über „App nutzen“ und Anmeldung.
+                </p>
+              ) : null}
             </ContentSection>
 
             <ContentSection
@@ -375,13 +373,12 @@ export async function MarketingCommunityPreview({ slug }: MarketingCommunityPrev
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-gray-600">
                 {
-                  "Diese Seite zeigt ausschließlich öffentliche Informationen aus UNZE Connect. Beitritt, Verwaltung, Zahlungen und der Mitgliederbereich sind in der App auf "
+                  "Diese Seite zeigt ausschließlich öffentliche Informationen aus UNZE Connect. Beitritt, Verwaltung, Zahlungen und der Mitgliederbereich sind nur in der App verfügbar."
                 }
-                <a href={joinUrl} className="font-medium text-[#00C853] hover:underline">
-                  unzeconnect.app
-                </a>{" "}
-                verf{"ü"}gbar.
               </p>
+              <div className="mt-4">
+                <MarketingAppNutzenCta returnTo={`/community/${slug}`} />
+              </div>
             </div>
           </div>
         </div>

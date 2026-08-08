@@ -5,7 +5,6 @@ import { MockupViewport } from "@/components/business/visuals/MockupViewport";
 import { BUSINESS_VISUAL } from "@/lib/constants/business-visual-tokens";
 import {
   BUSINESS_MOCKUP_STANDARD,
-  PHONE_SHOWCASE_WIDTH,
   type MockupPresentation,
 } from "@/lib/constants/business-mockup-standard";
 import { cn } from "@/lib/utils/cn";
@@ -60,10 +59,10 @@ export function ProductMockupFrame({
   if (isPhone) {
     return (
       <figure
-        className={cn("mx-auto flex flex-col items-center", BUSINESS_VISUAL.figureGap, className)}
+        className={cn("mx-auto flex w-full max-w-[280px] flex-col items-stretch", BUSINESS_VISUAL.figureGap, className)}
         data-export="product-mockup-phone"
       >
-        <div className={PHONE_SHOWCASE_WIDTH}>
+        <div className="w-full">
           <DeviceFrame variant="phone" label={displayLabel} hideCaption={!!caption || synthetic}>
             <MockupViewport device="phone" presentation={presentation}>
               {children}

@@ -1,5 +1,8 @@
+"use client";
+
 import { MarketingLink } from "@/components/landing/MarketingLink";
-import { platformUrl } from "@/lib/constants/site";
+import { AppNutzenButton } from "@/components/landing/marketing/MarketingAppEntryGate";
+import { CTA_APP_USE } from "@/lib/constants/cta-copy";
 import type { PublicServiceCard } from "@/lib/marketing/public-directory.service";
 import { ShieldCheck, Wrench } from "lucide-react";
 
@@ -37,13 +40,13 @@ export function PublicServiceCardView({ service }: { service: PublicServiceCard 
           ) : null}
           <span>{formatPrice(service.priceCents)}</span>
         </div>
-        <a
-          href={platformUrl(`/community/${service.communitySlug}/group/${service.slug}`)}
-          rel="noopener noreferrer"
+        <AppNutzenButton
+          tone="group"
+          returnTo={`/community/${service.communitySlug}/group/${service.slug}`}
           className="rounded-full bg-[#00C853] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#00b34a]"
         >
-          In der App ansehen
-        </a>
+          {CTA_APP_USE}
+        </AppNutzenButton>
       </div>
     </article>
   );

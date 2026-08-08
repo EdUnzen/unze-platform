@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  /** Dev-„N“-Badge ausblenden (wirkt oft wie Norton-Overlay) */
+  devIndicators: false,
   experimental: {
     optimizePackageImports: ["lucide-react", "html5-qrcode"],
   },

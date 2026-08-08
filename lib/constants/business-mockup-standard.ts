@@ -43,6 +43,10 @@ export function mockupViewportClass(
   presentation: MockupPresentation = "standard",
 ): string {
   const aspect = DEVICE_VIEWPORT_ASPECT[device];
+  // Phone: Höhe ausschließlich aus 9:19 — große min-heights würden das Display quetschen
+  if (device === "phone") {
+    return `${aspect} w-full min-h-[120px]`;
+  }
   const minH = PRESENTATION_MIN_HEIGHT[presentation];
   return `${aspect} ${minH} w-full`;
 }

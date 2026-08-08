@@ -24,21 +24,34 @@ export function MockupViewport({
   presentation = "standard",
   className,
 }: MockupViewportProps) {
+  const isPhone = device === "phone";
+
   return (
     <div
       className={cn(
-        "relative overflow-hidden",
-        device === "phone" ? "bg-white" : "bg-gray-50",
+        "relative w-full overflow-hidden",
+        isPhone ? "aspect-[9/19] bg-[#1c1c1e]" : "bg-gray-50",
         mockupViewportClass(device, presentation),
         className,
       )}
+      style={isPhone ? { aspectRatio: "9 / 19" } : undefined}
       data-mockup-viewport
       data-device={device}
       data-presentation={presentation}
     >
-      <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-        <div className="h-full w-full min-h-0 min-w-0">{children}</div>
-      </div>
+      {isPhone ? (
+        /* Dunkler Innenrand sichtbar gegen weißes App-UI — Inline-Style, damit Tailwind JIT nicht auslässt */
+        <div
+          className="absolute overflow-hidden rounded-[1.35rem] bg-white"
+          style={{ inset: 8 }}
+        >
+          <div className="relative h-full w-full">{children}</div>
+        </div>
+      ) : (
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="relative h-full w-full">{children}</div>
+        </div>
+      )}
     </div>
   );
 }
@@ -53,11 +66,7 @@ export function MockupShowcaseShell({
 }) {
   return (
     <div
-      className={cn(
-        BUSINESS_VISUAL.showcaseCard,
-        "overflow-hidden",
-        className,
-      )}
+      className={cn(BUSINESS_VISUAL.showcaseCard, "overflow-hidden", className)}
       data-mockup-showcase-shell
     >
       {children}

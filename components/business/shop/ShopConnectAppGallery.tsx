@@ -27,7 +27,6 @@ export function ShopConnectAppGallery({ variant = "detail", className }: ShopCon
                   src={preview.src}
                   alt={`${preview.title} — UNZE Connect`}
                   embedded
-                  fillFrame
                   fallback={<MockScreen variant="community" device="phone" bare showcase />}
                 />
               </ProductMockupFrame>
