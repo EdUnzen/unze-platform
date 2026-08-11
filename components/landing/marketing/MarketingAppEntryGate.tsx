@@ -110,7 +110,7 @@ type AppNutzenButtonProps = {
 
 /**
  * App-CTA mit Hinweis-Dialog (Gruppen, Events, Inhalts-CTAs).
- * Header „App nutzen“ geht bewusst direkt zum Login — siehe MarketingHeader.
+ * Header „App nutzen“ geht direkt zur Connect-App — siehe MarketingHeader.
  */
 export function AppNutzenButton({
   children = CTA_APP_USE,
