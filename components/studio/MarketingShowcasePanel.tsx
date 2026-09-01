@@ -120,8 +120,11 @@ export function MarketingShowcasePanel({
           Wo finde ich die Bilder?
         </h2>
         <p className="mt-2 text-sm text-gray-600">
-          <strong>Diese Studio-Seite zeigt die Checkliste</strong> — die Dateien liegen im UNZE-App-Ordner auf
-          deiner Festplatte, nicht im Browser. Pfad relativ zum Projekt:
+          <strong>Diese Karten sind keine Videos.</strong> Antippen öffnet nichts — das sind nur Ordnerpfade
+          auf dem Rechner. Ansehen und zuschneiden geht in den Dateien, nicht hier im Handy.
+        </p>
+        <p className="mt-2 text-sm text-gray-600">
+          Pfad relativ zum Projekt:
           <code className="ml-1 rounded bg-white px-1.5 py-0.5 text-xs">Desktop/UNZE/UNZE APP/UNZE/</code>
         </p>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">

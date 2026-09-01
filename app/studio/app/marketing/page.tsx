@@ -31,7 +31,8 @@ export default async function StudioMarketingPage() {
           Marketing Showcase
         </h1>
         <p className="mt-1 text-sm text-gray-600">
-          Checkliste, Dateipfade und Werbevideo-Pipeline — Business, Connect, Studio
+          Hier siehst du, welche Screens und Videos vorbereitet sind. Zum Ansehen: unten bei einem Screen
+          <strong> Öffnen</strong> — die Werbevideos selbst liegen als Datei auf dem Rechner.
         </p>
       </div>
 
