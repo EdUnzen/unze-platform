@@ -23,7 +23,7 @@ export const DEVICE_VIEWPORT_ASPECT: Record<DeviceVariant, string> = {
   laptop: "aspect-[16/10]",
   desktop: "aspect-[16/10]",
   tablet: "aspect-[3/4]",
-  phone: "aspect-[9/19]",
+  phone: "aspect-[9/19.5]",
 };
 
 /** Mindesthöhen — Lesbarkeit vor Dekoration */

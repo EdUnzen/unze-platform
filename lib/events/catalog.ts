@@ -196,7 +196,7 @@ export const PLATFORM_EVENT_CATALOG: Record<PlatformEventType, EventDefinition> 
     label: "Rolle geändert",
     notification: {
       category: "community_event",
-      title: "Rolle geändert",
+      title: "Herzlichen Glückwunsch!",
       notifyTarget: true,
     },
     audit: { category: "role_change", actionTemplate: "Rolle geändert" },
@@ -238,13 +238,13 @@ export const PLATFORM_EVENT_CATALOG: Record<PlatformEventType, EventDefinition> 
   "badge.granted": {
     eventType: "badge.granted",
     domain: "badge",
-    label: "Badge vergeben",
+    label: "Auszeichnung vergeben",
     notification: {
       category: "community_event",
-      title: "Badge erhalten",
+      title: "Herzlichen Glückwunsch!",
       notifyTarget: true,
     },
-    audit: { category: "membership", actionTemplate: "Badge vergeben" },
+    audit: { category: "membership", actionTemplate: "Auszeichnung vergeben" },
   },
   "trust.score_changed": {
     eventType: "trust.score_changed",

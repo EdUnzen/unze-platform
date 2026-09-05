@@ -19,6 +19,7 @@ export function DeviceFrame({
   className = "",
   fillContainer = false,
   hideCaption = false,
+  chrome = "slim",
 }: {
   children: ReactNode;
   label?: string;
@@ -26,16 +27,44 @@ export function DeviceFrame({
   className?: string;
   fillContainer?: boolean;
   hideCaption?: boolean;
+  chrome?: "standard" | "slim";
 }) {
   const displayLabel = hideCaption ? undefined : (label ?? DEVICE_LABELS[variant]);
+  const phoneChrome =
+    chrome === "standard"
+      ? { border: 5, padding: 6, inset: 8 }
+      : { border: 3.5, padding: 4, inset: 6 };
 
   if (variant === "phone") {
     return (
-      <div className={cn("mx-auto w-full max-w-[260px]", className)} data-export="device-phone">
-        {/* Moderne Smartphone-Optik (iPhone-ähnlich) — kein Watch-Format */}
-        <div className="relative w-full rounded-[2.35rem] border-[7px] border-[#1c1c1e] bg-[#1c1c1e] p-[3px] shadow-2xl shadow-gray-900/30 ring-1 ring-black/20">
-          <div className="pointer-events-none absolute left-1/2 top-[7px] z-10 h-[16px] w-[72px] -translate-x-1/2 rounded-full bg-black" />
-          <div className="w-full overflow-hidden rounded-[1.9rem] bg-[#1c1c1e]">{children}</div>
+      <div className={cn("mx-auto h-auto w-full max-w-[320px] shrink-0", className)} data-export="device-phone">
+        {/* 1:1 Werkstatt OrganizerPhoneFrame — rund, Display kantenlos */}
+        <div
+          className="h-auto w-full shadow-lg"
+          style={{
+            borderRadius: "2.25rem",
+            border: `${phoneChrome.border}px solid hsl(222 20% 14%)`,
+            background: "hsl(222 20% 14%)",
+            padding: phoneChrome.padding,
+          }}
+        >
+          <div
+            className="relative h-auto w-full overflow-hidden"
+            style={{
+              aspectRatio: "9 / 19.5",
+              borderRadius: "1.85rem",
+              background: "hsl(222 20% 14%)",
+            }}
+          >
+            {/* Werkstatt-UI hat pt-9/px-3. Screenshots gehen in die Ecke — Glasrand,
+                damit Logo und Glocke nicht unter der Gehäuse-Rundung liegen. */}
+            <div
+              className="absolute overflow-hidden"
+              style={{ inset: phoneChrome.inset, borderRadius: "0.5rem" }}
+            >
+              {children}
+            </div>
+          </div>
         </div>
         {displayLabel ? (
           <p className="mt-4 max-w-full px-2 text-center text-xs font-medium leading-snug text-gray-500 break-words">

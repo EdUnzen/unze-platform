@@ -7,6 +7,7 @@ import {
   updateMemberRoleTitleAction,
 } from "@/app/dashboard/actions";
 import { BanMemberButton } from "@/components/dashboard/RestrictionsPanel";
+import { ActionSuccessBanner } from "@/components/ui/ActionSuccessBanner";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { RoleBadge } from "@/components/ui/RoleBadge";
 import { ASSIGNABLE_ROLES, ROLE_LABELS } from "@/lib/constants/dashboard";
@@ -42,6 +43,7 @@ export function MemberListClient({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [selectedBadgeByMember, setSelectedBadgeByMember] = useState<
     Record<string, string>
   >({});
@@ -49,8 +51,13 @@ export function MemberListClient({
   const handleRoleChange = (memberId: string, role: CommunityRole) => {
     startTransition(async () => {
       setError(null);
+      setSuccess(null);
       const result = await updateMemberRoleAction(slug, memberId, role);
       if (result.error) setError(result.error);
+      else if (result.message) {
+        setSuccess(result.message);
+        router.refresh();
+      }
     });
   };
 
@@ -65,8 +72,13 @@ export function MemberListClient({
   const handleRoleTitleBlur = (memberId: string, title: string) => {
     startTransition(async () => {
       setError(null);
+      setSuccess(null);
       const result = await updateMemberRoleTitleAction(slug, memberId, title);
       if (result.error) setError(result.error);
+      else if (result.message) {
+        setSuccess(result.message);
+        router.refresh();
+      }
     });
   };
 
@@ -74,11 +86,13 @@ export function MemberListClient({
     if (!badgeId) return;
     startTransition(async () => {
       setError(null);
+      setSuccess(null);
       const result = await grantBadgeAction(slug, badgeId, memberUserId, badgeName);
       if (result.error) {
         setError(result.error);
         return;
       }
+      setSuccess(result.message ?? "Auszeichnung vergeben");
       router.refresh();
     });
   };
@@ -93,6 +107,12 @@ export function MemberListClient({
 
   return (
     <div>
+      {success && <ActionSuccessBanner message={success} className="mb-3" />}
+      {error && (
+        <p className="mb-3 text-sm text-red-600" role="alert">
+          {error}
+        </p>
+      )}
       <ul className="flex flex-col gap-2">
         {members.map((member) => {
           const name = member.displayName ?? member.username ?? "Nutzer";
@@ -236,12 +256,6 @@ export function MemberListClient({
           );
         })}
       </ul>
-
-      {error && (
-        <p className="mt-3 text-center text-xs text-red-600" role="alert">
-          {error}
-        </p>
-      )}
     </div>
   );
 }

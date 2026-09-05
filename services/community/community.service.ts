@@ -24,11 +24,7 @@ import {
   updateCommunityInDb,
 } from "./community.repository";
 
-export function formatMemberCount(count: number): string {
-  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
-  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}k`;
-  return count.toString();
-}
+export { formatMemberCount } from "@/lib/utils/format-metrics";
 
 async function withViewerContext(communities: Community[]): Promise<Community[]> {
   if (communities.length === 0) return communities;

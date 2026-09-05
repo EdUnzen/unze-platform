@@ -9,6 +9,7 @@ interface CommunityGroupCardListProps {
   title?: string;
   subtitle?: string;
   layout?: "vertical" | "horizontal";
+  cardVariant?: "group" | "service";
 }
 
 export function CommunityGroupCardList({
@@ -16,6 +17,7 @@ export function CommunityGroupCardList({
   title,
   subtitle,
   layout = "vertical",
+  cardVariant,
 }: CommunityGroupCardListProps) {
   if (groups.length === 0) {
     return (
@@ -52,7 +54,7 @@ export function CommunityGroupCardList({
         >
           {groups.map((group) => (
             <li key={group.id}>
-              <CommunityGroupCard group={group} compact />
+              <CommunityGroupCard group={group} compact variant={cardVariant} />
             </li>
           ))}
         </ul>
@@ -60,7 +62,7 @@ export function CommunityGroupCardList({
         <ul className="flex flex-col gap-4">
           {groups.map((group) => (
             <li key={group.id}>
-              <CommunityGroupCard group={group} />
+              <CommunityGroupCard group={group} variant={cardVariant} />
             </li>
           ))}
         </ul>

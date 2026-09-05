@@ -12,6 +12,8 @@ export {
   canManageReports,
   canViewAuditLog,
   canManagePermissions,
+  canCreateAwards,
+  canGrantAwards,
   isCommunityCreator,
   isCommunityOwner,
   canAssignRole,

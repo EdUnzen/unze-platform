@@ -1,5 +1,5 @@
 import { RatingSummary } from "@/components/ui/RatingSummary";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import type { Community } from "@/types/community";
 import { cn } from "@/lib/utils/cn";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";

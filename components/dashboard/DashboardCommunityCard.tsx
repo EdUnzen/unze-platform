@@ -4,7 +4,7 @@ import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { resolveCommunityCover } from "@/lib/visual/auto-cover";
 import { ACCESS_STATUS_OPTIONS } from "@/lib/constants/access";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import { formatCompactCount } from "@/lib/utils/format-metrics";
 import type { ManagedCommunity } from "@/types/dashboard";
 import { ChevronRight, Eye, Share2, Users } from "lucide-react";

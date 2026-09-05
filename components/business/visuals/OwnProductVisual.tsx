@@ -1,5 +1,5 @@
 import {
-  AppPhoneStageShowcase,
+  AppPhoneShowcaseTile,
   type PhoneShowcaseItem,
 } from "@/components/business/visuals/AppPhoneCollageShowcase";
 import { MockScreen } from "@/components/business/visuals/MockScreen";
@@ -13,6 +13,8 @@ import {
   UNZE_CONNECT_LOGO,
 } from "@/lib/constants/business-product-assets";
 import type { OwnProductId } from "@/lib/constants/business-own-products";
+import { isOwnProductDiscontinued, UNZE_OWN_PRODUCTS } from "@/lib/constants/business-own-products";
+import { DiscontinuedOverlay } from "@/components/business/visuals/DiscontinuedMark";
 
 const PRODUCT_BRAND = {
   "unze-connect": {
@@ -28,7 +30,7 @@ const PRODUCT_BRAND = {
     src: MY_ORGANIZER_AI_HERO.src,
     alt: MY_ORGANIZER_AI_HERO.alt,
     productName: "My Organizer AI",
-    caption: "Offizielles App-Icon — Assistent, Dokumente & Kalender",
+    caption: "Nicht mehr für neue Kunden — Bestandskunden behalten Zugang",
     phones: [] as readonly PhoneShowcaseItem[],
     screens: ORGANIZER_PHONE_SHOWCASE.map((s) => ({
       src: s.src,
@@ -38,6 +40,12 @@ const PRODUCT_BRAND = {
     priorityIndex: 0,
   },
 } as const;
+
+const PORTFOLIO_VARIANT_FOR_PRODUCT: Partial<
+  Record<OwnProductId, "community" | "dashboard" | "admin" | "profile">
+> = {
+  "unze-connect": "dashboard",
+};
 
 function OrganizerDesktopStage({
   screens,
@@ -71,77 +79,96 @@ function ProductShowcaseLayout({
   layout: "card" | "compact";
 }) {
   const brand = PRODUCT_BRAND[productId];
+  const discontinued = isOwnProductDiscontinued(
+    UNZE_OWN_PRODUCTS.find((p) => p.id === productId) ?? { availability: "available" },
+  );
+  const faded = discontinued ? "opacity-50 grayscale" : "";
   const hasPhones = brand.phones.length > 0;
   const hasScreens = brand.screens.length > 0;
 
   const visual = hasPhones ? (
-    <AppPhoneStageShowcase
-      items={brand.phones}
-      priorityIndex={brand.priorityIndex}
-      showLabels={layout === "card"}
-    />
+    <ul className="grid justify-items-center gap-8 px-4 py-8 sm:grid-cols-3 sm:gap-6 md:px-8">
+      {brand.phones.slice(0, 3).map((item, i) => (
+        <li key={item.id} className="w-full max-w-[248px]">
+          <AppPhoneShowcaseTile
+            item={item}
+            priority={i === brand.priorityIndex || i === 0}
+            showLabels={layout === "card"}
+          />
+        </li>
+      ))}
+    </ul>
   ) : hasScreens ? (
     <OrganizerDesktopStage screens={brand.screens} />
   ) : null;
 
   if (layout === "compact") {
-    return (
-      <div className="flex h-full min-h-[360px] flex-col">
-        {visual ? (
-          <div className="grid flex-1 grid-cols-1 md:grid-cols-[minmax(0,0.35fr)_minmax(0,1fr)]">
-            <div className="flex items-center justify-center bg-white">
-              <ProductBrandPanel
-                src={brand.src}
-                alt={brand.alt}
-                productName={brand.productName}
-                size="compact"
-              />
-            </div>
-            <div className="flex items-center justify-center border-t border-gray-100 bg-gray-50/80 px-4 py-6 md:border-l md:border-t-0 md:px-6 md:py-8">
-              {visual}
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-1 items-center justify-center bg-white">
-            <ProductBrandPanel
-              src={brand.src}
-              alt={brand.alt}
-              productName={brand.productName}
-              caption={brand.caption}
-              size="compact"
+    if (hasPhones) {
+      const shot = brand.phones[brand.priorityIndex] ?? brand.phones[0];
+      return (
+        <div className="relative flex justify-center bg-gray-50/80 px-4 py-8 md:py-10">
+          {discontinued ? <DiscontinuedOverlay /> : null}
+          <div className={`w-full max-w-[248px] ${faded}`}>
+            <PortfolioPhoneShowcase
+              screenshot={shot}
+              label=""
+              variant={PORTFOLIO_VARIANT_FOR_PRODUCT[productId] ?? "community"}
+              presentation="standard"
             />
           </div>
-        )}
+        </div>
+      );
+    }
+
+    return (
+      <div className="relative flex min-h-[280px] items-center justify-center bg-gray-50/80 px-6 py-10">
+        {discontinued ? <DiscontinuedOverlay /> : null}
+        <div className={faded || undefined}>
+          <ProductBrandPanel
+            src={brand.src}
+            alt={brand.alt}
+            productName={brand.productName}
+            caption={brand.caption}
+            size="compact"
+            discontinued={discontinued}
+          />
+        </div>
       </div>
     );
   }
 
   if (!visual) {
     return (
-      <div className="flex min-h-[380px] items-center justify-center bg-white p-10 md:p-14">
-        <ProductBrandPanel
-          src={brand.src}
-          alt={brand.alt}
-          productName={brand.productName}
-          caption={brand.caption}
-          size="card"
-        />
+      <div className="relative flex min-h-[380px] items-center justify-center bg-white p-10 md:p-14">
+        {discontinued ? <DiscontinuedOverlay /> : null}
+        <div className={faded || undefined}>
+          <ProductBrandPanel
+            src={brand.src}
+            alt={brand.alt}
+            productName={brand.productName}
+            caption={brand.caption}
+            size="card"
+            discontinued={discontinued}
+          />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="grid md:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
-      <div className="flex items-center justify-center border-b border-gray-100 bg-white md:border-b-0 md:border-r">
+    <div className="relative grid md:grid-cols-[minmax(0,0.7fr)_minmax(0,1.3fr)]">
+      {discontinued ? <DiscontinuedOverlay /> : null}
+      <div className={`flex items-center justify-center border-b border-gray-100 bg-white md:border-b-0 md:border-r ${faded}`}>
         <ProductBrandPanel
           src={brand.src}
           alt={brand.alt}
           productName={brand.productName}
           caption={brand.caption}
           size="card"
+          discontinued={discontinued}
         />
       </div>
-      <div className="bg-gray-50/70 p-5 md:p-7 lg:p-9">{visual}</div>
+      <div className={`bg-gray-50/70 p-5 md:p-7 lg:p-9 ${faded}`}>{visual}</div>
     </div>
   );
 }
@@ -178,16 +205,18 @@ export function PortfolioPhoneShowcase({
   variant = "community",
   presentation = "standard",
   priority = false,
+  chrome = "slim",
 }: {
   screenshot?: PhoneShowcaseItem;
   label: string;
   variant?: "community" | "dashboard" | "admin" | "profile";
   presentation?: "standard" | "hero";
   priority?: boolean;
+  chrome?: "standard" | "slim";
 }) {
   if (screenshot?.src) {
     return (
-      <ProductMockupFrame device="phone" label={label} presentation={presentation}>
+      <ProductMockupFrame device="phone" label={label} presentation={presentation} chrome={chrome}>
         <ReferencePhoneScreenshot
           src={screenshot.src}
           alt={screenshot.alt}

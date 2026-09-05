@@ -5,6 +5,7 @@ import { UnzeLogo } from "@/components/brand/UnzeLogo";
 import { MarketingModeInit } from "@/components/marketing/MarketingModeInit";
 import { FirstVisitOnboarding } from "@/components/onboarding/FirstVisitOnboarding";
 import { InstallPrompt } from "@/components/pwa/InstallPrompt";
+import { PushNotificationManager } from "@/components/pwa/PushNotificationManager";
 import { PwaBootstrap } from "@/components/pwa/PwaBootstrap";
 import { RoutePrefetch } from "@/components/pwa/RoutePrefetch";
 import { ShellHydrator } from "@/components/pwa/ShellHydrator";
@@ -45,6 +46,7 @@ export async function PlatformShell({ children }: PlatformShellProps) {
         <InstallPrompt />
         <RoutePrefetch />
         <PwaBootstrap userId={user?.id ?? null} />
+        <PushNotificationManager userId={user?.id ?? null} />
       </div>
     </ShellHydrator>
   );

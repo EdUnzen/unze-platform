@@ -10,6 +10,7 @@ const STATUS_COLORS = {
   live: "bg-emerald-50 text-emerald-800",
   beta: "bg-blue-50 text-blue-800",
   development: "bg-gray-100 text-gray-600",
+  discontinued: "bg-gray-100 text-gray-500",
 } as const;
 
 export function ProductOverviewSection({
@@ -40,7 +41,15 @@ export function ProductOverviewSection({
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-sm font-semibold text-gray-900">{product.name}</h3>
+                  <h3
+                    className={`text-sm font-semibold text-gray-900 ${
+                      product.status === "discontinued"
+                        ? "line-through decoration-gray-400 decoration-2"
+                        : ""
+                    }`}
+                  >
+                    {product.name}
+                  </h3>
                   <span
                     className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${STATUS_COLORS[product.status]}`}
                   >

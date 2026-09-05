@@ -1,6 +1,6 @@
 import catalogJson from "@/docs/marketing/showcase-catalog.json";
 
-export type ShowcaseCategoryId = "business" | "connect" | "studio" | "template";
+export type ShowcaseCategoryId = "landing" | "business" | "connect" | "studio" | "template";
 export type ShowcaseAuth = null | "connect" | "studio";
 export type ShowcasePriority = "high" | "medium" | "low";
 export type ShowcaseStatus = "ready" | "partial" | "planned";

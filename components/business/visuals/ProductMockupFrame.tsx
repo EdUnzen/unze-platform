@@ -21,6 +21,7 @@ export type ProductMockupFrameProps = {
   priority?: boolean;
   /** Demo-/KI-Visual — dezente EU-Kennzeichnung */
   synthetic?: boolean;
+  chrome?: "standard" | "slim";
 };
 
 /**
@@ -36,6 +37,7 @@ export function ProductMockupFrame({
   className,
   fillContainer = true,
   synthetic = false,
+  chrome = "slim",
 }: ProductMockupFrameProps) {
   const isPhone = device === "phone";
   const displayLabel = caption ? undefined : label;
@@ -59,14 +61,12 @@ export function ProductMockupFrame({
   if (isPhone) {
     return (
       <figure
-        className={cn("mx-auto flex w-full max-w-[280px] flex-col items-stretch", BUSINESS_VISUAL.figureGap, className)}
+        className={cn("mx-auto flex w-full max-w-[320px] flex-col items-stretch", BUSINESS_VISUAL.figureGap, className)}
         data-export="product-mockup-phone"
       >
         <div className="w-full">
-          <DeviceFrame variant="phone" label={displayLabel} hideCaption={!!caption || synthetic}>
-            <MockupViewport device="phone" presentation={presentation}>
-              {children}
-            </MockupViewport>
+          <DeviceFrame variant="phone" label={displayLabel} hideCaption={!!caption || synthetic || !displayLabel} chrome={chrome}>
+            {children}
           </DeviceFrame>
         </div>
         {captionBlock}

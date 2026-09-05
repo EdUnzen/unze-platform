@@ -1,4 +1,5 @@
 import type { ActivityFeedItem } from "@/types/events";
+import { resolveActivityCopy } from "@/lib/activity/resolve-activity-copy";
 import {
   Award,
   CreditCard,
@@ -11,6 +12,7 @@ import {
 interface ActivityFeedProps {
   items: ActivityFeedItem[];
   emptyMessage?: string;
+  viewerUserId?: string | null;
 }
 
 function formatRelativeTime(iso: string): string {
@@ -40,6 +42,7 @@ const DOMAIN_ICONS: Record<string, LucideIcon> = {
 export function ActivityFeed({
   items,
   emptyMessage = "Noch keine Aktivitäten.",
+  viewerUserId = null,
 }: ActivityFeedProps) {
   if (items.length === 0) {
     return (
@@ -51,6 +54,7 @@ export function ActivityFeed({
     <ul className="space-y-3">
       {items.map((item) => {
         const Icon = DOMAIN_ICONS[item.domain] ?? Users;
+        const copy = resolveActivityCopy(item, viewerUserId);
         return (
           <li
             key={item.id}
@@ -60,8 +64,11 @@ export function ActivityFeed({
               <Icon className="h-4 w-4" aria-hidden />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-medium text-unze-ink">{item.label}</p>
-              <p className="text-xs text-unze-ink-secondary">
+              <p className="text-sm font-medium text-unze-ink">{copy.title}</p>
+              {copy.subtitle && (
+                <p className="text-xs text-unze-ink-secondary">{copy.subtitle}</p>
+              )}
+              <p className="text-xs text-unze-ink-muted">
                 {formatRelativeTime(item.createdAt)}
               </p>
             </div>

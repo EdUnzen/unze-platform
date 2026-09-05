@@ -1,3 +1,4 @@
+import { PublicAwardsPanel } from "@/components/profile/PublicAwardsPanel";
 import { CommunityCardList } from "@/components/community/CommunityCardList";
 import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
 import { CreatorReviewsSection } from "@/components/creator/CreatorReviewsSection";
@@ -5,7 +6,7 @@ import { ReportDialog } from "@/components/governance/ReportDialog";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { VerificationInfoTrigger } from "@/components/verification/VerificationInfoTrigger";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import type { CreatorPublicProfile } from "@/services/creator/creator.service";
 import { Users } from "lucide-react";
 
@@ -14,7 +15,7 @@ interface CreatorPublicProfileViewProps {
 }
 
 export function CreatorPublicProfileView({ profile }: CreatorPublicProfileViewProps) {
-  const { creator, communities, groups, reviews } = profile;
+  const { creator, communities, groups, reviews, publicAwards } = profile;
 
   return (
     <div className="page-padding">
@@ -72,6 +73,8 @@ export function CreatorPublicProfileView({ profile }: CreatorPublicProfileViewPr
           />
         </div>
       </section>
+
+      <PublicAwardsPanel awards={publicAwards} creatorName={creator.name} />
 
       {communities.length > 0 ? (
         <CommunityCardList

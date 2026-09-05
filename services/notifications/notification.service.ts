@@ -25,7 +25,7 @@ export async function getUnreadNotifications(limit = 20) {
   return data ?? [];
 }
 
-/** Push-Subscription speichern (Web Push API — Integration folgt) */
+/** Push-Subscription speichern (Web Push API) */
 export async function savePushSubscription(input: {
   endpoint: string;
   p256dh: string;

@@ -1,3 +1,4 @@
+import { resolvePushUrl } from "@/lib/push/resolve-push-url";
 import { createClient } from "@/lib/supabase/server";
 import type {
   NotificationCategory,
@@ -5,6 +6,7 @@ import type {
   NotificationPreferences,
 } from "@/types/governance";
 import { insertNotificationInDb } from "./notification.repository";
+import { sendPushToUser } from "./push.service";
 
 const CATEGORY_TO_TYPE: Record<NotificationCategory, string> = {
   application: "application",
@@ -25,16 +27,30 @@ export async function dispatchNotification(input: {
   const prefs = await getNotificationPreferences(input.userId);
   if (!isCategoryEnabled(prefs, input.category)) return { error: null };
 
-  return insertNotificationInDb({
+  const type = input.type ?? CATEGORY_TO_TYPE[input.category];
+  const data = {
+    category: input.category,
+    ...input.data,
+  };
+
+  const result = await insertNotificationInDb({
     userId: input.userId,
     title: input.title,
     body: input.body,
-    type: input.type ?? CATEGORY_TO_TYPE[input.category],
-    data: {
-      category: input.category,
-      ...input.data,
-    },
+    type,
+    data,
   });
+
+  if (!result.error && prefs?.pushEnabled) {
+    void sendPushToUser({
+      userId: input.userId,
+      title: input.title,
+      body: input.body,
+      url: resolvePushUrl({ category: input.category, type, data }),
+    });
+  }
+
+  return result;
 }
 
 function isCategoryEnabled(

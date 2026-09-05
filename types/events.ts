@@ -71,6 +71,7 @@ export interface PublishPlatformEventInput {
   idempotencyKey?: string | null;
   /** Zusätzliche Empfänger für Notifications (z.B. Reviewer) */
   notifyUserIds?: string[];
+  notificationTitleOverride?: string;
   notificationBodyOverride?: string;
   skipHandlers?: string[];
 }
@@ -101,7 +102,10 @@ export interface ActivityFeedItem {
   domain: PlatformEventDomain;
   label: string;
   actorId: string | null;
+  targetUserId?: string | null;
   communityId: string | null;
+  communityTitle?: string | null;
+  communitySlug?: string | null;
   payload: Record<string, unknown>;
   createdAt: string;
 }

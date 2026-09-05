@@ -163,7 +163,7 @@ export const BUSINESS_COPY = {
       eyebrow: "Unsere Produkte",
       title: "Eigene Software — Referenz unserer Entwicklung",
       subtitle:
-        "UNZE Connect und My Organizer AI sind eigenständige Produkte von UNZE Business — keine Module von Business Core, keine Dienstleistungspakete.",
+        "UNZE Connect ist ein eigenständiges Produkt von UNZE Business. My Organizer AI ist aufgrund einer neuen Ausrichtung nicht mehr für neue Kunden verfügbar.",
       cta: "Produkte ansehen",
       href: "/business/produkte",
     },
@@ -240,7 +240,7 @@ export const BUSINESS_COPY = {
       eyebrow: "Produkte",
       title: "Eigene Software — getrennt von unseren Leistungen",
       text:
-        "UNZE Connect und My Organizer AI sind eigenständige Produkte von UNZE Business. Sie dienen als Referenz für unsere Entwicklungskompetenz — nicht als Module von Business Core.",
+        "UNZE Connect ist ein eigenständiges Produkt von UNZE Business und dient als Referenz für unsere Entwicklungskompetenz. My Organizer AI ist für neue Kunden nicht mehr verfügbar.",
       cta: "Produkte ansehen",
       href: "/business/produkte",
     },
@@ -439,6 +439,11 @@ export const BUSINESS_COPY = {
         "Interne Verwaltungstools",
       ],
     },
+    sales: [
+      "Individuelle Apps ersetzen Excel, E-Mail-Chaos und Insellösungen — mit einer Oberfläche, die Ihr Team wirklich nutzt.",
+      "Wir entwickeln Web-Apps, PWAs und mobile Apps für Buchungen, Mitglieder, Kundenportale und interne Abläufe. Kein Baukasten von der Stange: der Prozess steht im Mittelpunkt, die App folgt.",
+      "UNZE Connect ist unsere eigene Referenz — dieselbe Qualität in Bedienung und Aufbau fließt in Ihr Projekt.",
+    ],
   },
   ki: {
     hero: {

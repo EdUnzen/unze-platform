@@ -12,41 +12,63 @@ import { OwnProductVisual } from "@/components/business/visuals/OwnProductVisual
 import {
   OWN_PRODUCTS_INTRO,
   UNZE_OWN_PRODUCTS,
+  isOwnProductDiscontinued,
   type OwnProduct,
 } from "@/lib/constants/business-own-products";
 import { BUSINESS_COPY } from "@/lib/constants/business-copy";
+import { DiscontinuedBadge } from "@/components/business/visuals/DiscontinuedMark";
 
 function ProductCard({ product }: { product: OwnProduct }) {
   const isConnect = product.id === "unze-connect";
+  const discontinued = isOwnProductDiscontinued(product);
 
   return (
     <article
-      className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm"
+      className={`overflow-hidden rounded-3xl border bg-white shadow-sm ${
+        discontinued ? "border-gray-200 opacity-90" : "border-gray-100"
+      }`}
       data-export={`own-product-${product.id}`}
     >
       <div className="p-8 md:p-10">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-600/10">
-          <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
-          {product.statusLabel}
-        </span>
+        {discontinued ? (
+          <DiscontinuedBadge />
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-emerald-600/10">
+            <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
+            {product.statusLabel}
+          </span>
+        )}
         <h2 className="mt-4 font-[family-name:var(--font-display)] text-2xl font-bold text-balance text-gray-900 md:text-3xl">
-          {product.name}
+          <span className={discontinued ? "line-through decoration-gray-400 decoration-2" : undefined}>
+            {product.name}
+          </span>
         </h2>
-        <p className="mt-1 text-sm font-medium text-[#00C853]">{product.tagline}</p>
+        <p className={`mt-1 text-sm font-medium ${discontinued ? "text-gray-500" : "text-[#00C853]"}`}>
+          {product.tagline}
+        </p>
         <p className="mt-4 max-w-3xl text-base leading-relaxed text-pretty text-gray-600">
           {product.description}
         </p>
+        {product.availabilityNote ? (
+          <p className="mt-4 max-w-3xl rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm leading-relaxed text-pretty text-gray-700">
+            {product.availabilityNote}
+          </p>
+        ) : null}
         <ul className="mt-6 flex flex-wrap gap-2">
           {product.highlights.map((h) => (
             <li
               key={h}
-              className="rounded-full bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600"
+              className={`rounded-full px-3 py-1 text-xs font-medium ${
+                discontinued
+                  ? "bg-gray-50 text-gray-400 line-through decoration-gray-300"
+                  : "bg-gray-50 text-gray-600"
+              }`}
             >
               {h}
             </li>
           ))}
         </ul>
-        {product.href ? (
+        {product.href && !discontinued ? (
           <Link
             href={product.href}
             target="_blank"

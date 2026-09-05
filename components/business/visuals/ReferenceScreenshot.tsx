@@ -80,15 +80,14 @@ export function ReferenceScreenshot({
   );
 }
 
-/** Screenshot im Smartphone-Viewport — proportional, vollständig sichtbar (contain) */
+/** Screenshot füllt das runde Display — kein Weißrand, kein object-contain */
 export function ReferencePhoneScreenshot({
   src,
   alt,
   fallback,
   priority = false,
   presentation = "standard" as MockupPresentation,
-  embedded = false,
-  /** @deprecated — immer contain; nur Abwärtskompatibilität */
+  embedded = true,
   fillFrame = false,
 }: {
   src: string;
@@ -97,38 +96,30 @@ export function ReferencePhoneScreenshot({
   priority?: boolean;
   presentation?: MockupPresentation;
   embedded?: boolean;
-  /** @deprecated — ignoriert; immer object-contain laut Mockup-Standard */
   fillFrame?: boolean;
 }) {
   const [failed, setFailed] = useState(false);
+  void presentation;
   void fillFrame;
+  void embedded;
 
-  const imageContent = failed ? (
-    fallback
-  ) : (
-    <Image
-      src={src}
-      alt={alt}
-      fill
-      priority={priority}
-      quality={BUSINESS_MOCKUP_STANDARD.screenshotQuality}
-      sizes="(max-width: 640px) 40vw, 280px"
-      className="object-contain object-center"
-      onError={() => setFailed(true)}
-      onLoad={(event) => {
-        const img = event.currentTarget;
-        if (img.naturalWidth < 2 || img.naturalHeight < 2) setFailed(true);
-      }}
-    />
-  );
-
-  if (embedded) {
-    return <div className="relative h-full w-full">{imageContent}</div>;
+  if (failed) {
+    return <div className="absolute inset-0 overflow-hidden" style={{ borderRadius: "inherit" }}>{fallback}</div>;
   }
 
   return (
-    <MockupViewport device="phone" presentation={presentation}>
-      {imageContent}
-    </MockupViewport>
+    <div className="absolute inset-0 overflow-hidden" style={{ borderRadius: "inherit" }}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority={priority}
+        quality={BUSINESS_MOCKUP_STANDARD.screenshotQuality}
+        sizes="248px"
+        className="!h-full !w-full !max-h-none !max-w-none"
+        style={{ objectFit: "cover", objectPosition: "center top" }}
+        onError={() => setFailed(true)}
+      />
+    </div>
   );
 }

@@ -1,3 +1,4 @@
+import { GroupRequirementsHint } from "@/components/community/GroupRequirementsHint";
 import { ServiceBookingPanel } from "@/components/services/ServiceBookingPanel";
 import { ReportDialog } from "@/components/governance/ReportDialog";
 import { RatingSummary } from "@/components/ui/RatingSummary";
@@ -7,7 +8,7 @@ import { EntityReviewsSection } from "@/components/reviews/EntityReviewsSection"
 import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
 import { resolveGroupCoverDisplay } from "@/lib/visual/resolve-banner";
 import { getGroupVisualSeed } from "@/lib/demo/group-visuals";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import { getGroupBySlugs } from "@/services/community/group.service";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import { getCommunityEventsListed } from "@/services/events/event.service";
@@ -142,6 +143,8 @@ export default async function GroupPage({ params }: GroupPageProps) {
         </div>
 
         <aside className="order-1 space-y-4">
+          {user && <GroupRequirementsHint userId={user.id} groupId={group.id} />}
+
           {isService ? (
             <ServiceBookingPanel
               communityId={group.communityId}

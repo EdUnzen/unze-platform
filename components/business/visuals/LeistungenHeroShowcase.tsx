@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { BusinessScrollReveal } from "@/components/business/BusinessScrollReveal";
 import { BusinessShowcaseCard } from "@/components/business/BusinessUi";
-import { AppPhoneStageShowcase } from "@/components/business/visuals/AppPhoneCollageShowcase";
+import { AppPhoneShowcaseTile } from "@/components/business/visuals/AppPhoneCollageShowcase";
 import { CONNECT_PLATFORM_SHOWCASE } from "@/lib/constants/business-connect-showcase";
 import { ReferenceBrowserShowcase } from "@/components/business/visuals/ReferenceShowcase";
 import { BUSINESS_VISUAL } from "@/lib/constants/business-visual-tokens";
@@ -20,7 +20,9 @@ function LeistungVisual({
   if (item.id === "apps") {
     return (
       <div className="flex justify-center py-2">
-        <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} />
+        <div className="w-full max-w-[248px]">
+          <AppPhoneShowcaseTile item={CONNECT_PLATFORM_SHOWCASE[1]} priority={priority} showLabels={false} />
+        </div>
       </div>
     );
   }

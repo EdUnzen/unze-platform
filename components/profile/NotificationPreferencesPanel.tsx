@@ -2,12 +2,17 @@
 
 import { saveNotificationPrefsAction } from "@/app/profile/notification-actions";
 import { ActionSuccessBanner } from "@/components/ui/ActionSuccessBanner";
+import {
+  isPushSupported,
+  subscribeToPush,
+  unsubscribeFromPush,
+} from "@/lib/push/client";
 import type { NotificationPreferences } from "@/types/governance";
 import { cn } from "@/lib/utils/cn";
 import { Bell } from "lucide-react";
 import { useState, useTransition } from "react";
 
-type PrefsForm = NotificationPreferences & {
+type PrefsForm = Omit<NotificationPreferences, "userId"> & {
   newGroups: boolean;
   newServices: boolean;
   newPosts: boolean;
@@ -15,6 +20,8 @@ type PrefsForm = NotificationPreferences & {
   communityUpdates: boolean;
   monetizationChanges: boolean;
   creatorReferrals: boolean;
+  ownAwards: boolean;
+  ownRoles: boolean;
 };
 
 interface NotificationPreferencesPanelProps {
@@ -56,6 +63,7 @@ export function NotificationPreferencesPanel({
   initial,
 }: NotificationPreferencesPanelProps) {
   const [success, setSuccess] = useState(false);
+  const [pushError, setPushError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
   return (
@@ -65,18 +73,44 @@ export function NotificationPreferencesPanel({
         <h2 className="text-sm font-semibold text-unze-ink">Benachrichtigungen</h2>
       </div>
       <p className="mb-4 text-xs text-unze-ink-secondary">
-        Push-Versand folgt — Einstellungen werden bereits gespeichert.
+        Persönliche Meilensteine (Auszeichnung, Rolle) sind nur für dich sichtbar.
+        Community-weite Updates kannst du separat steuern.
       </p>
 
       <form
         className="space-y-2"
         action={(formData) => {
           startTransition(async () => {
+            setPushError(null);
+            const wantsPush = formData.get("pushEnabled") === "on";
+
+            if (wantsPush && isPushSupported()) {
+              const sub = await subscribeToPush();
+              if (sub.error) {
+                setPushError(sub.error);
+                formData.delete("pushEnabled");
+              }
+            } else if (!wantsPush) {
+              await unsubscribeFromPush();
+            }
+
             const result = await saveNotificationPrefsAction(userId, formData);
             if (!result.error) setSuccess(true);
           });
         }}
       >
+        <ToggleRow
+          name="ownAwards"
+          label="Eigene Auszeichnungen"
+          description="z. B. „Herzlichen Glückwunsch — du hast SSL Coach erhalten“"
+          defaultChecked={initial.ownAwards}
+        />
+        <ToggleRow
+          name="ownRoles"
+          label="Eigene Rollen & Titel"
+          description="z. B. wenn du Admin wirst oder einen Titel wie „Gruppenadmin SSL Coaching“ erhältst"
+          defaultChecked={initial.ownRoles}
+        />
         <ToggleRow
           name="communityEvents"
           label="Neue Events"
@@ -136,10 +170,20 @@ export function NotificationPreferencesPanel({
         />
         <ToggleRow
           name="pushEnabled"
-          label="Push-Benachrichtigungen (vorbereitet)"
-          description="Aktivierung folgt mit PWA-Push"
+          label="Push-Benachrichtigungen"
+          description={
+            isPushSupported()
+              ? "Browser- oder App-Hinweise zu Communities, denen du folgst oder beigetreten bist"
+              : "In diesem Browser nicht verfügbar — nutze die installierte UNZE-App"
+          }
           defaultChecked={initial.pushEnabled}
         />
+
+        {pushError && (
+          <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+            {pushError}
+          </p>
+        )}
 
         {success && <ActionSuccessBanner message="Einstellungen gespeichert" className="mt-3" />}
 

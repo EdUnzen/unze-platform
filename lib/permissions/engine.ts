@@ -99,6 +99,20 @@ export function canManagePermissions(
   return hasCommunityPermission(role, "manage_permissions", overrides);
 }
 
+export function canCreateAwards(
+  role: CommunityRole | null | undefined,
+  overrides?: PermissionOverride[],
+): boolean {
+  return hasCommunityPermission(role, "create_awards", overrides);
+}
+
+export function canGrantAwards(
+  role: CommunityRole | null | undefined,
+  overrides?: PermissionOverride[],
+): boolean {
+  return hasCommunityPermission(role, "grant_awards", overrides);
+}
+
 export function isCommunityCreator(role: CommunityRole | null | undefined): boolean {
   return role === "creator";
 }

@@ -6,12 +6,12 @@ import { ShareMenu } from "@/components/share/ShareMenu";
 import { GroupPriceBadge } from "@/components/ui/PriceBadge";
 import { GroupCoverVisual } from "@/components/visual/GroupCoverVisual";
 import { resolveGroupCoverDisplay } from "@/lib/visual/resolve-banner";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import type { DiscoverGroup } from "@/types/community";
 import { RatingSummary } from "@/components/ui/RatingSummary";
 import { hasReviews } from "@/lib/utils/ratings";
 import { cn } from "@/lib/utils/cn";
-import { BadgeCheck, Lock, TrendingUp, Users } from "lucide-react";
+import { BadgeCheck, Lock, TrendingUp, Users, Wrench, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { memo } from "react";
 import { PlatformBadge } from "./PlatformBadge";
@@ -20,13 +20,17 @@ interface CommunityGroupCardProps {
   group: DiscoverGroup;
   className?: string;
   compact?: boolean;
+  variant?: "group" | "service";
 }
 
 function CommunityGroupCardInner({
   group,
   className,
   compact = false,
+  variant,
 }: CommunityGroupCardProps) {
+  const cardVariant = variant ?? (group.groupType === "service" ? "service" : "group");
+  const isService = cardVariant === "service";
   const href = `/community/${group.communitySlug}/group/${group.slug}`;
   const shareUrl = `${getAppUrl()}${href}`;
   const visual = getGroupVisual(group.communitySlug, group.slug);
@@ -44,6 +48,7 @@ function CommunityGroupCardInner({
       className={cn(
         "glass-card overflow-hidden rounded-3xl shadow-card transition-all duration-300",
         "hover:shadow-card-hover",
+        isService && "ring-1 ring-unze-green/20",
         compact ? "w-[280px] shrink-0 snap-start" : "w-full",
         className,
       )}
@@ -63,6 +68,12 @@ function CommunityGroupCardInner({
                 compact={compact}
               />
             <div className="absolute left-3 top-3 z-10 flex flex-wrap gap-1.5 pr-10">
+              {isService && (
+                <span className="inline-flex items-center gap-0.5 rounded-lg bg-unze-green/90 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
+                  <Wrench className="h-3 w-3" aria-hidden />
+                  Service
+                </span>
+              )}
               <PlatformBadge platform={group.platformType} variant="overlay" />
               {group.isTrending && (
                 <span className="inline-flex items-center gap-0.5 rounded-lg bg-white/20 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
@@ -126,24 +137,41 @@ function CommunityGroupCardInner({
 
             <CardEngagementStrip metrics={group.engagement} className="mb-2" max={2} />
 
-            {(group.priceCents != null && group.priceCents > 0) ||
-            group.groupType === "service" ? (
+            {(group.priceCents != null && group.priceCents > 0) || isService ? (
               <div className="mb-3">
                 <GroupPriceBadge
                   priceCents={group.priceCents}
                   currency={group.currency}
-                  isService={group.groupType === "service"}
+                  isService={isService}
                 />
               </div>
             ) : null}
 
+            {isService && !compact && (
+              <p className="mb-3 inline-flex items-center gap-1 text-xs font-semibold text-unze-green">
+                Details &amp; Buchung
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden />
+              </p>
+            )}
+
             <div className="flex items-center justify-between border-t border-unze-border/80 pt-3">
               <div className="flex flex-wrap items-center gap-2">
                 <PlatformBadge platform={group.platformType} variant="footer" />
-                <span className="flex items-center gap-1 text-xs text-unze-ink-secondary">
-                  <Users className="h-3.5 w-3.5" aria-hidden />
-                  {formatMemberCount(group.memberCount)}
-                </span>
+                {!isService && (
+                  <span className="flex items-center gap-1 text-xs text-unze-ink-secondary">
+                    <Users className="h-3.5 w-3.5" aria-hidden />
+                    {formatMemberCount(group.memberCount)}
+                  </span>
+                )}
+                {isService && hasReviews(group.reviewCount) && (
+                  <RatingSummary
+                    rating={group.rating}
+                    reviewCount={group.reviewCount}
+                    showCount
+                    starClassName="h-3 w-3"
+                    className="text-xs text-unze-ink-secondary"
+                  />
+                )}
               </div>
               <span className="text-[11px] text-unze-ink-muted">{group.category}</span>
             </div>

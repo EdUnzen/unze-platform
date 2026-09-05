@@ -1,7 +1,7 @@
 import type { CommunityDashboardStats } from "@/types/dashboard";
 import { cn } from "@/lib/utils/cn";
 import { Award, Eye, FileText, Heart, Share2, Users, FolderOpen } from "lucide-react";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import { formatCompactCount } from "@/lib/utils/format-metrics";
 import Link from "next/link";
 

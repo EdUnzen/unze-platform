@@ -39,4 +39,14 @@ export const ACTION_MESSAGES = {
     paymentSuccess: "Zahlung erfolgreich",
     paymentFailed: "Zahlung fehlgeschlagen",
   },
+  awards: {
+    created: "Auszeichnung erstellt",
+    updated: "Auszeichnung gespeichert",
+    archived: "Auszeichnung archiviert",
+    granted: "Auszeichnung vergeben",
+  },
+  roles: {
+    updated: "Rolle gespeichert",
+    titleUpdated: "Anzeigetitel gespeichert",
+  },
 } as const;

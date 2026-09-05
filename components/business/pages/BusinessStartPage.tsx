@@ -209,7 +209,7 @@ export function BusinessStartPage() {
             className={`max-w-2xl ${BUSINESS_VISUAL.sectionIntroMb}`}
           />
         </BusinessScrollReveal>
-        <div className={`${BUSINESS_VISUAL.cardGrid} md:grid-cols-2`}>
+        <div className={`${BUSINESS_VISUAL.cardGrid} items-start md:grid-cols-2`}>
           {UNZE_OWN_PRODUCTS.map((product, i) => (
             <div key={product.id}>
               <BusinessProductShowcaseCard

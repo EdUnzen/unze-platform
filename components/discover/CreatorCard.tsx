@@ -1,4 +1,4 @@
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import { getCreatorProfilePath } from "@/services/creator/creator.service";
 import type { PlatformCreator } from "@/types/creator";
 import { UserAvatar } from "@/components/ui/UserAvatar";

@@ -23,6 +23,7 @@ export function ProductBrandPanel({
   productName,
   size = "card",
   className,
+  discontinued = false,
 }: {
   src: string;
   alt: string;
@@ -31,6 +32,7 @@ export function ProductBrandPanel({
   productName?: string;
   size?: ProductBrandPanelSize;
   className?: string;
+  discontinued?: boolean;
 }) {
   const isInline = size === "footer";
 
@@ -62,7 +64,9 @@ export function ProductBrandPanel({
       {icon}
       {productName ? (
         <p className="mt-4 text-center font-[family-name:var(--font-display)] text-base font-semibold tracking-tight text-gray-900 sm:text-lg">
-          {productName}
+          <span className={discontinued ? "line-through decoration-gray-400 decoration-2" : undefined}>
+            {productName}
+          </span>
         </p>
       ) : null}
       {caption ? (

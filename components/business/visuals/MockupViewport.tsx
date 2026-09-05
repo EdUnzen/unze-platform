@@ -16,7 +16,7 @@ type MockupViewportProps = {
 
 /**
  * Einheitlicher Viewport für Screenshots und Live-Previews.
- * Hält Proportionen, erzwingt keine Verzerrung — Inhalt wird vollständig sichtbar gehalten.
+ * Hält Proportionen — Screenshot sitzt im Display, ohne Abschneiden.
  */
 export function MockupViewport({
   children,
@@ -30,21 +30,16 @@ export function MockupViewport({
     <div
       className={cn(
         "relative w-full overflow-hidden",
-        isPhone ? "aspect-[9/19] bg-[#1c1c1e]" : "bg-gray-50",
-        mockupViewportClass(device, presentation),
+        isPhone ? "h-full min-h-0 w-full bg-transparent" : "bg-gray-50",
+        isPhone ? "" : mockupViewportClass(device, presentation),
         className,
       )}
-      style={isPhone ? { aspectRatio: "9 / 19" } : undefined}
       data-mockup-viewport
       data-device={device}
       data-presentation={presentation}
     >
       {isPhone ? (
-        /* Dunkler Innenrand sichtbar gegen weißes App-UI — Inline-Style, damit Tailwind JIT nicht auslässt */
-        <div
-          className="absolute overflow-hidden rounded-[1.35rem] bg-white"
-          style={{ inset: 8 }}
-        >
+        <div className="absolute inset-0 overflow-hidden">
           <div className="relative h-full w-full">{children}</div>
         </div>
       ) : (

@@ -199,7 +199,7 @@ export const DEVELOPMENT_PORTFOLIO = {
   eyebrow: "Entwicklungsqualität",
   title: "So sieht unsere Software aus — aus echter Entwicklung",
   lead:
-    "UNZE Business nutzt UI-Patterns aus UNZE Connect und eigenen Projekten: Communities, Verwaltung, Profile, CRM und Business-Module — anonymisiert als Referenz.",
+    "UNZE Business nutzt UI-Patterns aus UNZE Connect und eigenen Projekten: Communities, Verwaltung und Profile — anonymisiert als Referenz.",
   items: [
     {
       id: "community",
@@ -218,12 +218,6 @@ export const DEVELOPMENT_PORTFOLIO = {
       title: "Profile & Creator",
       text: "Nutzerprofile, Statistiken, Events und Services.",
       variant: "profile" as MockVariant,
-    },
-    {
-      id: "crm",
-      title: "CRM & Business Core",
-      text: "Kunden, Angebote, Rechnungen — das Herz der Unternehmenssoftware.",
-      variant: "customers" as MockVariant,
     },
   ],
 } as const;

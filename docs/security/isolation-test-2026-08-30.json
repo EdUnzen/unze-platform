@@ -1,0 +1,92 @@
+{
+  "generatedAt": "2026-08-30T07:40:20.796Z",
+  "project": "UNZE Connect",
+  "standard": "CORSA Sicherheit_Regeln S9/S15 G10",
+  "mode": "two-identity-isolation",
+  "supabaseUrl": "https://zzbjvcwmdrnuzzlepfja.supabase.co",
+  "users": {
+    "a": "rls-test-a-fi230c@local.dev",
+    "b": "rls-test-b-fi230c@local.dev"
+  },
+  "steps": [
+    {
+      "id": "anon_notifications_empty",
+      "pass": true,
+      "returned": 0
+    },
+    {
+      "id": "admin_create_notification_A",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "A_reads_own_notification",
+      "pass": true,
+      "returned": "6a3a7843-ae3c-45a5-9069-04e9f0e40738"
+    },
+    {
+      "id": "B_select_A_notification_denied",
+      "pass": true,
+      "returned": null
+    },
+    {
+      "id": "A_create_push_subscription",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "B_select_A_push_denied",
+      "pass": true,
+      "returned": null
+    },
+    {
+      "id": "B_insert_push_as_A_denied",
+      "pass": true,
+      "error": "new row violates row-level security policy for table \"push_subscriptions\""
+    },
+    {
+      "id": "B_select_A_profile_public_by_design",
+      "pass": true,
+      "note": "ISO-PROFILE: profiles SELECT ist bewusst öffentlich (Community)."
+    },
+    {
+      "id": "B_update_A_profile_denied",
+      "pass": true,
+      "updatedRows": 0
+    },
+    {
+      "id": "B_cannot_self_promote_admin",
+      "pass": true,
+      "error": null,
+      "role": "user",
+      "note": null
+    },
+    {
+      "id": "A_create_hidden_community",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "B_select_A_hidden_community_denied",
+      "pass": true,
+      "returned": null
+    },
+    {
+      "id": "B_insert_community_as_A_denied",
+      "pass": true,
+      "error": "new row violates row-level security policy for table \"communities\""
+    },
+    {
+      "id": "admin_create_user_credential_A",
+      "pass": true,
+      "error": null
+    },
+    {
+      "id": "B_select_A_user_credential_denied",
+      "pass": true,
+      "returned": null
+    }
+  ],
+  "pass": true,
+  "findings": []
+}

@@ -21,5 +21,5 @@ export async function CommunityRequirementsHint({
 
   if (!hasSatisfied && !hasMissing) return null;
 
-  return <RequirementMemberStatus evaluation={data} />;
+  return <RequirementMemberStatus evaluation={data} title={data.fulfilled ? undefined : "Für den Beitritt fehlt dir noch:"} />;
 }

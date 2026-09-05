@@ -14,6 +14,7 @@ import { getDashboardCommunityAccess } from "@/services/dashboard/dashboard.serv
 import { getCommunityBadges } from "@/services/badges/badge.service";
 import { fetchUserBadgesForCommunity } from "@/services/badges/badge.repository";
 import { canBanMembers, hasCommunityPermission } from "@/lib/permissions/community.permissions";
+import { loadCommunityPermissionChecks } from "@/services/governance/community-permission-context.service";
 import { redirect } from "next/navigation";
 
 interface MembersPageProps {
@@ -34,9 +35,11 @@ export default async function DashboardMembersPage({ params }: MembersPageProps)
     fetchUserBadgesForCommunity(
       community.id,
       members.map((m) => m.userId),
+      { publicOnly: false },
     ),
   ]);
   const role = community.viewerRole;
+  const perm = await loadCommunityPermissionChecks(community.id, role);
   const restrictionsData = await loadRestrictionsData(slug);
   const removedData = await loadRemovedMembersData(slug);
   const pendingRemovals = await loadPendingRemovalsData(slug);
@@ -61,7 +64,7 @@ export default async function DashboardMembersPage({ params }: MembersPageProps)
         canBan={canBanMembers(role)}
         communityBadges={communityBadges}
         memberAwards={memberAwards}
-        canGrantAwards={hasCommunityPermission(role, "moderate")}
+        canGrantAwards={perm.has("grant_awards")}
       />
       {restrictionsData && (
         <RestrictionsPanel

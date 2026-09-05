@@ -1,5 +1,7 @@
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
+import { NotificationPreferencesPanel } from "@/components/profile/NotificationPreferencesPanel";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { loadNotificationPrefsForm } from "@/app/profile/notification-actions";
 import { getCurrentUser } from "@/services/auth/auth.service";
 import {
   getNotifications,
@@ -28,6 +30,8 @@ export default async function NotificationsPage() {
   }
   const unreadCount = 0;
 
+  const prefsForm = await loadNotificationPrefsForm(user.id);
+
   return (
     <div className="page-padding">
       <div className="mb-4 flex items-center justify-between">
@@ -38,8 +42,21 @@ export default async function NotificationsPage() {
 
       <PageHeader
         title="Benachrichtigungen & Aktivität"
-        subtitle="Community-Updates, Einladungen, Rollen und wichtige Ereignisse"
+        subtitle="Persönliche Meilensteine, Community-Updates und Einladungen"
       />
+
+      {prefsForm && (
+        <div className="mb-6">
+          <NotificationPreferencesPanel userId={user.id} initial={prefsForm} />
+        </div>
+      )}
+
+      <p className="mb-4 text-center text-xs text-unze-ink-muted">
+        Vollständige Historie:{" "}
+        <Link href="/profile/aktivitaet" className="font-semibold text-unze-green">
+          Meine Aktivität →
+        </Link>
+      </p>
 
       <NotificationCenter
         notifications={notifications}

@@ -151,7 +151,13 @@ function buildOrganizerProduct(): ProductOverviewCard {
     tagline: def.tagline,
     status: def.status,
     statusLabel: STUDIO_PRODUCT_STATUS_LABELS[def.status],
-    metrics: [{ label: "Status", value: "Entwicklung", hint: "Noch keine Live-Kennzahlen" }],
+    metrics: [
+      {
+        label: "Status",
+        value: "Nicht mehr verfügbar",
+        hint: "Neue Kunden: nein · Bestandskunden behalten Zugang",
+      },
+    ],
   };
 }
 

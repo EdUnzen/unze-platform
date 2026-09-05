@@ -5,6 +5,16 @@ interface RequirementMemberStatusProps {
   title?: string;
 }
 
+function formatMissingLabel(predicate: string, label: string): string {
+  if (predicate === "credential") {
+    return `Auszeichnung „${label}"`;
+  }
+  if (predicate === "collection") {
+    return `Qualifikation „${label}"`;
+  }
+  return label;
+}
+
 export function RequirementMemberStatus({
   evaluation,
   title,
@@ -28,6 +38,9 @@ export function RequirementMemberStatus({
       : isRequired
         ? "Noch nicht alle Pflicht-Voraussetzungen erfüllt"
         : "Empfohlene Voraussetzungen");
+
+  const showDirFehltPrefix =
+    !evaluation.fulfilled && isRequired && missing.some((m) => m.predicate === "credential" || m.predicate === "collection");
 
   return (
     <div
@@ -65,7 +78,10 @@ export function RequirementMemberStatus({
           <ul className="mt-1 space-y-1 text-xs text-unze-ink-secondary">
             {missing.map((item, index) => (
               <li key={`miss-${item.predicate}-${index}`}>
-                {"•"} {item.label}
+                {"•"}{" "}
+                {showDirFehltPrefix && (item.predicate === "credential" || item.predicate === "collection")
+                  ? `Dir fehlt: ${formatMissingLabel(item.predicate, item.label)}`
+                  : formatMissingLabel(item.predicate, item.label)}
               </li>
             ))}
           </ul>

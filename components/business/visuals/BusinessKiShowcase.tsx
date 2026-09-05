@@ -7,30 +7,33 @@ import { BusinessScrollReveal } from "@/components/business/BusinessScrollReveal
 import { BUSINESS_VISUAL } from "@/lib/constants/business-visual-tokens";
 import { ProductBrandPanel } from "@/components/business/visuals/ProductBrandPanel";
 import { MY_ORGANIZER_AI_HERO } from "@/lib/constants/business-product-assets";
+import { UNZE_OWN_PRODUCTS } from "@/lib/constants/business-own-products";
+import { DiscontinuedBadge } from "@/components/business/visuals/DiscontinuedMark";
 import Link from "next/link";
 import { ArrowRight, FileSearch, MessageSquare, Workflow } from "lucide-react";
 
-/** KI-Seite — Final-Logo (Bildmarke), ohne Fake-Phone-Mocks / Wordmark-Doppelung */
+const ORGANIZER = UNZE_OWN_PRODUCTS.find((p) => p.id === "my-organizer-ai")!;
+
+/** KI-Seite — Organizer nur noch als Hinweis, nicht als Angebot */
 export function BusinessKiHeroShowcase() {
   return (
     <div className="relative overflow-hidden rounded-3xl border border-gray-200/80 bg-white shadow-lg shadow-gray-900/5">
       <div className="relative grid items-center gap-8 p-8 md:grid-cols-[0.9fr_1.1fr] md:gap-10 md:p-12">
         <div>
-          <p className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-            Eigene KI-Produkte
-          </p>
+          <DiscontinuedBadge />
           <h3 className="mt-5 font-[family-name:var(--font-display)] text-2xl font-bold text-gray-900 md:text-3xl">
-            My Organizer AI
+            <span className="line-through decoration-gray-400 decoration-2">{ORGANIZER.name}</span>
           </h3>
           <p className="mt-4 max-w-md text-sm leading-relaxed text-pretty text-gray-600 md:text-base">
-            Offizielles Produkt von UNZE Business — Original-App-Icon und echte Oberflächen.
+            {ORGANIZER.availabilityNote}
           </p>
         </div>
-        <div className="flex justify-center md:justify-end">
+        <div className="flex justify-center opacity-60 grayscale md:justify-end">
           <ProductBrandPanel
             src={MY_ORGANIZER_AI_HERO.src}
             alt={MY_ORGANIZER_AI_HERO.alt}
             size="hero"
+            discontinued
           />
         </div>
       </div>
@@ -61,9 +64,9 @@ export function BusinessKiShowcaseSection() {
     <section className="border-b border-gray-100 bg-gradient-to-b from-gray-50 via-white to-gray-50 py-20 md:py-28">
       <div className="container mx-auto max-w-6xl px-4">
         <BusinessSectionIntro
-          eyebrow={<BusinessEyebrow>Eigene KI-Produkte</BusinessEyebrow>}
+          eyebrow={<BusinessEyebrow>KI im Unternehmen</BusinessEyebrow>}
           title="Von der Idee zur produktiven Automatisierung"
-          intro="My Organizer AI und Business Core zeigen, wie wir KI praxisnah einsetzen — nicht als Buzzword, sondern als entlastende Oberfläche im Alltag."
+          intro="Business Core und individuelle KI-Projekte zeigen, wie wir KI praxisnah einsetzen — nicht als Buzzword, sondern als entlastende Oberfläche im Alltag."
           className={BUSINESS_VISUAL.sectionIntroMb}
         />
 

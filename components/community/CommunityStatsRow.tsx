@@ -1,4 +1,4 @@
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import { cn } from "@/lib/utils/cn";
 import { Calendar, Layers, Users, Wrench } from "lucide-react";
 

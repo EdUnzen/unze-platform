@@ -1,0 +1,18 @@
+{
+  "renderedAt": "2026-08-11T16:39:51.020Z",
+  "videos": [
+    {
+      "id": "connect-reel",
+      "title": "UNZE Connect — Community App",
+      "webm": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\output\\videos\\connect-reel.webm",
+      "mp4": null,
+      "slides": [
+        "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-home.png",
+        "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-discover.png",
+        "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-community-gaming.png",
+        "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-dashboard.png"
+      ],
+      "durationMs": 14000
+    }
+  ]
+}

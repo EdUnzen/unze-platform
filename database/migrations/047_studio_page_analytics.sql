@@ -15,6 +15,9 @@ CREATE INDEX IF NOT EXISTS idx_studio_page_views_path_created
 CREATE INDEX IF NOT EXISTS idx_studio_page_views_created
   ON studio.page_views (created_at DESC);
 
+-- PostgREST-Schema studio ist exponiert → RLS Pflicht (Advisor: rls_disabled_in_public)
+ALTER TABLE studio.page_views ENABLE ROW LEVEL SECURITY;
+
 CREATE OR REPLACE FUNCTION studio.path_analytics(path_prefix text, period_days int DEFAULT 30)
 RETURNS jsonb
 LANGUAGE sql

@@ -1,4 +1,5 @@
 import { CommunityBadgeIcon } from "@/components/badges/UserBadgeChip";
+import { AwardVisibilityToggle } from "@/components/profile/AwardVisibilityToggle";
 import { getAwardSourceLabel } from "@/lib/constants/award-source-labels";
 import { getCredentialDisplayTerm } from "@/lib/constants/credential-categories";
 import type { UserAwardView } from "@/services/badges/badge.repository";
@@ -30,8 +31,8 @@ export function ProfileAwardsPanel({ awards }: ProfileAwardsPanelProps) {
         <Award className="mx-auto mb-3 h-10 w-10 text-unze-ink-muted" aria-hidden />
         <p className="text-sm font-semibold text-unze-ink">Noch keine Auszeichnungen</p>
         <p className="mx-auto mt-2 max-w-sm text-sm text-unze-ink-secondary">
-          Qualifikationen, Zertifikate und Auszeichnungen aus Communities, Events und Services
-          erscheinen hier mit Datum, Community und Verleiher.
+          Qualifikationen, Zertifikate und Auszeichnungen aus Communities erscheinen hier.
+          Standardmäßig sind sie in der Community sichtbar — du kannst sie jederzeit verbergen.
         </p>
         <Link
           href="/discover"
@@ -54,7 +55,7 @@ export function ProfileAwardsPanel({ awards }: ProfileAwardsPanelProps) {
         return (
           <li key={award.id} className="rounded-2xl bg-white p-4 shadow-card">
             <div className="flex items-start gap-3">
-              <CommunityBadgeIcon name={award.name} badgeType={award.badgeType} size="sm" />
+              <CommunityBadgeIcon name={award.name} badgeType={award.badgeType} iconUrl={award.iconUrl} size="sm" />
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-semibold text-unze-ink">{award.name}</p>
@@ -100,6 +101,13 @@ export function ProfileAwardsPanel({ awards }: ProfileAwardsPanelProps) {
                   )}
                 </p>
               </div>
+              {!award.isCollectionQualification && award.visibility && (
+                <AwardVisibilityToggle
+                  userCredentialId={award.id}
+                  communitySlug={award.communitySlug}
+                  visibility={award.visibility === "public" ? "public" : "private"}
+                />
+              )}
             </div>
           </li>
         );

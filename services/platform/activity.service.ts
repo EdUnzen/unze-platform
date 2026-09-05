@@ -1,5 +1,8 @@
 import { getEventDefinition } from "@/lib/events/catalog";
 import { PLATFORM_EVENT_CATALOG } from "@/lib/events/catalog";
+import {
+  isPersonalActivityItem,
+} from "@/lib/activity/resolve-activity-copy";
 import type { ActivityFeedItem, PlatformEventType } from "@/types/events";
 import { fetchPlatformEventsFromDb } from "./event.repository";
 
@@ -37,6 +40,15 @@ export async function getUserActivity(
   return unique.map(toActivityItem);
 }
 
+/** Eigene Historie — gefiltert, ohne fremde Admin-Vorgänge */
+export async function getPersonalActivity(
+  userId: string,
+  limit = 60,
+): Promise<ActivityFeedItem[]> {
+  const raw = await getUserActivity(userId, limit);
+  return raw.filter((item) => isPersonalActivityItem(item, userId));
+}
+
 export async function getRecentPlatformActivity(limit = 30) {
   const discoverTypes = Object.values(PLATFORM_EVENT_CATALOG)
     .filter((d) => d.discoverRelevant)
@@ -55,14 +67,18 @@ function toActivityItem(
 ): ActivityFeedItem {
   const definition = getEventDefinition(event.eventType);
   const label = definition?.label ?? event.eventType.replace(/[._]/g, " ");
+  const payload = event.payload ?? {};
   return {
     id: event.id,
     eventType: event.eventType,
     domain: event.domain,
     label,
     actorId: event.actorId,
+    targetUserId: event.targetUserId,
     communityId: event.communityId,
-    payload: event.payload,
+    communityTitle: (payload.communityTitle as string | null) ?? null,
+    communitySlug: (payload.communitySlug as string | null) ?? null,
+    payload,
     createdAt: event.createdAt,
   };
 }

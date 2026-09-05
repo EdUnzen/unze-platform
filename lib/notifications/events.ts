@@ -53,6 +53,7 @@ export async function notifyGovernanceEvent(input: {
   event: GovernanceNotificationEvent;
   communityId?: string;
   body?: string;
+  title?: string;
   data?: Record<string, unknown>;
   actorId?: string;
   subjectType?: string;
@@ -68,12 +69,14 @@ export async function notifyGovernanceEvent(input: {
       communityId: input.communityId ?? null,
       subjectType: input.subjectType,
       subjectId: input.subjectId,
+      notificationTitleOverride: input.title,
       notificationBodyOverride: input.body,
-    payload: {
-      governanceEvent: input.event,
-      auditAction: input.data?.auditAction,
-      ...input.data,
-    },
+      skipHandlers: ["community-activity"],
+      payload: {
+        governanceEvent: input.event,
+        auditAction: input.data?.auditAction,
+        ...input.data,
+      },
     });
   }
 

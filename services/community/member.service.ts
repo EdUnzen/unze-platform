@@ -1,4 +1,8 @@
 import { hasCommunityPermission, canAssignRole, canRemoveMember } from "@/lib/permissions/community.permissions";
+import {
+  buildRoleChangedNotification,
+  buildRoleTitleChangedNotification,
+} from "@/lib/notifications/personal-milestones";
 import { notifyGovernanceEvent } from "@/lib/notifications/events";
 import { grantVerifiedMemberTrust } from "@/services/trust/trust.service";
 import type { CommunityRole } from "@/types/database";
@@ -12,6 +16,15 @@ import {
 } from "./member.repository";
 import { softRemoveMemberInDb } from "@/services/governance/soft-delete.repository";
 import { queueMemberRemovalTask } from "@/services/lifecycle/removal-task.service";
+
+type MemberNotificationContext = {
+  communityId: string;
+  actorId: string;
+  userId: string;
+  communityTitle?: string;
+  communitySlug?: string;
+  roleTitle?: string | null;
+};
 
 export async function getMembership(communityId: string, userId: string) {
   const member = await fetchMembership(communityId, userId);
@@ -29,11 +42,45 @@ export async function updateMemberRoleTitle(
   memberId: string,
   roleTitle: string | null,
   actorRole: CommunityRole,
+  context?: MemberNotificationContext & { role?: CommunityRole | null },
 ): Promise<{ error: string | null }> {
   if (!hasCommunityPermission(actorRole, "manage_roles")) {
     return { error: "Keine Berechtigung" };
   }
-  return updateMemberRoleTitleInDb(memberId, roleTitle);
+
+  const result = await updateMemberRoleTitleInDb(memberId, roleTitle);
+  if (result.error) return result;
+
+  if (context?.communityId && context.actorId && context.userId) {
+    const copy = buildRoleTitleChangedNotification({
+      communityTitle: context.communityTitle ?? "Community",
+      roleTitle: roleTitle ?? "",
+      role: context.role,
+    });
+
+    await notifyGovernanceEvent({
+      userId: context.userId,
+      category: "community_event",
+      event: "role_changed",
+      communityId: context.communityId,
+      actorId: context.actorId,
+      subjectType: "member",
+      subjectId: memberId,
+      title: copy.title,
+      body: copy.body,
+      data: {
+        auditAction: roleTitle
+          ? `Anzeigetitel gesetzt: ${roleTitle}`
+          : "Anzeigetitel entfernt",
+        roleTitle,
+        communityTitle: context.communityTitle,
+        communitySlug: context.communitySlug,
+        userId: context.userId,
+      },
+    });
+  }
+
+  return result;
 }
 
 export async function updateMemberRole(
@@ -41,11 +88,7 @@ export async function updateMemberRole(
   role: CommunityRole,
   actorRole: CommunityRole,
   targetRole?: CommunityRole,
-  context?: {
-    communityId?: string;
-    actorId?: string;
-    userId?: string;
-  },
+  context?: MemberNotificationContext,
 ) {
   if (!hasCommunityPermission(actorRole, "manage_roles")) {
     return { error: "Keine Berechtigung" };
@@ -60,32 +103,41 @@ export async function updateMemberRole(
   const result = await updateMemberRoleInDb(memberId, role);
   if (result.error) return result;
 
-  if (context?.communityId && context.actorId && targetRole) {
-    if (context.userId) {
-      await notifyGovernanceEvent({
+  if (context?.communityId && context.actorId && context.userId && targetRole) {
+    const copy = buildRoleChangedNotification({
+      communityTitle: context.communityTitle ?? "Community",
+      toRole: role,
+      fromRole: targetRole,
+      roleTitle: context.roleTitle,
+    });
+
+    await notifyGovernanceEvent({
+      userId: context.userId,
+      category: "community_event",
+      event: "role_changed",
+      communityId: context.communityId,
+      actorId: context.actorId,
+      subjectType: "member",
+      subjectId: memberId,
+      title: copy.title,
+      body: copy.body,
+      data: {
+        auditAction: `Rolle geändert: ${targetRole} → ${role}`,
+        fromRole: targetRole,
+        toRole: role,
+        roleTitle: context.roleTitle,
+        communityTitle: context.communityTitle,
+        communitySlug: context.communitySlug,
         userId: context.userId,
-        category: "community_event",
-        event: "role_changed",
+      },
+    });
+
+    if (role === "verified_member") {
+      await grantVerifiedMemberTrust({
+        userId: context.userId,
         communityId: context.communityId,
         actorId: context.actorId,
-        subjectType: "member",
-        subjectId: memberId,
-        body: `Neue Rolle: ${role}`,
-        data: {
-          auditAction: `Rolle geändert: ${targetRole} → ${role}`,
-          fromRole: targetRole,
-          toRole: role,
-          userId: context.userId,
-        },
       });
-
-      if (role === "verified_member") {
-        await grantVerifiedMemberTrust({
-          userId: context.userId,
-          communityId: context.communityId,
-          actorId: context.actorId,
-        });
-      }
     }
   }
 

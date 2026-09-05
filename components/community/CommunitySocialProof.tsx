@@ -1,7 +1,7 @@
 import { hasReviews } from "@/lib/utils/ratings";
 import { SocialProofBar } from "@/components/social/SocialProofBar";
 import { isFeedEnabled } from "@/lib/features/platform-features";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import {
   formatWeeklyActivityLabel,
   formatWeeklyEventLabel,

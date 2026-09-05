@@ -13,6 +13,7 @@
     "check:utf8": "node scripts/check-utf8.mjs",
     "check:unicode": "node scripts/fix-unicode-escapes.mjs --check",
     "check:supabase": "node scripts/check-supabase.mjs",
+    "security:isolation": "node scripts/security-rls-isolation-test.mjs",
     "seed:demo": "node scripts/seed-demo-platform.mjs",
     "migrate:demo": "node scripts/migrate-demo-fields.mjs",
     "db:grants": "node scripts/apply-api-grants.mjs",
@@ -41,6 +42,7 @@
     "marketing:capture:studio": "node scripts/marketing/capture-showcase.mjs --category=studio",
     "marketing:capture:tbc": "node scripts/marketing/capture-tbc-templates.mjs",
     "marketing:capture:overload": "node scripts/marketing/capture-showcase.mjs --overload",
+    "marketing:capture:complete": "node scripts/marketing/capture-showcase.mjs --overload && node scripts/marketing/capture-screens.mjs && node scripts/marketing/build-pack.mjs",
     "marketing:video:slideshow": "node scripts/marketing/render-showcase-slideshow.mjs",
     "marketing:video:business": "node scripts/marketing/render-showcase-slideshow.mjs --id=business-reel",
     "marketing:video:studio": "node scripts/marketing/render-showcase-slideshow.mjs --id=studio-reel",
@@ -114,13 +116,15 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "stripe": "^22.1.1",
-    "tailwind-merge": "^2.6.0"
+    "tailwind-merge": "^2.6.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "@types/node": "^20.17.50",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.1.4",
     "@types/react-dom": "^19.1.5",
+    "@types/web-push": "^3.6.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.27.0",
     "eslint-config-next": "^15.3.3",

@@ -40,6 +40,7 @@ export interface CommunityBadgeView {
   badgeType: BadgeType;
   category?: string | null;
   iconUrl: string | null;
+  earnHint?: string | null;
   grantedCount: number;
 }
 

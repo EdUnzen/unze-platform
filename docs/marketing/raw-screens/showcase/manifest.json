@@ -1,7 +1,7 @@
 {
-  "capturedAt": "2026-07-22T07:41:03.138Z",
+  "capturedAt": "2026-08-11T16:33:57.466Z",
   "filter": {
-    "category": "template",
+    "category": "connect",
     "id": null,
     "priority": null,
     "overload": false
@@ -9,32 +9,74 @@
   "localBase": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase",
   "files": [
     {
-      "id": "business-core",
+      "id": "connect-home",
       "viewport": "mobile",
-      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-core.png",
-      "category": "template",
-      "url": "http://localhost:3000/business/business-core?marketing=1"
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-home.png",
+      "category": "connect",
+      "url": "http://localhost:3000/?marketing=1"
     },
     {
-      "id": "business-branchen",
+      "id": "connect-discover",
       "viewport": "mobile",
-      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-branchen.png",
-      "category": "template",
-      "url": "http://localhost:3000/business/branchenloesungen?marketing=1"
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-discover.png",
+      "category": "connect",
+      "url": "http://localhost:3000/discover?marketing=1"
     },
     {
-      "id": "business-core",
-      "viewport": "desktop",
-      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-core-desktop.png",
-      "category": "template",
-      "url": "http://localhost:3000/business/business-core?marketing=1"
+      "id": "connect-community-gaming",
+      "viewport": "mobile",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-community-gaming.png",
+      "category": "connect",
+      "url": "http://localhost:3000/community/rocket-league-ssl?marketing=1"
     },
     {
-      "id": "business-branchen",
+      "id": "connect-dashboard",
+      "viewport": "mobile",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-dashboard.png",
+      "category": "connect",
+      "url": "http://localhost:3000/dashboard?marketing=1"
+    },
+    {
+      "id": "connect-create-community",
+      "viewport": "mobile",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-create-community.png",
+      "category": "connect",
+      "url": "http://localhost:3000/create/community?marketing=1"
+    },
+    {
+      "id": "connect-home",
       "viewport": "desktop",
-      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\template\\business-branchen-desktop.png",
-      "category": "template",
-      "url": "http://localhost:3000/business/branchenloesungen?marketing=1"
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-home-desktop.png",
+      "category": "connect",
+      "url": "http://localhost:3000/?marketing=1"
+    },
+    {
+      "id": "connect-discover",
+      "viewport": "desktop",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-discover-desktop.png",
+      "category": "connect",
+      "url": "http://localhost:3000/discover?marketing=1"
+    },
+    {
+      "id": "connect-community-gaming",
+      "viewport": "desktop",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-community-gaming-desktop.png",
+      "category": "connect",
+      "url": "http://localhost:3000/community/rocket-league-ssl?marketing=1"
+    },
+    {
+      "id": "connect-dashboard",
+      "viewport": "desktop",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-dashboard-desktop.png",
+      "category": "connect",
+      "url": "http://localhost:3000/dashboard?marketing=1"
+    },
+    {
+      "id": "connect-discover",
+      "viewport": "ipad",
+      "path": "C:\\Users\\GBT B450M-S2H\\Desktop\\UNZE\\UNZE APP\\UNZE\\docs\\marketing\\raw-screens\\showcase\\connect\\connect-discover-ipad.png",
+      "category": "connect",
+      "url": "http://localhost:3000/discover?marketing=1"
     }
   ]
 }

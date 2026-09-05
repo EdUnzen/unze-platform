@@ -1,6 +1,6 @@
 export type StudioProductId = "unze-business" | "unze-connect" | "my-organizer-ai";
 
-export type StudioProductStatus = "live" | "beta" | "development";
+export type StudioProductStatus = "live" | "beta" | "development" | "discontinued";
 
 export type StudioProductDefinition = {
   id: StudioProductId;
@@ -30,8 +30,8 @@ export const STUDIO_PRODUCTS: readonly StudioProductDefinition[] = [
   {
     id: "my-organizer-ai",
     name: "My Organizer AI",
-    tagline: "KI-Organizer — in Entwicklung",
-    status: "development",
+    tagline: "Nicht mehr für neue Kunden — Bestandskunden behalten Zugang",
+    status: "discontinued",
   },
 ] as const;
 
@@ -39,4 +39,5 @@ export const STUDIO_PRODUCT_STATUS_LABELS: Record<StudioProductStatus, string> =
   live: "Live",
   beta: "Beta",
   development: "In Entwicklung",
+  discontinued: "Nicht verfügbar",
 };

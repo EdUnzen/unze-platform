@@ -1,14 +1,12 @@
 import type { PlatformEventType } from "@/types/events";
 
-/** Wichtige Community-Ereignisse — kein Spam */
+/** Wichtige Community-Ereignisse — kein Spam, keine privaten Meilensteine anderer */
 export const COMMUNITY_ACTIVITY_NOTIFY_TYPES = new Set<PlatformEventType>([
   "community.event_published",
   "community.group_created",
   "community.service_created",
   "community.update_published",
   "community.premium_scheduled",
-  "role.changed",
-  "badge.granted",
 ]);
 
 export function communityActivityTitle(
@@ -27,10 +25,6 @@ export function communityActivityTitle(
       return `${community}: Wichtige Ankündigung`;
     case "community.premium_scheduled":
       return `${community}: Wird kostenpflichtig`;
-    case "role.changed":
-      return `${community}: Rolle geändert`;
-    case "badge.granted":
-      return `${community}: Badge erhalten`;
     default:
       return `${community}: Update`;
   }

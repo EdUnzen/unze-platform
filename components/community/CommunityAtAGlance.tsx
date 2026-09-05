@@ -2,7 +2,7 @@ import { ACCESS_STATUS_OPTIONS, JOIN_APPROVAL_OPTIONS } from "@/lib/constants/ac
 import { VISIBILITY_OPTIONS } from "@/lib/constants/community";
 import { PLATFORM_LABELS } from "@/lib/constants/platforms";
 import { PlatformBadge } from "@/components/community/PlatformBadge";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import type { Community } from "@/types/community";
 import { Lock, Users, Wallet } from "lucide-react";
 

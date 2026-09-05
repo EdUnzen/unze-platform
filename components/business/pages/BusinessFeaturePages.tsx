@@ -6,7 +6,7 @@ import {
 } from "@/components/business/BusinessUi";
 import { BUSINESS_VISUAL } from "@/lib/constants/business-visual-tokens";
 import { AppReferenceShowcase } from "@/components/business/visuals/AppReferenceShowcase";
-import { AppPhoneStageShowcase } from "@/components/business/visuals/AppPhoneCollageShowcase";
+import { AppPhoneShowcaseTile } from "@/components/business/visuals/AppPhoneCollageShowcase";
 import { BusinessKiHeroShowcase, BusinessKiShowcaseSection } from "@/components/business/visuals/BusinessKiShowcase";
 import { PremiumCta } from "@/components/business/visuals/PremiumCta";
 import { IndustryMockStage } from "@/components/business/visuals/IndustryMockStage";
@@ -35,7 +35,7 @@ function BusinessFeaturePage({
   ctaLabel?: string;
   mockVariant: MockVariant;
   mockDevice?: "laptop" | "phone";
-  salesLine: string;
+  salesLine: ReactNode;
   salesVisual?: ReactNode;
   wow?: ReactNode;
 }) {
@@ -44,7 +44,9 @@ function BusinessFeaturePage({
       <BusinessPageHero {...hero} />
       <BusinessSection>
         <div className="grid items-start gap-12 lg:grid-cols-2 lg:gap-20">
-          <p className="text-lg leading-relaxed text-pretty text-gray-600 lg:max-w-lg lg:py-4">{salesLine}</p>
+          <div className="space-y-4 text-lg leading-relaxed text-pretty text-gray-600 lg:max-w-lg lg:py-4">
+            {typeof salesLine === "string" ? <p>{salesLine}</p> : salesLine}
+          </div>
           <div className="lg:pt-2">
             {salesVisual ?? (
               <IndustryMockStage
@@ -154,10 +156,18 @@ export function BusinessWebAppsPage() {
       ctaLabel="Web-App anfragen"
       mockVariant="webapp"
       mockDevice="phone"
-      salesLine="Individuelle Apps ersetzen Excel, E-Mail-Chaos und Insellösungen — Referenzqualität wie UNZE Connect und unsere Plattform."
+      salesLine={
+        <>
+          {c.sales.map((paragraph) => (
+            <p key={paragraph}>{paragraph}</p>
+          ))}
+        </>
+      }
       salesVisual={
-        <div className="rounded-3xl border border-gray-100 bg-gradient-to-br from-gray-50 via-white to-emerald-50/40 p-6 md:p-8">
-          <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} showLabels />
+        <div className="flex justify-center rounded-3xl border border-gray-100 bg-gradient-to-br from-gray-50 via-white to-emerald-50/40 px-6 py-8 md:px-8 md:py-10">
+          <div className="w-full max-w-[248px]">
+            <AppPhoneShowcaseTile item={CONNECT_PLATFORM_SHOWCASE[1]} priority showLabels={false} />
+          </div>
         </div>
       }
       wow={<WebAppScrollWow />}

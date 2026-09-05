@@ -10,6 +10,7 @@ import {
   Bell,
   ChevronRight,
   CreditCard,
+  History,
   LayoutDashboard,
   Settings,
   Sparkles,
@@ -286,10 +287,16 @@ export function ProfileHub({
         aria-label="Profil-Menü"
       >
         <ProfileMenuRow
+          href="/profile/aktivitaet"
+          icon={History}
+          label="Meine Aktivität"
+          description="Historie — Auszeichnungen, Rollen, Beitritte"
+        />
+        <ProfileMenuRow
           href="/notifications"
           icon={Bell}
           label="Benachrichtigungen"
-          description="Aktivität & Updates"
+          description="Hinweise & Einstellungen"
           badge={unreadCount}
         />
         <ProfileMenuRow

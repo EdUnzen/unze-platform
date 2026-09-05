@@ -6,7 +6,7 @@ import { ShareMenu } from "@/components/share/ShareMenu";
 import { PriceBadge } from "@/components/ui/PriceBadge";
 import { CommunityCoverVisual } from "@/components/visual/CommunityCoverVisual";
 import { resolveCommunityCover } from "@/lib/visual/auto-cover";
-import { formatMemberCount } from "@/services/community/community.service";
+import { formatMemberCount } from "@/lib/utils/format-metrics";
 import type { Community } from "@/types/community";
 import { getAppUrl } from "@/lib/env";
 import { Users } from "lucide-react";

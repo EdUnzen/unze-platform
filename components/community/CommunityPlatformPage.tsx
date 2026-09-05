@@ -1,6 +1,10 @@
 import { CommunityFocusChips } from "@/components/community/CommunityFocusChips";
 
-import { CommunityGroupCardList } from "@/components/community/CommunityGroupCardList";
+import { CommunityGroupsOrganizedList } from "@/components/community/CommunityGroupsOrganizedList";
+
+import { CommunityAvailableAwards } from "@/components/community/CommunityAvailableAwards";
+
+import { CommunityOverviewHighlights } from "@/components/community/CommunityOverviewHighlights";
 
 import { CommunityHeader } from "@/components/community/CommunityHeader";
 
@@ -85,6 +89,8 @@ import { canEditCommunity } from "@/services/community/member.service";
 import { fetchCommunityPlatformLinksFromDb } from "@/services/community/platform-links.repository";
 
 import { getCommunityEventsListed } from "@/services/events/event.service";
+import { getCommunityAvailableAwards } from "@/services/badges/badge.service";
+import { fetchUserBadgesForCommunity } from "@/services/badges/badge.repository";
 
 import { getFollowedEventIdsAmong } from "@/services/follow/follow.service";
 
@@ -148,16 +154,20 @@ export async function CommunityPlatformPage({
     }
   }
 
-  const needsGroupList = tab === "groups" || tab === "services";
+  const needsGroupList = tab === "groups" || tab === "services" || tab === "overview";
 
-  const needsEventsList = tab === "events";
+  const needsEventsList = tab === "events" || tab === "overview";
 
   const needsFeed = tab === "feed" || tab === "overview";
   const feedLimit = tab === "overview" ? 5 : 20;
 
   const needsOverviewExtras = tab === "overview";
 
+  const needsAvailableAwards = tab === "overview";
+
   const needsMembers = tab === "members";
+
+  const eventsFetchLimit = tab === "events" ? 50 : 12;
 
   const needsCountsOnly = !needsGroupList;
 
@@ -173,6 +183,7 @@ export async function CommunityPlatformPage({
     activityStats,
     showcaseMembers,
     feedPosts,
+    availableAwards,
   ] = await Promise.all([
     needsGroupList
       ? settle("groups", getCommunityGroups(community.id, slug), [])
@@ -180,7 +191,7 @@ export async function CommunityPlatformPage({
     needsEventsList
       ? settle(
           "events",
-          getCommunityEventsListed(community.id, slug, 12),
+          getCommunityEventsListed(community.id, slug, eventsFetchLimit),
           [],
         )
       : Promise.resolve([]),
@@ -219,7 +230,23 @@ export async function CommunityPlatformPage({
     needsFeed
       ? settle("feedPosts", getCommunityPosts(community.id, feedLimit), [])
       : Promise.resolve([]),
+    needsAvailableAwards
+      ? settle("availableAwards", getCommunityAvailableAwards(community.id), [])
+      : Promise.resolve([]),
   ]);
+
+  const showcaseMemberAwards =
+    needsMembers && showcaseMembers.length > 0
+      ? await settle(
+          "showcaseMemberAwards",
+          fetchUserBadgesForCommunity(
+            community.id,
+            showcaseMembers.map((m) => m.userId),
+            { publicOnly: true },
+          ),
+          {},
+        )
+      : {};
 
   const eventCountForLevel = needsEventsList
     ? events.length
@@ -370,6 +397,24 @@ export async function CommunityPlatformPage({
 
             <CommunityLevelPanel levelResult={levelResult} />
 
+            <CommunityOverviewHighlights
+              slug={slug}
+              events={events}
+              groups={discoverRegular}
+              services={discoverServices}
+              followedEventIds={followedEventIds}
+              showFollowButtons={Boolean(user)}
+              communityBannerUrl={communityWithLevel.bannerUrl}
+              communityCategory={communityWithLevel.category}
+              communityBannerGradient={communityWithLevel.bannerGradient}
+            />
+
+            <CommunityAvailableAwards
+              slug={slug}
+              awards={availableAwards}
+              communityTitle={communityWithLevel.title}
+            />
+
             <CommunityPlatformLinksSection
               community={communityWithLevel}
               links={platformLinks}
@@ -399,7 +444,7 @@ export async function CommunityPlatformPage({
               </section>
             )}
 
-            <section className="rounded-3xl bg-white p-4 shadow-card">
+            <section id="beitritt" className="rounded-3xl bg-white p-4 shadow-card">
               <h2 className="mb-3 text-sm font-semibold text-unze-ink">
                 Community beitreten
               </h2>
@@ -444,9 +489,9 @@ export async function CommunityPlatformPage({
                 className="py-8"
               />
             ) : (
-              <CommunityGroupCardList
+              <CommunityGroupsOrganizedList
                 groups={discoverRegular}
-                layout="vertical"
+                cardVariant="group"
               />
             )}
           </section>
@@ -466,9 +511,9 @@ export async function CommunityPlatformPage({
                 description="Services werden als Gruppen vom Typ Service angelegt."
               />
             ) : (
-              <CommunityGroupCardList
+              <CommunityGroupsOrganizedList
                 groups={discoverServices}
-                layout="vertical"
+                cardVariant="service"
               />
             )}
           </section>
@@ -498,6 +543,8 @@ export async function CommunityPlatformPage({
                 communityCategory={communityWithLevel.category}
                 communityBannerGradient={communityWithLevel.bannerGradient}
                 embedded
+                limit={null}
+                layout="timeline"
               />
             )}
           </section>
@@ -505,7 +552,10 @@ export async function CommunityPlatformPage({
 
         {tab === "members" && (
           <section className="rounded-3xl bg-white p-4 shadow-card">
-            <CommunityMemberShowcase members={showcaseMembers} />
+            <CommunityMemberShowcase
+              members={showcaseMembers}
+              memberAwards={showcaseMemberAwards}
+            />
           </section>
         )}
 

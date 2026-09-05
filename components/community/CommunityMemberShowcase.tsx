@@ -1,11 +1,14 @@
+import { CommunityBadgeIcon } from "@/components/badges/UserBadgeChip";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { ROLE_LABELS } from "@/lib/constants/dashboard";
+import type { MemberCommunityAwardView } from "@/services/badges/badge.repository";
 import type { CommunityMemberView } from "@/types/dashboard";
 import type { CommunityRole } from "@/types/database";
 import { BadgeCheck, Crown, Shield, Star, Users } from "lucide-react";
 
 interface CommunityMemberShowcaseProps {
   members: CommunityMemberView[];
+  memberAwards?: Record<string, MemberCommunityAwardView[]>;
 }
 
 function displayRole(member: CommunityMemberView): string {
@@ -16,25 +19,51 @@ function displayRole(member: CommunityMemberView): string {
 function MemberRow({
   member,
   badge,
+  awards = [],
 }: {
   member: CommunityMemberView;
   badge?: "vip" | "verified";
+  awards?: MemberCommunityAwardView[];
 }) {
   const name = member.displayName ?? member.username ?? "Mitglied";
+  const roleLine = displayRole(member);
 
   return (
-    <li className="flex items-center gap-3 rounded-2xl border border-unze-border/60 bg-unze-surface-muted/30 px-3 py-2.5">
+    <li className="flex items-start gap-3 rounded-2xl border border-unze-border/60 bg-unze-surface-muted/30 px-3 py-2.5">
       <UserAvatar name={name} seed={member.userId} avatarUrl={member.avatarUrl} size="md" />
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-semibold text-unze-ink">{name}</p>
-        <p className="text-[11px] text-unze-ink-muted">{displayRole(member)}</p>
+        <p className="text-[11px] text-unze-ink-muted">{roleLine}</p>
+        {awards.length > 0 && (
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            {awards.map((award) => (
+              <span
+                key={award.id}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white py-0.5 pr-2 pl-0.5 shadow-sm ring-1 ring-unze-border/60"
+                title={`${award.name} — Auszeichnung dieser Community`}
+              >
+                <CommunityBadgeIcon
+                  name={award.name}
+                  badgeType={award.badgeType}
+                  iconUrl={award.iconUrl}
+                  size="sm"
+                />
+                <span className="max-w-[8rem] truncate text-[10px] font-semibold text-unze-ink-secondary">
+                  {award.name}
+                </span>
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-      {badge === "vip" && (
-        <Crown className="h-4 w-4 shrink-0 text-amber-500" aria-label="VIP" />
-      )}
-      {(badge === "verified" || member.isVerified) && (
-        <BadgeCheck className="h-4 w-4 shrink-0 text-unze-green" aria-label="Verifiziert" />
-      )}
+      <div className="flex shrink-0 flex-col items-end gap-1 pt-0.5">
+        {badge === "vip" && (
+          <Crown className="h-4 w-4 text-amber-500" aria-label="VIP" />
+        )}
+        {(badge === "verified" || member.isVerified) && (
+          <BadgeCheck className="h-4 w-4 text-unze-green" aria-label="Verifiziert" />
+        )}
+      </div>
     </li>
   );
 }
@@ -64,7 +93,10 @@ function isVipMember(member: CommunityMemberView): boolean {
   return member.role === "verified_member" && title.includes("vip");
 }
 
-export function CommunityMemberShowcase({ members }: CommunityMemberShowcaseProps) {
+export function CommunityMemberShowcase({
+  members,
+  memberAwards = {},
+}: CommunityMemberShowcaseProps) {
   const byRole = (roles: CommunityRole[]) =>
     members.filter((m) => roles.includes(m.role));
 
@@ -91,7 +123,7 @@ export function CommunityMemberShowcase({ members }: CommunityMemberShowcaseProp
         <div>
           <h2 className="text-sm font-semibold text-unze-ink">Mitgliederbereich</h2>
           <p className="text-xs text-unze-ink-secondary">
-            Creator, Team, Experten &amp; verifizierte Mitglieder
+            Creator, Team, Experten &amp; Auszeichnungen dieser Community
           </p>
         </div>
       </header>
@@ -99,7 +131,12 @@ export function CommunityMemberShowcase({ members }: CommunityMemberShowcaseProp
       {creators.length > 0 && (
         <MemberSection title="Creator" icon={Star}>
           {creators.map((m) => (
-            <MemberRow key={m.id} member={m} badge="verified" />
+            <MemberRow
+              key={m.id}
+              member={m}
+              badge="verified"
+              awards={memberAwards[m.userId] ?? []}
+            />
           ))}
         </MemberSection>
       )}
@@ -107,7 +144,12 @@ export function CommunityMemberShowcase({ members }: CommunityMemberShowcaseProp
       {moderators.length > 0 && (
         <MemberSection title="Moderatoren" icon={Shield}>
           {moderators.map((m) => (
-            <MemberRow key={m.id} member={m} badge={m.isVerified ? "verified" : undefined} />
+            <MemberRow
+              key={m.id}
+              member={m}
+              badge={m.isVerified ? "verified" : undefined}
+              awards={memberAwards[m.userId] ?? []}
+            />
           ))}
         </MemberSection>
       )}
@@ -115,7 +157,12 @@ export function CommunityMemberShowcase({ members }: CommunityMemberShowcaseProp
       {experts.length > 0 && (
         <MemberSection title="Experten" icon={BadgeCheck}>
           {experts.map((m) => (
-            <MemberRow key={m.id} member={m} badge="verified" />
+            <MemberRow
+              key={m.id}
+              member={m}
+              badge="verified"
+              awards={memberAwards[m.userId] ?? []}
+            />
           ))}
         </MemberSection>
       )}
@@ -123,7 +170,12 @@ export function CommunityMemberShowcase({ members }: CommunityMemberShowcaseProp
       {vips.length > 0 && (
         <MemberSection title="VIPs" icon={Crown}>
           {vips.map((m) => (
-            <MemberRow key={m.id} member={m} badge="vip" />
+            <MemberRow
+              key={m.id}
+              member={m}
+              badge="vip"
+              awards={memberAwards[m.userId] ?? []}
+            />
           ))}
         </MemberSection>
       )}
@@ -131,15 +183,21 @@ export function CommunityMemberShowcase({ members }: CommunityMemberShowcaseProp
       {verified.length > 0 && (
         <MemberSection title="Verifizierte Mitglieder" icon={BadgeCheck}>
           {verified.map((m) => (
-            <MemberRow key={m.id} member={m} badge="verified" />
+            <MemberRow
+              key={m.id}
+              member={m}
+              badge="verified"
+              awards={memberAwards[m.userId] ?? []}
+            />
           ))}
         </MemberSection>
       )}
 
       <p className="text-[11px] text-unze-ink-muted">
-        Individuelle Bezeichnungen werden vom Creator vergeben. Technisch bleiben Rollen
-        über das Dashboard verwaltbar.
+        Anzeigenamen und Auszeichnungen werden vom Creator vergeben. Mitglieder können
+        Auszeichnungen in den Profileinstellungen auf privat stellen.
       </p>
     </div>
   );
 }
+

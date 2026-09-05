@@ -1,3 +1,4 @@
+import type { UserAwardView } from "@/services/badges/badge.repository";
 import type { CreatorNetworkReview, PlatformCreator } from "@/types/creator";
 import type { Community, DiscoverGroup } from "@/types/community";
 import {
@@ -8,24 +9,27 @@ import {
   fetchCreatorPublicGroupsFromDb,
   fetchDiscoverCreatorsFromDb,
 } from "./creator.repository";
+import { getPublicUserAwards } from "@/services/badges/badge.service";
 
 export interface CreatorPublicProfile {
   creator: PlatformCreator;
   communities: Community[];
   groups: DiscoverGroup[];
   reviews: CreatorNetworkReview[];
+  publicAwards: UserAwardView[];
 }
 
 async function loadCreatorPublicProfile(
   creator: PlatformCreator,
 ): Promise<CreatorPublicProfile> {
-  const [communities, groups, reviews] = await Promise.all([
+  const [communities, groups, reviews, publicAwards] = await Promise.all([
     fetchCreatorCommunitiesFromDb(creator.id),
     fetchCreatorPublicGroupsFromDb(creator.id),
     fetchCreatorNetworkReviewsFromDb(creator.id),
+    getPublicUserAwards(creator.id),
   ]);
 
-  return { creator, communities, groups, reviews };
+  return { creator, communities, groups, reviews, publicAwards };
 }
 
 export async function getDiscoverCreators(limit = 20): Promise<PlatformCreator[]> {

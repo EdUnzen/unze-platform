@@ -26,6 +26,12 @@ export const PERMISSION_DISPLAY_GROUPS: {
     categories: ["access", "members", "settings", "governance", "lifecycle"],
   },
   {
+    id: "awards",
+    label: "Auszeichnungen",
+    description: "Erstellen und vergeben von Auszeichnungen",
+    categories: ["awards"],
+  },
+  {
     id: "finance",
     label: "Finanzen",
     description: "Monetarisierung & Stripe",
@@ -42,6 +48,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   governance: "Governance",
   lifecycle: "Lifecycle",
   monetization: "Monetarisierung",
+  awards: "Auszeichnungen",
 };
 
 export function getPermissionsByDisplayGroup(

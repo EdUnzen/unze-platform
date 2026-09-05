@@ -1,3 +1,10 @@
+/** Mitglieder-/Follower-Zahlen auf Karten — client-sicher, kein Server-Import */
+export function formatMemberCount(count: number): string {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}k`;
+  return count.toString();
+}
+
 /** Kompakte Zahlen für Cards — de-DE, nicht überladen */
 
 export function formatCompactCount(value: number): string {

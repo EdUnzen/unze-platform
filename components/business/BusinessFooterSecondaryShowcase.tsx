@@ -13,7 +13,7 @@ const SECONDARY_META = {
   },
   "/business/produkte": {
     title: "Eigene Produkte",
-    text: "UNZE Connect und My Organizer AI — Referenzsoftware, die wir selbst betreiben.",
+    text: "UNZE Connect — eigene Plattform. My Organizer AI ist für neue Kunden nicht mehr verfügbar.",
     accent: "from-emerald-500/15 via-slate-900 to-gray-950",
     icon: null,
   },
@@ -63,11 +63,14 @@ export function BusinessFooterSecondaryShowcase() {
                   </div>
                   <div className="hidden shrink-0 items-center justify-center gap-3 sm:flex">
                     {isKi ? (
-                      <ProductBrandPanel
-                        src={MY_ORGANIZER_AI_HERO.src}
-                        alt={MY_ORGANIZER_AI_HERO.alt}
-                        size="footer"
-                      />
+                      <span className="opacity-60 grayscale">
+                        <ProductBrandPanel
+                          src={MY_ORGANIZER_AI_HERO.src}
+                          alt={MY_ORGANIZER_AI_HERO.alt}
+                          size="footer"
+                          discontinued
+                        />
+                      </span>
                     ) : (
                       <>
                         <ProductBrandPanel
@@ -75,11 +78,14 @@ export function BusinessFooterSecondaryShowcase() {
                           alt={UNZE_CONNECT_LOGO.alt}
                           size="footer"
                         />
-                        <ProductBrandPanel
-                          src={MY_ORGANIZER_AI_HERO.src}
-                          alt={MY_ORGANIZER_AI_HERO.alt}
-                          size="footer"
-                        />
+                        <span className="opacity-60 grayscale">
+                          <ProductBrandPanel
+                            src={MY_ORGANIZER_AI_HERO.src}
+                            alt={MY_ORGANIZER_AI_HERO.alt}
+                            size="footer"
+                            discontinued
+                          />
+                        </span>
                       </>
                     )}
                   </div>

@@ -18,6 +18,8 @@ export const PERMISSION_DEFINITIONS: PermissionDefinition[] = [
   { key: "view_audit_log", label: "Audit-Log", description: "Governance-Nachverfolgung", defaultMinRole: "admin", category: "governance" },
   { key: "manage_members", label: "Mitglieder", description: "Entfernen/Wiederherstellen", defaultMinRole: "admin", category: "members" },
   { key: "manage_roles", label: "Rollen", description: "Rollen zuweisen", defaultMinRole: "admin", category: "members" },
+  { key: "create_awards", label: "Auszeichnungen erstellen", description: "Auszeichnungen anlegen und entfernen", defaultMinRole: "admin", category: "awards" },
+  { key: "grant_awards", label: "Auszeichnungen vergeben", description: "Auszeichnungen an Mitglieder vergeben", defaultMinRole: "moderator", category: "awards" },
   { key: "manage_settings", label: "Einstellungen", description: "Community-Einstellungen", defaultMinRole: "admin", category: "settings" },
   { key: "manage_access", label: "Zugang", description: "Beitrittslogik & Status", defaultMinRole: "admin", category: "access" },
   { key: "manage_join_questions", label: "Bewerbungsfragen", description: "Antragsfragen", defaultMinRole: "admin", category: "access" },

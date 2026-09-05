@@ -2,7 +2,7 @@
 
 import { ReferencePhoneScreenshot } from "@/components/business/visuals/ReferenceScreenshot";
 import { ProductMockupFrame } from "@/components/business/visuals/ProductMockupFrame";
-import { AppPhoneStageShowcase } from "@/components/business/visuals/AppPhoneCollageShowcase";
+import { AppPhoneShowcaseTile } from "@/components/business/visuals/AppPhoneCollageShowcase";
 import { MockScreen } from "@/components/business/visuals/MockScreen";
 import { CONNECT_PLATFORM_SHOWCASE } from "@/lib/constants/business-connect-showcase";
 import { cn } from "@/lib/utils/cn";
@@ -47,7 +47,13 @@ export function ShopConnectAppGallery({ variant = "detail", className }: ShopCon
           Echte App-Oberflächen aus unserem Netzwerk — Ihre Web-App wird individuell umgesetzt.
         </p>
       </div>
-      <AppPhoneStageShowcase items={CONNECT_PLATFORM_SHOWCASE} showLabels />
+      <ul className="grid gap-6 sm:grid-cols-3">
+        {CONNECT_PLATFORM_SHOWCASE.map((item, i) => (
+          <li key={item.id}>
+            <AppPhoneShowcaseTile item={item} priority={i === 0} showLabels />
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

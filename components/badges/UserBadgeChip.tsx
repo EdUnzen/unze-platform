@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils/cn";
 import type { BadgeType } from "@/types/database";
 import { Award } from "lucide-react";
+import Image from "next/image";
 
 const BADGE_STYLES: Record<BadgeType, string> = {
-  permanent: "bg-unze-green-muted text-unze-green-dark",
-  temporary: "bg-blue-100 text-blue-800",
-  event: "bg-amber-100 text-amber-900",
+  permanent: "bg-unze-green-muted text-unze-green-dark ring-unze-green/25",
+  temporary: "bg-blue-100 text-blue-800 ring-blue-200/80",
+  event: "bg-amber-100 text-amber-900 ring-amber-200/80",
 };
 
 interface UserBadgeChipProps {
@@ -37,24 +38,51 @@ export function UserBadgeChip({
 interface CommunityBadgeIconProps {
   name: string;
   badgeType?: BadgeType;
-  size?: "sm" | "md";
+  iconUrl?: string | null;
+  size?: "sm" | "md" | "lg";
 }
 
+const SIZE_MAP = {
+  sm: "h-10 w-10",
+  md: "h-12 w-12",
+  lg: "h-16 w-16",
+} as const;
+
+const ICON_SIZE_MAP = {
+  sm: "h-4 w-4",
+  md: "h-5 w-5",
+  lg: "h-7 w-7",
+} as const;
+
+/** Runde Auszeichnungs-Medaille — optional mit individuellem Bild */
 export function CommunityBadgeIcon({
   name,
   badgeType = "permanent",
+  iconUrl,
   size = "md",
 }: CommunityBadgeIconProps) {
+  const hasImage = Boolean(iconUrl?.trim());
+
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-2xl shadow-sm",
+        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-white shadow-sm",
         BADGE_STYLES[badgeType],
-        size === "sm" ? "h-9 w-9" : "h-11 w-11",
+        SIZE_MAP[size],
       )}
       title={name}
     >
-      <Award className={cn(size === "sm" ? "h-4 w-4" : "h-5 w-5")} aria-hidden />
+      {hasImage ? (
+        <Image
+          src={iconUrl!}
+          alt={name}
+          fill
+          className="object-cover"
+          sizes={size === "lg" ? "64px" : size === "md" ? "48px" : "40px"}
+        />
+      ) : (
+        <Award className={cn(ICON_SIZE_MAP[size], "opacity-90")} aria-hidden />
+      )}
     </div>
   );
 }

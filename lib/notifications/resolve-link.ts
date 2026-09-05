@@ -8,6 +8,9 @@ export function resolveNotificationHref(
   const communitySlug = data.communitySlug as string | undefined;
   const communityId = data.communityId as string | undefined;
   const slug = communitySlug ?? (data.slug as string | undefined);
+  const linkHref = data.linkHref as string | undefined;
+
+  if (linkHref) return linkHref;
 
   switch (notification.category) {
     case "application":
@@ -52,6 +55,12 @@ export function getNotificationActionLabel(
     case "invite":
       return "Einladung öffnen";
     case "community_event":
+      if (notification.type === "badge.granted" && notification.data?.linkHref) {
+        return "Auszeichnungen ansehen";
+      }
+      if (notification.type === "role.changed" && notification.data?.linkHref) {
+        return "Community öffnen";
+      }
       return "Community öffnen";
     case "system":
       return "Details ansehen";

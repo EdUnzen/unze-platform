@@ -41,19 +41,17 @@ export function AppPhoneShowcaseTile({
   const fallbackVariant = item.fallbackVariant ?? DEFAULT_FALLBACK[item.id] ?? "community";
   const widthClass =
     stage === "hero"
-      ? "w-[170px] sm:w-[190px] md:w-[210px]"
-      : stage === "side"
-        ? "w-[150px] sm:w-[170px] md:w-[190px]"
-        : "w-full max-w-[200px]";
+      ? "w-full max-w-[248px]"
+      : "w-[220px] sm:w-[230px] md:w-[240px]";
 
   return (
     <div className="flex w-full flex-col items-center">
       <div className={cn("w-full", widthClass)}>
         <ProductMockupFrame
           device="phone"
-          label={showLabels ? item.title : undefined}
           presentation={stage === "hero" ? "hero" : "standard"}
-          className="!max-w-none !w-full [&_[data-export=device-phone]]:!max-w-none [&_[data-export=device-phone]]:!w-full"
+          chrome="slim"
+          className="!max-w-none !w-full [&_[data-export=device-phone]]:!max-w-none [&_[data-export=device-phone]]:!w-full [&_[data-export=device-phone]]:!h-auto"
         >
           {item.mockOnly || !item.src ? (
             <MockScreen variant={fallbackVariant} device="phone" bare showcase />
@@ -99,7 +97,7 @@ export function AppPhoneStageShowcase({
   return (
     <div
       className={cn(
-        "flex min-w-0 items-end justify-center gap-5 overflow-x-auto px-3 pb-2 sm:gap-6 md:gap-8 md:overflow-visible md:px-2",
+        "flex min-w-0 items-end justify-center gap-5 overflow-x-auto px-3 pb-2 sm:gap-6 md:gap-8 md:px-2",
         className,
       )}
       data-export="app-phone-stage"
@@ -108,9 +106,9 @@ export function AppPhoneStageShowcase({
         <div key={item.id} className="shrink-0">
           <AppPhoneShowcaseTile
             item={item}
-            priority={index === priorityIndex}
+            priority={index === priorityIndex || index === 0}
             showLabels={showLabels}
-            stage={index === 1 ? "hero" : "side"}
+            stage="side"
           />
         </div>
       ))}

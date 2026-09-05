@@ -1,6 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import type { CommunityBadgeView } from "@/types/dashboard";
 import type { BadgeType } from "@/types/database";
+import type { CredentialCategory } from "@/types/credential";
+
+function badgeTypeToValidityMode(badgeType: BadgeType): string {
+  if (badgeType === "temporary" || badgeType === "event") return "expires_at";
+  return "permanent";
+}
 import {
   grantCredentialInDb,
   mapValidityToBadgeType,
@@ -8,6 +14,7 @@ import {
 
 async function fetchCredentialsByCommunity(
   communityId: string,
+  options?: { activeOnly?: boolean },
 ): Promise<
   {
     id: string;
@@ -17,16 +24,22 @@ async function fetchCredentialsByCommunity(
     validity_mode: string;
     icon_url: string | null;
     category: string | null;
+    earn_hint: string | null;
   }[]
 > {
   const supabase = await createClient();
   if (!supabase) return [];
 
-  const { data, error } = await supabase
+  const query = supabase
     .from("credentials")
-    .select("id, community_id, name, description, validity_mode, icon_url, category")
+    .select("id, community_id, name, description, validity_mode, icon_url, category, archived_at, earn_hint")
     .eq("community_id", communityId)
     .order("created_at", { ascending: false });
+
+  const { data, error } =
+    options?.activeOnly === false
+      ? await query
+      : await query.is("archived_at", null);
 
   if (error) {
     console.error("[badge.repository] credentials:", error.message);
@@ -38,8 +51,9 @@ async function fetchCredentialsByCommunity(
 
 export async function fetchBadgesByCommunity(
   communityId: string,
+  options?: { activeOnly?: boolean },
 ): Promise<CommunityBadgeView[]> {
-  const credentials = await fetchCredentialsByCommunity(communityId);
+  const credentials = await fetchCredentialsByCommunity(communityId, options);
   if (credentials.length === 0) {
     const supabase = await createClient();
     if (!supabase) return [];
@@ -105,6 +119,7 @@ export async function fetchBadgesByCommunity(
     badgeType: mapValidityToBadgeType(credential.validity_mode),
     category: (credential.category as string) ?? "community_award",
     iconUrl: credential.icon_url,
+    earnHint: (credential.earn_hint as string | null) ?? null,
     grantedCount: grantCounts[credential.id] ?? 0,
   }));
 }
@@ -114,33 +129,79 @@ export async function createBadgeInDb(input: {
   name: string;
   description?: string;
   badgeType: BadgeType;
+  category?: CredentialCategory;
+  iconUrl?: string | null;
+  earnHint?: string | null;
 }): Promise<{ error: string | null; id?: string }> {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase nicht konfiguriert" };
 
   const { data, error } = await supabase
-    .from("badges")
+    .from("credentials")
     .insert({
       community_id: input.communityId,
       name: input.name,
       description: input.description ?? null,
-      badge_type: input.badgeType,
+      validity_mode: badgeTypeToValidityMode(input.badgeType),
+      category: input.category ?? "community_award",
+      icon_url: input.iconUrl ?? null,
+      earn_hint: input.earnHint?.trim() || null,
     })
     .select("id")
     .single();
 
   if (error) return { error: error.message };
-  return { error: null, id: data?.id };
+  return { error: null, id: data?.id as string };
 }
 
-export async function deleteBadgeInDb(
+export async function updateBadgeInDb(input: {
+  badgeId: string;
+  communityId: string;
+  name: string;
+  description?: string | null;
+  badgeType: BadgeType;
+  category?: CredentialCategory;
+  iconUrl?: string | null;
+  earnHint?: string | null;
+}): Promise<{ error: string | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase nicht konfiguriert" };
+
+  const { error } = await supabase
+    .from("credentials")
+    .update({
+      name: input.name,
+      description: input.description ?? null,
+      validity_mode: badgeTypeToValidityMode(input.badgeType),
+      category: input.category ?? "community_award",
+      icon_url: input.iconUrl ?? null,
+      earn_hint: input.earnHint?.trim() || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", input.badgeId)
+    .eq("community_id", input.communityId)
+    .is("archived_at", null);
+
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
+export async function archiveBadgeInDb(
   badgeId: string,
 ): Promise<{ error: string | null }> {
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase nicht konfiguriert" };
 
-  const { error } = await supabase.from("badges").delete().eq("id", badgeId);
-  if (error) return { error: error.message };
+  const { error } = await supabase
+    .from("credentials")
+    .update({ archived_at: new Date().toISOString() })
+    .eq("id", badgeId)
+    .is("archived_at", null);
+
+  if (!error) return { error: null };
+
+  const { error: legacyError } = await supabase.from("badges").delete().eq("id", badgeId);
+  if (legacyError) return { error: legacyError.message };
   return { error: null };
 }
 
@@ -175,6 +236,103 @@ export async function grantBadgeInDb(input: {
   return { error: null };
 }
 
+export type CommunityAwardGrantActivity = {
+  id: string;
+  grantedAt: string;
+  recipientId: string;
+  recipientName: string;
+  recipientUsername: string | null;
+  badgeId: string;
+  badgeName: string;
+  badgeDescription: string | null;
+  badgeType: BadgeType;
+  iconUrl: string | null;
+  category: string;
+};
+
+/** Letzte Auszeichnungs-Vergaben in einer Community — für Social Proof auf der Übersicht */
+export async function fetchRecentCommunityAwardGrants(
+  communityId: string,
+  limit = 8,
+): Promise<CommunityAwardGrantActivity[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data: credentialRows } = await supabase
+    .from("credentials")
+    .select("id")
+    .eq("community_id", communityId)
+    .is("archived_at", null);
+
+  const credentialIds = (credentialRows ?? []).map((row) => row.id as string);
+  if (credentialIds.length === 0) return [];
+
+  const { data: rows, error } = await supabase
+    .from("user_credentials")
+    .select(
+      `
+      id,
+      granted_at,
+      user_id,
+      snapshot_name,
+      snapshot_description,
+      snapshot_icon_url,
+      credential:credentials (
+        id,
+        name,
+        description,
+        validity_mode,
+        category,
+        icon_url
+      ),
+      recipient:profiles!user_credentials_user_id_fkey (
+        display_name,
+        username
+      )
+    `,
+    )
+    .in("credential_id", credentialIds)
+    .is("revoked_at", null)
+    .order("granted_at", { ascending: false })
+    .limit(limit);
+
+  if (error || !rows) return [];
+
+  return rows
+    .map((row): CommunityAwardGrantActivity | null => {
+      const credentialRaw = row.credential;
+      const credential = Array.isArray(credentialRaw) ? credentialRaw[0] : credentialRaw;
+      const recipientRaw = row.recipient;
+      const recipient = Array.isArray(recipientRaw) ? recipientRaw[0] : recipientRaw;
+
+      const snapName = row.snapshot_name as string | null;
+      const snapDesc = row.snapshot_description as string | null;
+      const snapIcon = row.snapshot_icon_url as string | null;
+      const badgeName = snapName ?? (credential?.name as string) ?? "Auszeichnung";
+
+      const displayName = (recipient?.display_name as string | null)?.trim();
+      const username = (recipient?.username as string | null)?.trim() ?? null;
+      const recipientName = displayName || username || "Mitglied";
+
+      return {
+        id: row.id as string,
+        grantedAt: row.granted_at as string,
+        recipientId: row.user_id as string,
+        recipientName,
+        recipientUsername: username,
+        badgeId: (credential?.id as string) ?? (row.id as string),
+        badgeName,
+        badgeDescription: snapDesc ?? (credential?.description as string | null) ?? null,
+        badgeType: mapValidityToBadgeType((credential?.validity_mode as string) ?? "permanent"),
+        iconUrl: snapIcon ?? (credential?.icon_url as string | null) ?? null,
+        category: (credential?.category as string) ?? "community_award",
+      };
+    })
+    .filter((item): item is CommunityAwardGrantActivity => Boolean(item));
+}
+
+export type UserAwardVisibility = "public" | "private" | "archived";
+
 export type UserAwardView = {
   id: string;
   badgeId: string;
@@ -188,6 +346,8 @@ export type UserAwardView = {
   grantedAt: string;
   grantedByName: string | null;
   sourceType: string | null;
+  visibility?: UserAwardVisibility;
+  iconUrl?: string | null;
   isCollectionQualification?: boolean;
   collectionCredentialCount?: number;
 };
@@ -293,12 +453,17 @@ export async function fetchUserAwardsForProfile(
       id,
       granted_at,
       source_type,
+      visibility,
+      snapshot_name,
+      snapshot_description,
+      snapshot_icon_url,
       credential:credentials (
         id,
         name,
         description,
         validity_mode,
-        category
+        category,
+        icon_url
       ),
       community:communities (
         id,
@@ -324,26 +489,32 @@ export async function fetchUserAwardsForProfile(
         const community = Array.isArray(communityRaw) ? communityRaw[0] : communityRaw;
         const granterRaw = row.granter;
         const granter = Array.isArray(granterRaw) ? granterRaw[0] : granterRaw;
-        if (!credential || !community) return null;
+        if (!community) return null;
 
         const grantedByName =
           (granter?.display_name as string | null) ??
           (granter?.username as string | null) ??
           null;
 
+        const snapName = row.snapshot_name as string | null;
+        const snapDesc = row.snapshot_description as string | null;
+        const snapIcon = row.snapshot_icon_url as string | null;
+
         return {
           id: row.id as string,
-          badgeId: credential.id as string,
-          name: credential.name as string,
-          description: (credential.description as string | null) ?? null,
-          category: (credential.category as string) ?? "community_award",
-          badgeType: mapValidityToBadgeType(credential.validity_mode as string),
+          badgeId: (credential?.id as string) ?? row.id as string,
+          name: snapName ?? (credential?.name as string) ?? "Auszeichnung",
+          description: snapDesc ?? (credential?.description as string | null) ?? null,
+          category: (credential?.category as string) ?? "community_award",
+          badgeType: mapValidityToBadgeType((credential?.validity_mode as string) ?? "permanent"),
           communityId: community.id as string,
           communityTitle: community.title as string,
           communitySlug: community.slug as string,
           grantedAt: row.granted_at as string,
           grantedByName,
           sourceType: (row.source_type as string) ?? null,
+          visibility: (row.visibility as UserAwardVisibility) ?? "private",
+          iconUrl: snapIcon ?? (credential?.icon_url as string | null) ?? null,
         };
       })
       .filter((a): a is UserAwardView => Boolean(a));
@@ -417,25 +588,37 @@ export async function fetchUserAwardsForProfile(
     .filter((a): a is UserAwardView => Boolean(a));
 }
 
+export type MemberCommunityAwardView = {
+  id: string;
+  name: string;
+  badgeType: BadgeType;
+  iconUrl: string | null;
+};
+
 export async function fetchUserBadgesForCommunity(
   communityId: string,
   userIds: string[],
-): Promise<Record<string, { id: string; name: string; badgeType: BadgeType }[]>> {
+  options?: { publicOnly?: boolean },
+): Promise<Record<string, MemberCommunityAwardView[]>> {
   const unique = [...new Set(userIds.filter(Boolean))];
   if (unique.length === 0) return {};
 
   const supabase = await createClient();
   if (!supabase) return {};
 
-  const { data, error } = await supabase
+  let query = supabase
     .from("user_credentials")
     .select(
       `
       user_id,
+      visibility,
+      snapshot_name,
+      snapshot_icon_url,
       credential:credentials (
         id,
         name,
-        validity_mode
+        validity_mode,
+        icon_url
       )
     `,
     )
@@ -443,18 +626,29 @@ export async function fetchUserBadgesForCommunity(
     .in("user_id", unique)
     .is("revoked_at", null);
 
+  if (options?.publicOnly !== false) {
+    query = query.eq("visibility", "public");
+  }
+
+  const { data, error } = await query;
+
   if (!error && data) {
-    const result: Record<string, { id: string; name: string; badgeType: BadgeType }[]> = {};
+    const result: Record<string, MemberCommunityAwardView[]> = {};
     for (const row of data) {
       const userId = row.user_id as string;
       const credentialRaw = row.credential;
       const credential = Array.isArray(credentialRaw) ? credentialRaw[0] : credentialRaw;
       if (!credential) continue;
+
+      const snapName = row.snapshot_name as string | null;
+      const snapIcon = row.snapshot_icon_url as string | null;
+
       if (!result[userId]) result[userId] = [];
       result[userId].push({
         id: credential.id as string,
-        name: credential.name as string,
+        name: snapName ?? (credential.name as string),
         badgeType: mapValidityToBadgeType(credential.validity_mode as string),
+        iconUrl: snapIcon ?? (credential.icon_url as string | null) ?? null,
       });
     }
     if (Object.keys(result).length > 0 || data.length === 0) {
@@ -482,7 +676,7 @@ export async function fetchUserBadgesForCommunity(
     return {};
   }
 
-  const legacyResult: Record<string, { id: string; name: string; badgeType: BadgeType }[]> = {};
+  const legacyResult: Record<string, MemberCommunityAwardView[]> = {};
   for (const row of legacyData ?? []) {
     const userId = row.user_id as string;
     const badgeRaw = row.badge;
@@ -493,8 +687,102 @@ export async function fetchUserBadgesForCommunity(
       id: badge.id as string,
       name: badge.name as string,
       badgeType: badge.badge_type as BadgeType,
+      iconUrl: null,
     });
   }
 
   return legacyResult;
+}
+
+export async function fetchPublicUserAwards(
+  userId: string,
+): Promise<UserAwardView[]> {
+  const supabase = await createClient();
+  if (!supabase) return [];
+
+  const { data: credentialRows, error } = await supabase
+    .from("user_credentials")
+    .select(
+      `
+      id,
+      granted_at,
+      source_type,
+      visibility,
+      snapshot_name,
+      snapshot_description,
+      snapshot_icon_url,
+      credential:credentials (
+        id,
+        name,
+        description,
+        validity_mode,
+        category,
+        icon_url
+      ),
+      community:communities (
+        id,
+        title,
+        slug
+      )
+    `,
+    )
+    .eq("user_id", userId)
+    .eq("visibility", "public")
+    .is("revoked_at", null)
+    .order("granted_at", { ascending: false });
+
+  if (error) {
+    console.error("[badge.repository] public awards:", error.message);
+    return [];
+  }
+
+  return (credentialRows ?? [])
+    .map((row): UserAwardView | null => {
+      const credentialRaw = row.credential;
+      const credential = Array.isArray(credentialRaw) ? credentialRaw[0] : credentialRaw;
+      const communityRaw = row.community;
+      const community = Array.isArray(communityRaw) ? communityRaw[0] : communityRaw;
+      if (!community) return null;
+
+      const snapName = row.snapshot_name as string | null;
+      const snapDesc = row.snapshot_description as string | null;
+      const snapIcon = row.snapshot_icon_url as string | null;
+
+      return {
+        id: row.id as string,
+        badgeId: (credential?.id as string) ?? (row.id as string),
+        name: snapName ?? (credential?.name as string) ?? "Auszeichnung",
+        description: snapDesc ?? (credential?.description as string | null) ?? null,
+        category: (credential?.category as string) ?? "community_award",
+        badgeType: mapValidityToBadgeType((credential?.validity_mode as string) ?? "permanent"),
+        communityId: community.id as string,
+        communityTitle: community.title as string,
+        communitySlug: community.slug as string,
+        grantedAt: row.granted_at as string,
+        grantedByName: null,
+        sourceType: (row.source_type as string) ?? null,
+        visibility: "public",
+        iconUrl: snapIcon ?? (credential?.icon_url as string | null) ?? null,
+      };
+    })
+    .filter((a): a is UserAwardView => Boolean(a));
+}
+
+export async function updateUserCredentialVisibilityInDb(input: {
+  userId: string;
+  userCredentialId: string;
+  visibility: "public" | "private";
+}): Promise<{ error: string | null }> {
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase nicht konfiguriert" };
+
+  const { error } = await supabase
+    .from("user_credentials")
+    .update({ visibility: input.visibility })
+    .eq("id", input.userCredentialId)
+    .eq("user_id", input.userId)
+    .is("revoked_at", null);
+
+  if (error) return { error: error.message };
+  return { error: null };
 }

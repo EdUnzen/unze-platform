@@ -21,7 +21,9 @@ export type GovernancePermissionKey =
   | "manage_monetization"
   | "archive_community"
   | "delete_community"
-  | "transfer_ownership";
+  | "transfer_ownership"
+  | "create_awards"
+  | "grant_awards";
 
 export interface PermissionDefinition {
   key: GovernancePermissionKey;

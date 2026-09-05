@@ -111,7 +111,7 @@ export const DASHBOARD_DRAWER_SECTIONS: DashboardDrawerSection[] = [
         label: "Auszeichnungen",
         href: (slug) => `/dashboard/community/${slug}/auszeichnungen`,
         icon: Award,
-        minRole: "admin",
+        minRole: "moderator",
       },
     ],
   },
